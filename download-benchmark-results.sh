@@ -1,0 +1,1 @@
+wget -r -np -nH --cut-dirs=3 -nc -P benchmark-results -R index.html https://futhark-lang.org/benchmark-results/
