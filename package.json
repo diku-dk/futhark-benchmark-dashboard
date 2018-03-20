@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "d3": "^4.13.0"
+    "d3": "^4.13.0",
+    "request-promise": "^4.2.2"
   }
 }
