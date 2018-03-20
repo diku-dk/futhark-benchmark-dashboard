@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 benchmark-results
+combined.json
+combined.json.gz
 
 # Runtime data
 pids
