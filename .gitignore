@@ -8,6 +8,7 @@ yarn-error.log*
 benchmark-results
 combined.json
 combined.json.gz
+commits.json
 
 # Runtime data
 pids

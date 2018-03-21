@@ -1,12 +1,13 @@
 const fs = require('fs');
-var glob = require("glob")
+const glob = require("glob")
 
 const benchmarkResultsFolder = './benchmark-results'
 
-// options is optional
 const files = glob.sync("*.json", {
   cwd: benchmarkResultsFolder
 })
+
+const commits = require('./commits.json')
 
 const largeObject = {}
 
@@ -22,8 +23,8 @@ Promise.all(files.map(file => {
 
     resolve([file, backend, machine, commit])
   })
-})).then(results => 
-  Promise.all(results.map(([file, backend, machine, commit]) => {
+})).then(results => {
+  return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
       const data = require(`${benchmarkResultsFolder}/${file}`)
 
@@ -44,9 +45,14 @@ Promise.all(files.map(file => {
 
           delete dataset['runtimes']
           dataset['avg'] = Math.round(average(runtimes))
-          dataset['avg-'] = Math.round(average(filterOutliers(runtimes)))
+          //dataset['avg-'] = Math.round(average(filterOutliers(runtimes)))
           dataset['stdDev'] = Math.round(standardDeviation(runtimes))
-          dataset['stdDev-'] = Math.round(standardDeviation(filterOutliers(runtimes)))
+          //dataset['stdDev-'] = Math.round(standardDeviation(filterOutliers(runtimes)))
+          
+          let date = null
+
+          if (commit in commits)
+            dataset['date'] = commits[commit]
         } 
       }
 
@@ -54,7 +60,7 @@ Promise.all(files.map(file => {
       resolve()
     })
   }))
-).then(results => {
+}).then(results => {
   fs.writeFileSync('./combined.json', JSON.stringify(largeObject));
 }).then(results => {
   console.log("Done! :)")
