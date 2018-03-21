@@ -1,8 +1,6 @@
 const fs = require('fs');
 const glob = require("glob")
 const execSync = require('child_process').execSync;
-const exec = require('child_process').exec;
-var PromisePool = require('es6-promise-pool')
 
 const benchmarkResultsFolder = './benchmark-results'
 
@@ -14,30 +12,16 @@ const commits = uniq(files.map(file => file.replace('.json', '').split('-')[3]))
 
 const commitsMap = {}
 
-// Create a pool. 
-var pool = new PromisePool(() => commits.map(commit => {
-  return new Promise((resolve, reject) => {
-    exec(`git -C ../futhark show -s --format=%cI ${commit}`, (error, stdout, stderr) => {
-      console.log(commit, error, stdout, stderr)
-      if (stderr == "") {
-        console.log(commit, stdout)
-        commitsMap[commit] = stdout.trim()
-      }
-      resolve()
-    })
-  })
-}), 3)
+for (commit of commits) {
+	//console.log(commit)
+	try {
+		commitsMap[commit] = execSync(`git -C ../futhark show -s --format=%cI ${commit}`).toString('utf8').trim()
+	} catch (e) {
+		//console.error(`Bad commit hash: ${commit}`)
+	}
+}
 
-// Start the pool. 
-var poolPromise = pool.start()
-
-poolPromise.then(function () {
-  fs.writeFileSync('./commits.json', JSON.stringify(commitsMap));
-})
-
-/*Promise.all().then(() => {
-  
-})*/
+fs.writeFileSync('./commits.json', JSON.stringify(commitsMap));
 
 function uniq(a) {
     var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
