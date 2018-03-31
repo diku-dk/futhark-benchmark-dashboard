@@ -9,6 +9,7 @@ benchmark-results
 combined.json
 combined.json.gz
 commits.json
+data-split
 
 # Runtime data
 pids

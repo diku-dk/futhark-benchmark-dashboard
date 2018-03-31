@@ -1,5 +1,6 @@
 const fs = require('fs');
 const glob = require("glob")
+const zlib = require('zlib')
 
 const benchmarkResultsFolder = './benchmark-results'
 
@@ -26,6 +27,9 @@ Promise.all(files.map(file => {
 })).then(results => {
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
+      if (!commit in commits)
+        return resolve()
+
       const data = require(`${benchmarkResultsFolder}/${file}`)
 
       for (const benchmarkKey in data) {
@@ -48,20 +52,18 @@ Promise.all(files.map(file => {
           //dataset['avg-'] = Math.round(average(filterOutliers(runtimes)))
           dataset['stdDev'] = Math.round(standardDeviation(runtimes))
           //dataset['stdDev-'] = Math.round(standardDeviation(filterOutliers(runtimes)))
-          
-          let date = null
-
-          if (commit in commits)
-            dataset['date'] = commits[commit]
         } 
       }
-
+      
       largeObject[backend][machine][commit] = data
       resolve()
     })
   }))
 }).then(results => {
-  fs.writeFileSync('./combined.json', JSON.stringify(largeObject));
+  const json = JSON.stringify(largeObject)
+  fs.writeFileSync('./combined.json', json)
+  fs.writeFileSync('./combined.json.gz', zlib.gzipSync(json))
+
 }).then(results => {
   console.log("Done! :)")
 })
