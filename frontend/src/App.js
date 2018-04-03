@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
-import { Layout, Menu, Breadcrumb } from 'antd'
+import { Layout, Menu, Select } from 'antd'
 import './App.css'
 import ReactEcharts from 'echarts-for-react'
-const { Header, Content, Footer } = Layout
-//import * as d3 from "d3"
-//var svg = d3.select("body").append("svg")
+import axios from 'axios'
+import Graph from './Graph/Graph'
+const { Header, Content } = Layout
+const Option = Select.Option
 
 const ChartSettings = {
   yAxis: {
@@ -98,7 +98,27 @@ const ChartSettings = {
 }
 
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      skeleton: false
+    }
+  }
+
+  componentDidMount () {
+    axios('http://localhost:8080/metadata.json', {
+      mode: "cors"
+    })
+    .then(response => this.setState({
+      skeleton: JSON.parse(response)
+    }))
+    .catch(error => false)
+  }
+
   render() {
+    const {skeleton} = this.state
+
+    const machines = skeleton ? skeleton.machines : []
     return (
       <div className="app">
         <Layout className="layout">
@@ -113,6 +133,13 @@ class App extends Component {
             </Menu>
           </Header>
           <Content style={{ padding: '0 50px' }}>
+            <Select>
+              {machines.map(machine => (
+                <Option value={machine}>
+                  {machine}
+                </Option>
+              ))}
+            </Select>
           </Content>
         </Layout>
       </div>

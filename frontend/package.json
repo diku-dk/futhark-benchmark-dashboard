@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "^3.4.0",
+    "axios": "^0.18.0",
     "babel-plugin-import": "^1.6.7",
     "d3": "^4.13.0",
     "echarts": "^4.0.4",
