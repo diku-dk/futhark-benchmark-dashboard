@@ -1,0 +1,32 @@
+all: \
+	install \
+	run
+
+install:
+	yarn
+
+run: \
+	run-commit-dates \
+	run-process-data \
+	run-split-data
+
+run-optimized: \
+	run-commit-dates \
+	run-process-data \
+	run-optimize-data \
+	run-split-data-optimized
+
+run-commit-dates:
+	node find-commit-dates.js
+
+run-process-data:
+	node process-data.js
+
+run-optimize-data:
+	node optimize-data.js out/combined.json
+
+run-split-data:
+	node split-data.js out/combined.json
+
+run-split-data-optimized:
+	node split-data.js out/optimized.json
