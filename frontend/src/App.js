@@ -211,6 +211,7 @@ class App extends Component {
                       style={{ width: "100%", display: "block" }}
                       showSearch={true}
                       autoFocus={true}
+                      value={backend != null ? backend : undefined}
                     >
                       {backends.map(backend => (
                         <Option
@@ -230,6 +231,7 @@ class App extends Component {
                       onChange={this.changeMachine}
                       showSearch={true}
                       autoFocus={true}
+                      value={machine != null ? machine : undefined}
                     >
                       {machines.map(machine => (
                         <Option
@@ -249,6 +251,7 @@ class App extends Component {
                       onChange={this.changeBenchmark}
                       showSearch={true}
                       autoFocus={true}
+                      value={benchmark != null ? benchmark : undefined}
                     >
                       {benchmarkKeys.map(benchmark => (
                         <Option
@@ -268,6 +271,7 @@ class App extends Component {
                       onChange={this.changeDataset}
                       showSearch={true}
                       autoFocus={true}
+                      value={dataset != null ? dataset : undefined}
                     >
                       {datasets.map(dataset => (
                         <Option
