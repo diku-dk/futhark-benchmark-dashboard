@@ -1,6 +1,7 @@
 const fs = require('fs');
 const glob = require("glob")
 const zlib = require('zlib')
+var _ = require('lodash')
 
 const benchmarkResultsFolder = './benchmark-results'
 
@@ -15,6 +16,7 @@ const largeObject = {}
 const metadata = {
   skeleton: {},
   commits: commits,
+  benchmarks: [],
 }
 
 Promise.all(files.map(file => {
@@ -31,6 +33,7 @@ Promise.all(files.map(file => {
   })
 })).then(results => {
   metadata.skeleton = JSON.parse(JSON.stringify(largeObject))
+
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
       if (!commit in commits)
@@ -39,6 +42,8 @@ Promise.all(files.map(file => {
       const data = require(`${benchmarkResultsFolder}/${file}`)
 
       for (const benchmarkKey in data) {
+        metadata.benchmarks.push(benchmarkKey)
+
         const benchmark = data[benchmarkKey]
         if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length == 0) {
           delete data[benchmarkKey]
@@ -67,6 +72,8 @@ Promise.all(files.map(file => {
   const json = JSON.stringify(largeObject)
   fs.writeFileSync('./out/combined.json', json)
   fs.writeFileSync('./out/combined.json.gz', zlib.gzipSync(json))
+
+  metadata.benchmarks = _.uniq(metadata.benchmarks)
 
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 
