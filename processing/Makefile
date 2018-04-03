@@ -21,6 +21,9 @@ run-optimized: \
 	run-optimize-data \
 	run-split-data-optimized
 
+webserver:
+	yarn run http-server out/
+
 run-commit-dates:
 	node find-commit-dates.js
 
