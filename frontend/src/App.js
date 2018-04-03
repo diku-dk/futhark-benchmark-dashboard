@@ -101,8 +101,14 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      skeleton: null
+      skeleton: null,
+      backend: null,
+      machine: null,
+      benchmark: null
     }
+
+    this.changeBackend = this.changeBackend.bind(this)
+    this.changeMachine = this.changeMachine.bind(this)
   }
 
   componentDidMount () {
@@ -119,9 +125,26 @@ class App extends Component {
     .catch(console.error)
   }
 
+  changeMachine(machine) {
+    console.log(machine)
+    this.setState({
+      machine
+    })
+  }
+
+  changeBackend(backend) {
+    this.setState({
+      machine: null,
+      backend
+    })
+  }
+
   render() {
     const {
-      skeleton
+      skeleton,
+      backend,
+      machine,
+      benchmark
     } = this.state
 
     const backends = skeleton != null ? Object.keys(skeleton) : []
@@ -139,14 +162,35 @@ class App extends Component {
               <Menu.Item key="home">Home</Menu.Item>
             </Menu>
           </Header>
-          <Content style={{ padding: '0 50px' }}>
-            <Select>
+          <Content>
+            <Select
+              onChange={this.changeBackend}
+              style={{ width: "150px" }}
+            >
               {backends.map(backend => (
-                <Option value={backend}>
+                <Option
+                  value={backend}
+                  key={backend}
+                >
                   {backend}
                 </Option>
               ))}
             </Select>
+            { backend != null &&
+              <Select
+                style={{ width: "150px" }}
+                onChange={this.changeMachine}
+              >
+                {Object.keys(skeleton[backend]).map(machine => (
+                  <Option
+                    key={machine}
+                    value={machine}
+                  >
+                    {machine}
+                  </Option>
+                ))}
+              </Select>
+            }
           </Content>
         </Layout>
       </div>
