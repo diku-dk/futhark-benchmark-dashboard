@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Layout, Menu, Select } from 'antd'
+import { Layout, Menu, Select, Row, Col } from 'antd'
 import './App.css'
 import ReactEcharts from 'echarts-for-react'
 import axios from 'axios'
@@ -7,95 +7,95 @@ import Graph from './Graph/Graph'
 const { Header, Content } = Layout
 const Option = Select.Option
 
-const ChartSettings = {
+const ChartSettings = (x, y) => ({
   yAxis: {
-      type: 'value'
+    type: 'value'
   },
   xAxis: {
-      type: 'category',
-      data: ["20-07-2017", "21-07-2017", "22-07-2017", "23-07-2017", "24-07-2017", "25-07-2017", "26-07-2017"]
+    type: 'category',
+    data: x
   },
   series: [{
-      data: [820, 932, 901, 934, 1290, 1330, 1500],
-      type: 'line',
-      markPoint: {
-        data: [
-          {name : 'Test', value : 820, xAxis: "20-07-2017", yAxis: 820}
-        ]
-      },
-      markLine : {
-            data : [
-                {
-                  type : 'average', 
-                  name : 'Average',
+    data: y,
+    type: 'line',
+    /*markPoint: {
+      data: [
+        {name : 'Test', value : 820, xAxis: "20-07-2017", yAxis: 820}
+      ]
+    },*/
+    markLine : {
+          data : [
+              {
+                type : 'average', 
+                name : 'Average',
+                label: {
+                      normal: {
+                          position: 'end',
+                          formatter: 'Average'
+                      }
+                  }
+            },
+              [{
+                  symbol: 'none',
+                  x: '90%',
+                  yAxis: 'max'
+              }, {
+                  symbol: 'circle',
                   label: {
-                        normal: {
-                            position: 'end',
-                            formatter: 'Average'
-                        }
-                    }
-              },
-                [{
-                    symbol: 'none',
-                    x: '90%',
-                    yAxis: 'max'
-                }, {
-                    symbol: 'circle',
-                    label: {
-                        normal: {
-                            position: 'start',
-                            formatter: 'Max'
-                        }
-                    },
-                    type: 'max',
-                    name: 'Max'
-                }]
-            ]
-        }
+                      normal: {
+                          position: 'start',
+                          formatter: 'Max'
+                      }
+                  },
+                  type: 'max',
+                  name: 'Max'
+              }]
+          ]
+      }
   }],
   title: {
-      text: 'Performance',
-      subtext: "Benchmarks"
+    text: 'Performance',
+    subtext: "Benchmarks"
   },
   legend: {
-      data: ['Punch Card'],
-      left: 'right'
+    data: ['Punch Card'],
+    left: 'right'
   },
   tooltip: {
-      formatter: function (params) {
-        return params.value
-      }
+    formatter: function (params) {
+      return params.value
+    }
   },
   toolbox: {
     right: 40,
       show : true,
       feature : {
-          dataView : {
-            show: true,
-            readOnly: false,
-            title: "Dataview",
-            lang: ["Data view", "Turn off", "Refresh"]
-          },
-          magicType : {
-            show: true,
-            type: ['line', 'bar'],
-            title: {
-              line: "Line",
-              bar: "Bar"
-            },
-            showTitle: true
+        dataView : {
+          show: true,
+          readOnly: false,
+          title: "Dataview",
+          lang: ["Data view", "Turn off", "Refresh"]
         },
-          restore : {
-            show: true,
-            title: "Restore"
+        magicType : {
+          show: true,
+          type: ['line', 'bar'],
+          title: {
+            line: "Line",
+            bar: "Bar"
           },
-          saveAsImage : {
-            show: true,
-            title: "Save as Image"
-          }
+          showTitle: true
+      },
+        restore : {
+          show: true,
+          title: "Restore"
+        },
+        saveAsImage : {
+          show: true,
+          title: "Save as Image"
+        }
       }
   }
-}
+})
 
 class App extends Component {
   constructor(props) {
@@ -104,20 +104,25 @@ class App extends Component {
       skeleton: null,
       backend: null,
       machine: null,
-      benchmark: null
+      benchmark: null,
+      dataset: null,
+      benchmarks: null,
     }
 
     this.changeBackend = this.changeBackend.bind(this)
     this.changeMachine = this.changeMachine.bind(this)
+    this.changeBenchmark = this.changeBenchmark.bind(this)
+    this.changeDataset = this.changeDataset.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     axios('http://localhost:8080/metadata.json', {
       mode: "cors"
     })
     .then(response => {
       const parsed = response.data
       this.setState({
+        benchmarks: parsed.benchmarks,
         skeleton: parsed.skeleton,
         commits: parsed.commits,
       })
@@ -126,28 +131,65 @@ class App extends Component {
   }
 
   changeMachine(machine) {
-    console.log(machine)
     this.setState({
+      benchmark: null,
+      dataset: null,
       machine
     })
+  }
+
+  changeDataset(dataset) {
+    this.setState({
+      dataset
+    })
+  }
+
+  changeBenchmark(benchmark) {
+    const {backend, machine} = this.state
+    var {skeleton} = this.state
+    this.setState({
+      dataset: null,
+      benchmark
+    })
+    axios(`http://localhost:8080/data-split/${backend}/${machine}.json`, {
+      mode: "cors"
+    })
+    .then(response => {
+      const parsed = response.data
+      skeleton[backend][machine] = parsed
+      this.setState({
+        skeleton: skeleton
+      })
+    })
+    .catch(console.error)
   }
 
   changeBackend(backend) {
     this.setState({
       machine: null,
+      benchmark: null,
+      dataset: null,
       backend
     })
   }
 
   render() {
     const {
+      benchmarks,
       skeleton,
       backend,
       machine,
-      benchmark
+      benchmark,
+      dataset
     } = this.state
 
     const backends = skeleton != null ? Object.keys(skeleton) : []
+    const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
+    const benchmarkKeys = benchmarks != null ? Object.keys(benchmarks) : []
+    const datasets = []
+
+    const x = []
+    const y = []
 
     return (
       <div className="app">
@@ -162,36 +204,104 @@ class App extends Component {
               <Menu.Item key="home">Home</Menu.Item>
             </Menu>
           </Header>
-          <Content>
-            <Select
-              onChange={this.changeBackend}
-              style={{ width: "150px" }}
-            >
-              {backends.map(backend => (
-                <Option
-                  value={backend}
-                  key={backend}
-                >
-                  {backend}
-                </Option>
-              ))}
-            </Select>
-            { backend != null &&
-              <Select
-                style={{ width: "150px" }}
-                onChange={this.changeMachine}
-              >
-                {Object.keys(skeleton[backend]).map(machine => (
-                  <Option
-                    key={machine}
-                    value={machine}
-                  >
-                    {machine}
-                  </Option>
-                ))}
-              </Select>
-            }
-          </Content>
+          <Layout
+             style={{ padding: '24px', height: "calc(100vh - 64px)" }}
+          >
+            <Content>
+              <Row gutter={16}>
+                <Col span={2}>
+                  { backends != null &&
+                    <Select
+                      onChange={this.changeBackend}
+                      style={{ width: "100%", display: "block" }}
+                      showSearch={true}
+                      autoFocus={true}
+                      defaultValue={backends[0]}
+                    >
+                      {backends.map(backend => (
+                        <Option
+                          value={backend}
+                          key={backend}
+                        >
+                          {backend}
+                        </Option>
+                      ))}
+                    </Select>
+                  }
+                </Col>
+                <Col span={2}>
+                  { backend != null && skeleton[backend] != null &&
+                    <Select
+                      style={{ width: "100%", display: "block" }}
+                      onChange={this.changeMachine}
+                      showSearch={true}
+                      defaultValue={machines[0]}
+                    >
+                      {machines.map(machine => (
+                        <Option
+                          key={machine}
+                          value={machine}
+                        >
+                          {machine}
+                        </Option>
+                      ))}
+                    </Select>
+                  }
+                </Col>
+                <Col span={4}>
+                  { machine != null && benchmarks != null &&
+                    <Select
+                      style={{ width: "100%", display: "block" }}
+                      onChange={this.changeBenchmark}
+                      showSearch={true}
+                      defaultValue={benchmarkKeys[0]}
+                    >
+                      {benchmarkKeys.map(benchmark => (
+                        <Option
+                          key={benchmark}
+                          value={benchmark}
+                        >
+                          {benchmark.replace("futhark-benchmarks/", "")}
+                        </Option>
+                      ))}
+                    </Select>
+                  }
+                </Col>
+                <Col span={4}>
+                  { benchmark != null && datasets != null &&
+                    <Select
+                      style={{ width: "100%", display: "block" }}
+                      onChange={this.changeDataset}
+                      showSearch={true}
+                      defaultValue={datasets[0]}
+                    >
+                      {datasets.map(dataset => (
+                        <Option
+                          key={dataset}
+                          value={dataset}
+                        >
+                          {dataset}
+                        </Option>
+                      ))}
+                    </Select>
+                  }
+                </Col>
+              </Row>
+              { dataset != null &&
+                <Row>
+                  <Col span={24}>
+                    <ReactEcharts
+                      options={ChartSettings(x, y)}
+                      notMerge={true}
+                      lazyUpdate={true}
+                      theme={"light"}
+                      opts={{}}
+                    />
+                  </Col>
+                </Row>
+              }
+            </Content>
+          </Layout>
         </Layout>
       </div>
     )
