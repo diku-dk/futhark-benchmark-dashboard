@@ -22,7 +22,7 @@ run-optimized: \
 	run-split-data-optimized
 
 webserver:
-	yarn run http-server out/
+	yarn run http-server --cors out/
 
 run-commit-dates:
 	node find-commit-dates.js

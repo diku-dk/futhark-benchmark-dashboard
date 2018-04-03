@@ -101,7 +101,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      skeleton: false
+      skeleton: null
     }
   }
 
@@ -109,16 +109,23 @@ class App extends Component {
     axios('http://localhost:8080/metadata.json', {
       mode: "cors"
     })
-    .then(response => this.setState({
-      skeleton: JSON.parse(response)
-    }))
-    .catch(error => false)
+    .then(response => {
+      const parsed = response.data
+      this.setState({
+        skeleton: parsed.skeleton,
+        commits: parsed.commits,
+      })
+    })
+    .catch(console.error)
   }
 
   render() {
-    const {skeleton} = this.state
+    const {
+      skeleton
+    } = this.state
 
-    const machines = skeleton ? skeleton.machines : []
+    const backends = skeleton != null ? Object.keys(skeleton) : []
+
     return (
       <div className="app">
         <Layout className="layout">
@@ -134,9 +141,9 @@ class App extends Component {
           </Header>
           <Content style={{ padding: '0 50px' }}>
             <Select>
-              {machines.map(machine => (
-                <Option value={machine}>
-                  {machine}
+              {backends.map(backend => (
+                <Option value={backend}>
+                  {backend}
                 </Option>
               ))}
             </Select>
