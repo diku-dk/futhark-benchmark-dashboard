@@ -5,12 +5,17 @@ all: \
 install:
 	yarn
 
+ensure-dirs:
+	mkdir -p out
+
 run: \
+	ensure-dirs \
 	run-commit-dates \
 	run-process-data \
 	run-split-data
 
 run-optimized: \
+	ensure-dirs \
 	run-commit-dates \
 	run-process-data \
 	run-optimize-data \
