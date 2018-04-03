@@ -12,6 +12,11 @@ const commits = require('./commits.json')
 
 const largeObject = {}
 
+const metadata = {
+  skeleton: {},
+  commits: commits,
+}
+
 Promise.all(files.map(file => {
   return new Promise((resolve, reject) => {
     const [backend, machine, commit] = file.replace('.json', '').split('-').splice(1)
@@ -25,6 +30,7 @@ Promise.all(files.map(file => {
     resolve([file, backend, machine, commit])
   })
 })).then(results => {
+  metadata.skeleton = JSON.parse(JSON.stringify(largeObject))
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
       if (!commit in commits)
@@ -49,9 +55,7 @@ Promise.all(files.map(file => {
 
           delete dataset['runtimes']
           dataset['avg'] = Math.round(average(runtimes))
-          //dataset['avg-'] = Math.round(average(filterOutliers(runtimes)))
           dataset['stdDev'] = Math.round(standardDeviation(runtimes))
-          //dataset['stdDev-'] = Math.round(standardDeviation(filterOutliers(runtimes)))
         } 
       }
       
@@ -63,6 +67,8 @@ Promise.all(files.map(file => {
   const json = JSON.stringify(largeObject)
   fs.writeFileSync('./combined.json', json)
   fs.writeFileSync('./combined.json.gz', zlib.gzipSync(json))
+
+  fs.writeFileSync('./metadata.json', JSON.stringify(metadata))
 
 }).then(results => {
   console.log("Done! :)")
@@ -76,27 +82,4 @@ const standardDeviation = (values) => {
     const diff = value - avg
     return diff * diff
   })))
-}
-
-function filterOutliers(someArray) {
-  if(someArray.length < 4)
-    return someArray
-
-  let values, q1, q3, iqr, maxValue, minValue
-
-  values = someArray.slice().sort( (a, b) => a - b)//copy array fast and sort
-
-  if((values.length / 4) % 1 === 0){//find quartiles
-    q1 = 1/2 * (values[(values.length / 4)] + values[(values.length / 4) + 1])
-    q3 = 1/2 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1])
-  } else {
-    q1 = values[Math.floor(values.length / 4 + 1)]
-    q3 = values[Math.ceil(values.length * (3 / 4) + 1)]
-  }
-
-  iqr = q3 - q1
-  maxValue = q3 + iqr * 1.5
-  minValue = q1 - iqr * 1.5
-
-  return values.filter((x) => (x >= minValue) && (x <= maxValue))
 }
