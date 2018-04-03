@@ -3,18 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "antd": "^3.4.0",
+    "babel-plugin-import": "^1.6.7",
     "d3": "^4.13.0",
     "echarts": "^4.0.4",
     "echarts-for-react": "^2.0.8",
     "jsdom": "^11.6.2",
     "react": "^16.2.0",
+    "react-app-rewire-less": "^2.1.1",
+    "react-app-rewired": "^1.5.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-app-rewired eject"
   }
 }
