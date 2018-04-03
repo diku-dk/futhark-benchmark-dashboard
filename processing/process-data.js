@@ -8,7 +8,7 @@ const files = glob.sync("*.json", {
   cwd: benchmarkResultsFolder
 })
 
-const commits = require('./commits.json')
+const commits = require('./out/commits.json')
 
 const largeObject = {}
 
@@ -65,10 +65,10 @@ Promise.all(files.map(file => {
   }))
 }).then(results => {
   const json = JSON.stringify(largeObject)
-  fs.writeFileSync('./combined.json', json)
-  fs.writeFileSync('./combined.json.gz', zlib.gzipSync(json))
+  fs.writeFileSync('./out/combined.json', json)
+  fs.writeFileSync('./out/combined.json.gz', zlib.gzipSync(json))
 
-  fs.writeFileSync('./metadata.json', JSON.stringify(metadata))
+  fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 
 }).then(results => {
   console.log("Done! :)")

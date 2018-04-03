@@ -5,11 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
-benchmark-results
-combined.json
-combined.json.gz
-commits.json
-data-split
+processing/benchmark-results
+processing/out
+
 
 # Runtime data
 pids

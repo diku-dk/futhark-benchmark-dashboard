@@ -1,7 +1,7 @@
 const fs = require('fs')
 const rimraf = require('rimraf')
 const zlib = require('zlib')
-const baseDir = 'data-split'
+const baseDir = 'out/data-split'
 
 if (process.argv[2] == null) {
   console.log("Please run: split-data.js <input file>")
