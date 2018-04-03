@@ -1,5 +1,4 @@
 const fs = require('fs')
-const zlib = require('zlib')
 const commits = require('./out/commits.json')
 
 if (process.argv[2] == null) {
