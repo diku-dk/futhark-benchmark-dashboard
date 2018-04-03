@@ -1,6 +1,6 @@
 const fs = require('fs')
 const zlib = require('zlib')
-const commits = require('./commits.json')
+const commits = require('./out/commits.json')
 
 if (process.argv[2] == null) {
   console.log("Please run: optimize-data.js <input file>")
@@ -74,4 +74,4 @@ for (const backendKey in inputData) {
 }
 
 const json = JSON.stringify(inputData)
-fs.writeFileSync('./optimized.json', json)
+fs.writeFileSync('./out/optimized.json', json)

@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "d3": "^4.13.0",
+    "glob": "^7.1.2",
+    "request-promise": "^4.2.2",
+    "rimraf": "^2.6.2"
+  },
+  "name": "futhark-benchmark-dashboard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:boh1996/futhark-benchmark-dashboard.git",
+  "author": "Frederik Lassen <frederiklassen@gmail.com>",
+  "license": "MIT"
+}

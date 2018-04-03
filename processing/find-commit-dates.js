@@ -15,13 +15,13 @@ const commitsMap = {}
 for (commit of commits) {
 	//console.log(commit)
 	try {
-		commitsMap[commit] = execSync(`git -C ../futhark show -s --format=%cI ${commit}`).toString('utf8').trim()
+		commitsMap[commit] = execSync(`git -C ../../futhark show -s --format=%cI ${commit}`).toString('utf8').trim()
 	} catch (e) {
 		//console.error(`Bad commit hash: ${commit}`)
 	}
 }
 
-fs.writeFileSync('./commits.json', JSON.stringify(commitsMap));
+fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap));
 
 function uniq(a) {
     var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
