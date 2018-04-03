@@ -12,7 +12,8 @@ run: \
 	ensure-dirs \
 	run-commit-dates \
 	run-process-data \
-	run-split-data
+	run-split-data \
+	gzip
 
 run-optimized: \
 	ensure-dirs \
@@ -20,6 +21,9 @@ run-optimized: \
 	run-process-data \
 	run-optimize-data \
 	run-split-data-optimized
+
+gzip:
+	find out/ -type f ! -name "*.gz" -exec gzip -k -f --best {} \;
 
 webserver:
 	yarn run http-server --cors out/

@@ -1,6 +1,5 @@
 const fs = require('fs')
 const rimraf = require('rimraf')
-const zlib = require('zlib')
 const baseDir = 'out/data-split'
 
 if (process.argv[2] == null) {
@@ -22,6 +21,5 @@ for (backendIndex in inputData) {
 		const json = JSON.stringify(machine)
 
 		fs.writeFileSync(`${baseDir}/${backendIndex}/${machineIndex}.json`, json)
-		fs.writeFileSync(`${baseDir}/${backendIndex}/${machineIndex}.json.gz`, zlib.gzipSync(json))
 	}
 }

@@ -1,6 +1,5 @@
 const fs = require('fs');
 const glob = require("glob")
-const zlib = require('zlib')
 var _ = require('lodash')
 
 const benchmarkResultsFolder = './benchmark-results'
@@ -16,7 +15,7 @@ const largeObject = {}
 const metadata = {
   skeleton: {},
   commits: commits,
-  benchmarks: [],
+  benchmarks: {},
 }
 
 Promise.all(files.map(file => {
@@ -42,13 +41,13 @@ Promise.all(files.map(file => {
       const data = require(`${benchmarkResultsFolder}/${file}`)
 
       for (const benchmarkKey in data) {
-        metadata.benchmarks.push(benchmarkKey)
-
         const benchmark = data[benchmarkKey]
         if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length == 0) {
           delete data[benchmarkKey]
           continue
         }
+        
+        _.set(metadata.benchmarks, [benchmarkKey], [])
 
         for (const datasetKey in benchmark['datasets']) {
           const dataset = benchmark['datasets'][datasetKey]
@@ -57,6 +56,8 @@ Promise.all(files.map(file => {
             delete benchmark['datasets'][datasetKey]
             continue
           }
+
+          metadata.benchmarks[benchmarkKey].push(datasetKey)
 
           delete dataset['runtimes']
           dataset['avg'] = Math.round(average(runtimes))
@@ -71,9 +72,8 @@ Promise.all(files.map(file => {
 }).then(results => {
   const json = JSON.stringify(largeObject)
   fs.writeFileSync('./out/combined.json', json)
-  fs.writeFileSync('./out/combined.json.gz', zlib.gzipSync(json))
 
-  metadata.benchmarks = _.uniq(metadata.benchmarks)
+  metadata.benchmarks = _.mapValues(metadata.benchmarks, (datasets => _.uniq(datasets)))
 
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 
