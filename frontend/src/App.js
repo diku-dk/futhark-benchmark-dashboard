@@ -18,11 +18,6 @@ const ChartSettings = (x, y) => ({
   series: [{
     data: y,
     type: 'line',
-    /*markPoint: {
-      data: [
-        {name : 'Test', value : 820, xAxis: "20-07-2017", yAxis: 820}
-      ]
-    },*/
     markLine : {
           data : [
               {
@@ -186,7 +181,7 @@ class App extends Component {
     const backends = skeleton != null ? Object.keys(skeleton) : []
     const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
     const benchmarkKeys = benchmarks != null ? Object.keys(benchmarks) : []
-    const datasets = []
+    const datasets = ( benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
 
     const x = []
     const y = []
@@ -216,7 +211,6 @@ class App extends Component {
                       style={{ width: "100%", display: "block" }}
                       showSearch={true}
                       autoFocus={true}
-                      defaultValue={backends[0]}
                     >
                       {backends.map(backend => (
                         <Option
@@ -235,7 +229,7 @@ class App extends Component {
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeMachine}
                       showSearch={true}
-                      defaultValue={machines[0]}
+                      autoFocus={true}
                     >
                       {machines.map(machine => (
                         <Option
@@ -254,7 +248,7 @@ class App extends Component {
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeBenchmark}
                       showSearch={true}
-                      defaultValue={benchmarkKeys[0]}
+                      autoFocus={true}
                     >
                       {benchmarkKeys.map(benchmark => (
                         <Option
@@ -273,7 +267,7 @@ class App extends Component {
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeDataset}
                       showSearch={true}
-                      defaultValue={datasets[0]}
+                      autoFocus={true}
                     >
                       {datasets.map(dataset => (
                         <Option
@@ -291,10 +285,10 @@ class App extends Component {
                 <Row>
                   <Col span={24}>
                     <ReactEcharts
-                      options={ChartSettings(x, y)}
+                      option={ChartSettings(x, y)}
                       notMerge={true}
                       lazyUpdate={true}
-                      theme={"light"}
+                      theme={"dark"}
                       opts={{}}
                     />
                   </Col>
