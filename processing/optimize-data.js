@@ -14,8 +14,6 @@ function optimizeBenchmarks( input ) {
     const backend = input[backendKey]
 
     let filteredBackend = {}
-    let lastBackend = {}
-    let lastBackendReconstruct = {}
 
     for ( const machineKey in backend ) {
       const machine = backend[machineKey]
@@ -44,7 +42,6 @@ function optimizeBenchmarks( input ) {
                 const diff = Math.abs((previousDataset['avg'] - dataset['avg']) / previousDataset['avg'])
 
                 if ( diff < 0.05 ) {
-                  _.set(lastBackend, [machineKey, benchmarkKey, 'datasets', datasetKey], Object.assign({commit: commitKey}, dataset))
                   continue
                 }
               }
@@ -60,7 +57,7 @@ function optimizeBenchmarks( input ) {
       filterCommits(reversedSortedCommitKeys)
     }
 
-    input[backendKey] = _.merge(filteredBackend, lastBackendReconstruct)
+    input[backendKey] = filteredBackend
   }
 
   return input
