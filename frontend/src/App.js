@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Layout, Menu, Select, Row, Col } from 'antd'
+import { Layout, Menu, Select, Row, Col, Switch } from 'antd'
 import './App.css'
 import ReactEcharts from 'echarts-for-react'
 import axios from 'axios'
@@ -24,12 +24,14 @@ class App extends Component {
       dataset: 'data/radix_sort_100.in',
       benchmarks: null,
       commits: [],
+      graphType: "absolute"
     }
 
     this.changeBackend = this.changeBackend.bind(this)
     this.changeMachine = this.changeMachine.bind(this)
     this.changeBenchmark = this.changeBenchmark.bind(this)
     this.changeDataset = this.changeDataset.bind(this)
+    this.changeGraphType = this.changeGraphType.bind(this)
   }
 
   componentDidMount() {
@@ -58,6 +60,12 @@ class App extends Component {
   changeDataset(dataset) {
     this.setState({
       dataset
+    })
+  }
+
+  changeGraphType(value) {
+    this.setState({
+      graphType: value ? 'speedup' : 'absolute'
     })
   }
 
@@ -108,7 +116,8 @@ class App extends Component {
       machine,
       benchmark,
       dataset,
-      commits
+      commits,
+      graphType
     } = this.state
 
     if (skeleton == null)
@@ -151,6 +160,11 @@ class App extends Component {
       const unzipped = _.unzip(refinedData)
       x = unzipped[0]
       y = unzipped[1]
+    }
+
+    if (graphType == 'speedup') {
+      const minY = Math.min(...y)
+      y = y.map(e => (e / minY).toFixed(2))
     }
 
     //console.log(x)
@@ -253,6 +267,9 @@ class App extends Component {
                     </Select>
                   }
                 </Col>
+                <Col span={3}>
+                  Absolute <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType == "speedup"} /> Speedup
+                </Col>
               </Row>
               { dataset != null && data != null &&
                 <Row>
@@ -277,6 +294,9 @@ class App extends Component {
                             }
                           }],
                           yAxes: [{
+                            ticks: {
+                              //min: 1,
+                            },
                             scaleLabel: {
                               display: true,
                               labelString: 'value'
