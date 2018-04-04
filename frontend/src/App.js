@@ -5,92 +5,12 @@ import ReactEcharts from 'echarts-for-react'
 import axios from 'axios'
 import Graph from './Graph/Graph'
 import _ from 'lodash'
+import {Line} from "react-chartjs-2"
 const { Header, Content } = Layout
 const Option = Select.Option
 
 const ChartSettings = (x, y) => ({
-  yAxis: {
-    type: 'value'
-  },
-  xAxis: {
-    type: 'category',
-    data: x
-  },
-  series: [{
-    data: y,
-    type: 'line',
-    markLine : {
-          data : [
-              {
-                type : 'average', 
-                name : 'Average',
-                label: {
-                      normal: {
-                          position: 'end',
-                          formatter: 'Average'
-                      }
-                  }
-            },
-              [{
-                  symbol: 'none',
-                  x: '90%',
-                  yAxis: 'max'
-              }, {
-                  symbol: 'circle',
-                  label: {
-                      normal: {
-                          position: 'start',
-                          formatter: 'Max'
-                      }
-                  },
-                  type: 'max',
-                  name: 'Max'
-              }]
-          ]
-      }
-  }],
-  title: {
-    text: 'Performance',
-    subtext: "Benchmarks"
-  },
-  legend: {
-    data: ['Punch Card'],
-    left: 'right'
-  },
-  tooltip: {
-    formatter: function (params) {
-      return params.value
-    }
-  },
-  toolbox: {
-    right: 40,
-      show : true,
-      feature : {
-        dataView : {
-          show: true,
-          readOnly: false,
-          title: "Dataview",
-          lang: ["Data view", "Turn off", "Refresh"]
-        },
-        magicType : {
-          show: true,
-          type: ['line', 'bar'],
-          title: {
-            line: "Line",
-            bar: "Bar"
-          },
-          showTitle: true
-      },
-        restore : {
-          show: true,
-          title: "Restore"
-        },
-        saveAsImage : {
-          show: true,
-          title: "Save as Image"
-        }
-      }
-  }
+  
 })
 
 class App extends Component {
@@ -103,7 +23,7 @@ class App extends Component {
       benchmark: "futhark-benchmarks/misc/radix_sort/radix_sort.fut",
       dataset: 'data/radix_sort_100.in',
       benchmarks: null,
-      commits: []
+      commits: [],
     }
 
     this.changeBackend = this.changeBackend.bind(this)
@@ -202,6 +122,7 @@ class App extends Component {
     const datasets = ( benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
     let x = []
     let y = []
+    let data = []
 
     if (dataset != null) {
       const rawData = skeleton[backend][machine]
@@ -226,10 +147,13 @@ class App extends Component {
 
       refinedData = refinedData.sort((a, b) => a.date - b.date)
       refinedData = refinedData.map(e => [e.date, e.avg])
+      data = refinedData
       const unzipped = _.unzip(refinedData)
       x = unzipped[0]
       y = unzipped[1]
     }
+
+    //console.log(x)
 
     return (
       <div className="app">
@@ -330,15 +254,62 @@ class App extends Component {
                   }
                 </Col>
               </Row>
-              { dataset != null &&
+              { dataset != null && data != null &&
                 <Row>
                   <Col span={24}>
-                    <ReactEcharts
-                      option={ChartSettings(x, y)}
-                      notMerge={true}
-                      lazyUpdate={true}
-                      theme={"dark"}
-                      opts={{}}
+                    <Line
+                      height={300}
+                      options={{
+                        maintainAspectRatio: false,
+                        title: {
+                          text: 'Benchmark results'
+                        },
+                        scales: {
+                          xAxes: [{
+                            type: 'time',
+                            time: {
+                              format: 'MM/DD/YYYY HH:mm',
+                              tooltipFormat: 'll HH:mm'
+                            },
+                            scaleLabel: {
+                              display: true,
+                              labelString: 'Date'
+                            }
+                          }],
+                          yAxes: [{
+                            scaleLabel: {
+                              display: true,
+                              labelString: 'value'
+                            }
+                          }]
+                        }
+                      }}
+                      data={{
+                        labels: x,
+                        datasets: [
+                          {
+                            label: `${backend}/${machine}/${benchmark}/${dataset}`,
+                            fill: false,
+                            lineTension: 0.1,
+                            backgroundColor: 'rgba(75,192,192,0.4)',
+                            borderColor: 'rgba(75,192,192,1)',
+                            borderCapStyle: 'butt',
+                            borderDash: [],
+                            borderDashOffset: 0.0,
+                            borderJoinStyle: 'miter',
+                            pointBorderColor: 'rgba(75,192,192,1)',
+                            pointBackgroundColor: '#fff',
+                            pointBorderWidth: 1,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                            pointHoverBorderColor: 'rgba(220,220,220,1)',
+                            pointHoverBorderWidth: 2,
+                            pointRadius: 1,
+                            pointHitRadius: 10,
+                            data: y
+                          }
+                        ]
+                      }}
                     />
                   </Col>
                 </Row>

@@ -17,10 +17,10 @@ run: \
 
 run-optimized: \
 	ensure-dirs \
-	run-commit-dates \
 	run-process-data \
 	run-optimize-data \
-	run-split-data-optimized
+	run-split-data-optimized \
+	gzip
 
 gzip:
 	find out/ -type f ! -name "*.gz" -exec gzip -k -f --best {} \;
