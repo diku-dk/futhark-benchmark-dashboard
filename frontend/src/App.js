@@ -4,6 +4,7 @@ import './App.css'
 import ReactEcharts from 'echarts-for-react'
 import axios from 'axios'
 import Graph from './Graph/Graph'
+import _ from 'lodash'
 const { Header, Content } = Layout
 const Option = Select.Option
 
@@ -97,11 +98,12 @@ class App extends Component {
     super(props)
     this.state = {
       skeleton: null,
-      backend: null,
-      machine: null,
-      benchmark: null,
-      dataset: null,
+      backend: 'opencl',
+      machine: 'GTX780',
+      benchmark: "futhark-benchmarks/misc/radix_sort/radix_sort.fut",
+      dataset: 'data/radix_sort_100.in',
       benchmarks: null,
+      commits: []
     }
 
     this.changeBackend = this.changeBackend.bind(this)
@@ -140,23 +142,11 @@ class App extends Component {
   }
 
   changeBenchmark(benchmark) {
-    const {backend, machine} = this.state
     var {skeleton} = this.state
     this.setState({
       dataset: null,
       benchmark
     })
-    axios(`http://localhost:8080/data-split/${backend}/${machine}.json`, {
-      mode: "cors"
-    })
-    .then(response => {
-      const parsed = response.data
-      skeleton[backend][machine] = parsed
-      this.setState({
-        skeleton: skeleton
-      })
-    })
-    .catch(console.error)
   }
 
   changeBackend(backend) {
@@ -168,6 +158,28 @@ class App extends Component {
     })
   }
 
+  downloadData() {
+    const {backend, skeleton, machine} = this.state
+    if (
+      skeleton != null &&
+      backend != null &&
+      machine != null &&
+      Object.keys(skeleton[backend][machine]).length === 0
+    ) {
+      axios(`http://localhost:8080/data-split/${backend}/${machine}.json`, {
+        mode: "cors"
+      })
+      .then(response => {
+        const parsed = response.data
+        skeleton[backend][machine] = parsed
+        this.setState({
+          skeleton: skeleton
+        })
+      })
+      .catch(console.error)
+    }
+  }
+
   render() {
     const {
       benchmarks,
@@ -175,16 +187,49 @@ class App extends Component {
       backend,
       machine,
       benchmark,
-      dataset
+      dataset,
+      commits
     } = this.state
+
+    if (skeleton == null)
+      return <div>Loading</div>
+
+    this.downloadData()
 
     const backends = skeleton != null ? Object.keys(skeleton) : []
     const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
     const benchmarkKeys = benchmarks != null ? Object.keys(benchmarks) : []
     const datasets = ( benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
+    let x = []
+    let y = []
 
-    const x = []
-    const y = []
+    if (dataset != null) {
+      const rawData = skeleton[backend][machine]
+      let refinedData = []
+
+      for (const rawDataKey in rawData) {
+        const datapoint = {
+          commit: rawDataKey,
+          date: new Date(commits[rawDataKey]),
+        }
+
+        const datasetData = _.get(rawData, [rawDataKey, benchmark, 'datasets', dataset], null)
+
+        if (datasetData == null)
+          continue
+
+        datapoint['avg'] = datasetData['avg']
+        datapoint['stdDev'] = datasetData['stdDev']
+
+        refinedData.push(datapoint)
+      }
+
+      refinedData = refinedData.sort((a, b) => a.date - b.date)
+      refinedData = refinedData.map(e => [e.date, e.avg])
+      const unzipped = _.unzip(refinedData)
+      x = unzipped[0]
+      y = unzipped[1]
+    }
 
     return (
       <div className="app">

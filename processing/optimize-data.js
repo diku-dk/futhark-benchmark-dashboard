@@ -33,29 +33,31 @@ for (const backendKey in inputData) {
         continue
       }
 
-      for (const benchmarkKey in previousInsertedCommit) {
-        const benchmark = previousInsertedCommit[benchmarkKey]
+      for (const benchmarkKey in commit) {
+        const benchmark = commit[benchmarkKey]
 
         if (qualifies)
           break
 
-        if (!(benchmarkKey in commit)) {
+        if (!(benchmarkKey in previousInsertedCommit)) {
           qualifies = true
           break
         }
 
-        for (const datasetKey in benchmark['datasets']) {
-          const previousDataset = benchmark['datasets'][datasetKey]
+        const previousBenchmark = previousInsertedCommit[benchmarkKey]
 
-          if (!(datasetKey in commit[benchmarkKey]['datasets'])) {
+        for (const datasetKey in benchmark['datasets']) {
+          const currentDataset = commit[benchmarkKey]['datasets'][datasetKey]
+
+          if (!(datasetKey in previousBenchmark['datasets'])) {
             qualifies = true
             break
           }
 
-          const currentDataset = commit[benchmarkKey]['datasets'][datasetKey]
+          const previousDataset = previousBenchmark['datasets'][datasetKey]
           const diff = Math.abs((previousDataset['avg'] - currentDataset['avg']) / previousDataset['avg'])
 
-          if (diff > 0.02) {
+          if (diff > 0.10) {
             qualifies = true
             break
           }

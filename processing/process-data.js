@@ -35,7 +35,7 @@ Promise.all(files.map(file => {
 
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
-      if (!commit in commits)
+      if (!(commit in commits))
         return resolve()
 
       const data = require(`${benchmarkResultsFolder}/${file}`)
