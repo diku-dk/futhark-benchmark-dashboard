@@ -3,6 +3,7 @@ const fs = require('fs')
 const glob = require("glob")
 const execSync = require('child_process').execSync
 const chalk = require('chalk')
+const physicalCpuCount = require('physical-cpu-count')
 
 if (process.argv[2] == null || process.argv[3] == null) {
   console.log("Please run: run-benchmarks.js <machine name> <input file>")
@@ -14,23 +15,28 @@ const benchmarkDir = `${compilerDir}/futhark-benchmarks`
 const outDir = 'benchmark-results'
 const compilerGitCommand = `git -C ${compilerDir}`
 const benchmarkGitCommand = `git -C ${benchmarkDir}`
+const benchmarkRuns = 10
 const machine = process.argv[2]
 const runs = fs.readFileSync(process.argv[3]).toString().split('\n')
-const shell = (...args) => execSync(...args).toString('utf8').trim()
+const shell = (...args) => (execSync(...args) || '').toString('utf8').trim()
 
 const compileCompiler = () => {
   console.log("Running stack setup...")
-  shell(`stack setup`, {cwd: compilerDir})
+  shell(`stack setup`, {cwd: compilerDir, stdio: 'inherit'})
 
   console.log("Running stack clean...")
-  shell(`stack clean`, {cwd: compilerDir})
+  shell(`stack clean`, {cwd: compilerDir, stdio: 'inherit'})
 
   console.log("Running stack build...")
-  shell(`stack build`, {cwd: compilerDir})
+  shell(`stack build --ghc-options="-j${physicalCpuCount}"`, {cwd: compilerDir, stdio: 'inherit'})
 }
 
 const runBenchmarks = (backend, compilerRevision, outputFile) => {
-  shell(`stack exec -- futhark-bench --compiler=${backend} futhark-benchmarks --json ${outputFile} --runs 10`, {cwd: compilerDir})
+  try {
+    shell(`stack exec -- futhark-bench --compiler=${backend} futhark-benchmarks --json ${outputFile} --runs ${benchmarkRuns}`, {cwd: compilerDir, stdio: 'inherit'})
+  } catch (e) {
+    console.log(chalk.red('futhark-bench reported an error - but perhaps there was none'))
+  }
 }
 
 for (run of runs) {
@@ -41,7 +47,7 @@ for (run of runs) {
     continue
   }
 
-  console.log(chalk.green(`\n-- Running ${compilerRevision}`))
+  console.log(chalk.green(`\n-- Running ${compilerRevision} with ${backend}`))
 
   // Prepend futhark to the backend name
   backend = `futhark-${backend}`
@@ -67,11 +73,12 @@ for (run of runs) {
   // Get benchmark revision
   let benchmarkRevision = null
   try {
+    shell(`${compilerGitCommand} submodule update`)
     // Get benchmark revision from submodule (preferred, newer)
     const submoduleRevision = shell(`${compilerGitCommand} submodule status | grep futhark-benchmarks`)
     console.log(`Submodule: ${submoduleRevision}`)
-    
-    benchmarkRevision = submoduleRevision.replace('-', '').split(' ')[0]
+
+    benchmarkRevision = submoduleRevision.replace('-', '').replace('+', '').split(' ')[0]
   } catch (e) {
     // Get benchmark revision from date (fallback, older)
     const currentCompilerRevisionDate = shell(`${compilerGitCommand} show -s --format=%cI`)

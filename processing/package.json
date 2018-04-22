@@ -5,6 +5,7 @@
     "glob": "^7.1.2",
     "http-server": "^0.11.1",
     "lodash": "^4.17.5",
+    "physical-cpu-count": "^2.0.0",
     "request-promise": "^4.2.2",
     "rimraf": "^2.6.2"
   },
