@@ -17,6 +17,7 @@ run: \
 
 run-optimized: \
 	ensure-dirs \
+	run-commit-dates \
 	run-process-data \
 	run-optimize-data \
 	run-split-data-optimized \
