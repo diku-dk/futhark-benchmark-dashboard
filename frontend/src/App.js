@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { 
   Layout,
   Menu,
-  Select,
   Row,
   Col,
   Switch,
@@ -16,7 +15,6 @@ import './App.css'
 import axios from 'axios'
 import _ from 'lodash'
 const { Header, Content } = Layout
-const Option = Select.Option
 
 class App extends Component {
   constructor(props) {
@@ -152,7 +150,7 @@ class App extends Component {
   downloadData() {
     const {selected, skeleton} = this.state
 
-    selected.map(path => {
+    for ( let path of selected ) {
       const {backend, machine} = path
       if (
         skeleton != null &&
@@ -172,7 +170,7 @@ class App extends Component {
         })
         .catch(console.error)
       }
-    })
+    }
   }
 
   render() {

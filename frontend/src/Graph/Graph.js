@@ -26,9 +26,6 @@ class Graph extends Component {
       graphType
     } = this.props
 
-    if ( datasets === null )
-      return null
-
     let datasets = []
 
     const colors = [
@@ -75,7 +72,6 @@ class Graph extends Component {
         refinedData = refinedData.sort((a, b) => a.date - b.date)
         let XY = refinedData.map(e => ({x: e.date, y: e.avg}))
         let Y = refinedData.map(e => e.avg)
-        let X = refinedData.map(e => e.date)
         
         if (graphType === 'speedup' && Y !== undefined) {
           const minY = Math.min(...Y)
@@ -84,7 +80,6 @@ class Graph extends Component {
 
         datasets.push({
           label: `${backend}/${machine}/${benchmark}/${dataset}`,
-          labels: X,
           fill: false,
           lineTension: 0.1,
           backgroundColor: `rgba(${colors[pathIndex]},0.4)`,

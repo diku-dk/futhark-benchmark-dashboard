@@ -5,14 +5,9 @@ import {
   Col,
   Button
 } from 'antd'
-import _ from 'lodash'
 const Option = Select.Option
 
 class Path extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const {
       benchmarks,
