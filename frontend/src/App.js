@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
-import { Layout, Menu, Select, Row, Col, Switch } from 'antd'
+import { 
+  Layout,
+  Menu,
+  Select,
+  Row,
+  Col,
+  Switch,
+  Slider,
+  InputNumber
+} from 'antd'
 import './App.css'
-import ReactEcharts from 'echarts-for-react'
 import axios from 'axios'
-import Graph from './Graph/Graph'
 import _ from 'lodash'
 import {Line} from "react-chartjs-2"
 const { Header, Content } = Layout
 const Option = Select.Option
-
-const ChartSettings = (x, y) => ({
-  
-})
 
 class App extends Component {
   constructor(props) {
@@ -24,7 +27,9 @@ class App extends Component {
       dataset: 'data/radix_sort_100.in',
       benchmarks: null,
       commits: [],
-      graphType: "absolute"
+      graphType: "speedup",
+      speedUpMax: 2,
+      speedUpType: "average"
     }
 
     this.changeBackend = this.changeBackend.bind(this)
@@ -32,6 +37,8 @@ class App extends Component {
     this.changeBenchmark = this.changeBenchmark.bind(this)
     this.changeDataset = this.changeDataset.bind(this)
     this.changeGraphType = this.changeGraphType.bind(this)
+    this.onSpeedupMaxChange = this.onSpeedupMaxChange.bind(this)
+    this.onChangeSpeedUpType = this.onChangeSpeedUpType.bind(this)
   }
 
   componentDidMount() {
@@ -47,6 +54,18 @@ class App extends Component {
       })
     })
     .catch(console.error)
+  }
+
+  onChangeSpeedUpType(value) {
+    this.setState({
+      speedUpType: value ? 'minimum' : 'average'
+    })
+  }
+
+  onSpeedupMaxChange(speedUpMax) {
+    this.setState({
+      speedUpMax
+    })
   }
 
   changeMachine(machine) {
@@ -70,7 +89,6 @@ class App extends Component {
   }
 
   changeBenchmark(benchmark) {
-    var {skeleton} = this.state
     this.setState({
       dataset: null,
       benchmark
@@ -117,23 +135,24 @@ class App extends Component {
       benchmark,
       dataset,
       commits,
-      graphType
+      graphType,
+      speedUpMax
     } = this.state
 
-    if (skeleton == null)
+    if (skeleton === null)
       return <div>Loading</div>
 
     this.downloadData()
 
-    const backends = skeleton != null ? Object.keys(skeleton) : []
-    const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
-    const benchmarkKeys = benchmarks != null ? Object.keys(benchmarks) : []
-    const datasets = ( benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
+    const backends = skeleton !== null ? Object.keys(skeleton) : []
+    const machines = backend !== null && skeleton[backend] !== null ? Object.keys(skeleton[backend]) : []
+    const benchmarkKeys = benchmarks !== null ? Object.keys(benchmarks) : []
+    const datasets = ( benchmarks !== null && benchmark !== null ) ? benchmarks[benchmark] : []
     let x = []
     let y = []
     let data = []
 
-    if (dataset != null) {
+    if (dataset !== null) {
       const rawData = skeleton[backend][machine]
       let refinedData = []
 
@@ -145,7 +164,7 @@ class App extends Component {
 
         const datasetData = _.get(rawData, [rawDataKey, benchmark, 'datasets', dataset], null)
 
-        if (datasetData == null)
+        if (datasetData === null)
           continue
 
         datapoint['avg'] = datasetData['avg']
@@ -160,14 +179,12 @@ class App extends Component {
       const unzipped = _.unzip(refinedData)
       x = unzipped[0]
       y = unzipped[1]
+      
+      if (graphType === 'speedup' && y !== undefined) {
+        const minY = Math.min(...y)
+        y = y.map(e => (e / minY).toFixed(2))
+      }
     }
-
-    if (graphType == 'speedup') {
-      const minY = Math.min(...y)
-      y = y.map(e => (e / minY).toFixed(2))
-    }
-
-    //console.log(x)
 
     return (
       <div className="app">
@@ -187,14 +204,80 @@ class App extends Component {
           >
             <Content>
               <Row gutter={16}>
+                <Col span={3}>
+                  <span style={{marginRight: "5px"}}>
+                    Absolute
+                  </span>
+                  <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType === "speedup"} />
+                  <span style={{marginLeft: "5px"}}>
+                    Speedup
+                  </span>
+                </Col>
+                <Col span={9}>
+                  { this.state.graphType === "speedup" &&
+                    <div>
+                      <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
+                        Speedup max: 
+                      </span>
+                      <Slider
+                        style={{
+                          width: "150px",
+                          display: "inline-block",
+                          marginTop: "5px"
+                        }}
+                        min={2}
+                        max={10}
+                        onChange={this.onSpeedupMaxChange}
+                        value={speedUpMax}
+                      />
+                      <InputNumber
+                        min={2}
+                        max={10}
+                        style={{ 
+                          marginLeft: 16,
+                          position: "relative",
+                          top: "-10px",
+                          width: "60px"
+                        }}
+                        value={speedUpMax}
+                        onChange={this.onSpeedupMaxChange}
+                      />
+                      {/*
+                      <div
+                        style={{
+                            clear: "both",
+                            position: "relative",
+                            top: "-10px",
+                            marginLeft: "10px",
+                            display: "inline-block"
+                        }}
+                      >
+                          <span style={{marginRight: "5px"}}>
+                            Average
+                          </span>
+                          <Switch
+                            defaultChecked
+                            onChange={this.onChangeSpeedUpType}
+                            checked={this.state.speedUpType === "minimum"}
+                          />
+                          <span style={{marginLeft: "5px"}}>
+                            Minimum
+                          </span>
+                      </div>
+                      */}
+                    </div>
+                  }
+                </Col>
+              </Row>
+              <Row gutter={16}>
                 <Col span={2}>
-                  { backends != null &&
+                  { backends !== null &&
                     <Select
                       onChange={this.changeBackend}
                       style={{ width: "100%", display: "block" }}
                       showSearch={true}
                       autoFocus={true}
-                      value={backend != null ? backend : undefined}
+                      value={backend !== null ? backend : undefined}
                     >
                       {backends.map(backend => (
                         <Option
@@ -208,7 +291,7 @@ class App extends Component {
                   }
                 </Col>
                 <Col span={2}>
-                  { backend != null && skeleton[backend] != null &&
+                  { backend !== null && skeleton[backend] !== null &&
                     <Select
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeMachine}
@@ -228,7 +311,7 @@ class App extends Component {
                   }
                 </Col>
                 <Col span={4}>
-                  { machine != null && benchmarks != null &&
+                  { machine !== null && benchmarks !== null &&
                     <Select
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeBenchmark}
@@ -248,7 +331,7 @@ class App extends Component {
                   }
                 </Col>
                 <Col span={4}>
-                  { benchmark != null && datasets != null &&
+                  { benchmark !== null && datasets !== null &&
                     <Select
                       style={{ width: "100%", display: "block" }}
                       onChange={this.changeDataset}
@@ -267,11 +350,8 @@ class App extends Component {
                     </Select>
                   }
                 </Col>
-                <Col span={3}>
-                  Absolute <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType == "speedup"} /> Speedup
-                </Col>
               </Row>
-              { dataset != null && data != null &&
+              { dataset !== null && data !== null &&
                 <Row>
                   <Col span={24}>
                     <Line
@@ -285,7 +365,7 @@ class App extends Component {
                           xAxes: [{
                             type: 'time',
                             time: {
-                              format: 'MM/DD/YYYY HH:mm',
+                              parser: 'MM/DD/YYYY HH:mm',
                               tooltipFormat: 'll HH:mm'
                             },
                             scaleLabel: {
@@ -296,6 +376,7 @@ class App extends Component {
                           yAxes: [{
                             ticks: {
                               //min: 1,
+                              max: (graphType === "speedup") ? speedUpMax : undefined
                             },
                             scaleLabel: {
                               display: true,
