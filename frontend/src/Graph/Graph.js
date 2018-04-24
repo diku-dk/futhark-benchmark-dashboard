@@ -3,6 +3,7 @@ import {
   Row,
   Col
 } from 'antd'
+import _ from 'lodash'
 import {Line} from "react-chartjs-2"
 
 class Graph extends Component {
@@ -18,19 +19,99 @@ class Graph extends Component {
 
   render() {
     const {
-      dataset,
-      data,
-      backend,
+      commits,
+      skeleton,
+      selected,
       speedUpMax,
-      graphType,
-      benchmark,
-      machine,
-      x,
-      y
+      graphType
     } = this.props
 
-    if ( dataset === null || data === null )
+    if ( datasets === null )
       return null
+
+    let datasets = []
+    let x = []
+
+    const colors = [
+      "75,192,192", // Green
+      "255,138,128", // Red
+      "48,79,254",
+      "0,105,92",
+      "76,175,80",
+      "238,255,65",
+      "255,193,7", // Orange
+      "121,85,72" // Brown
+    ]
+
+    for ( let pathIndex in selected ) {
+      const path = selected[pathIndex]
+      const {
+        backend,
+        machine,
+        benchmark,
+        dataset
+      } = path
+
+      if ( dataset != null ) {
+        const rawData = skeleton[backend][machine]
+        let refinedData = []
+
+        for (const rawDataKey in rawData) {
+          const datapoint = {
+            commit: rawDataKey,
+            date: new Date(commits[rawDataKey]),
+          }
+
+          const datasetData = _.get(rawData, [rawDataKey, benchmark, 'datasets', dataset], null)
+
+          if (datasetData === null)
+            continue
+
+          datapoint['avg'] = datasetData['avg']
+          datapoint['stdDev'] = datasetData['stdDev']
+
+          refinedData.push(datapoint)
+        }
+
+        refinedData = refinedData.sort((a, b) => a.date - b.date)
+        refinedData = refinedData.map(e => [e.date, e.avg])
+        const unzipped = _.unzip(refinedData)
+        let xValues = unzipped[0]
+        x = x.concat(xValues)
+        let y = unzipped[1]
+        
+        if (graphType === 'speedup' && y !== undefined) {
+          const minY = Math.min(...y)
+          y = y.map(e => (e / minY).toFixed(2))
+        }
+
+        datasets.push({
+          label: `${backend}/${machine}/${benchmark}/${dataset}`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: `rgba(${colors[pathIndex]},0.4)`,
+          borderColor: `rgba(${colors[pathIndex]},1)`,
+          borderCapStyle: `butt`,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: `miter`,
+          pointBorderColor: `rgba(${colors[pathIndex]},1)`,
+          pointBackgroundColor: `#fff`,
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: `rgba(${colors[pathIndex]},1)`,
+          pointHoverBorderColor: `rgba(220,220,220,1)`,
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+            data: y
+        })
+      }
+    }
+
+    x = x.sort((a, b) => {
+      return new Date(a) - new Date(b)
+    })
 
     return (
       <Row>
@@ -56,7 +137,6 @@ class Graph extends Component {
                 }],
                 yAxes: [{
                   ticks: {
-                    //min: 1,
                     max: (graphType === "speedup") ? speedUpMax : undefined
                   },
                   scaleLabel: {
@@ -68,29 +148,7 @@ class Graph extends Component {
             }}
             data={{
               labels: x,
-              datasets: [
-                {
-                  label: `${backend}/${machine}/${benchmark}/${dataset}`,
-                  fill: false,
-                  lineTension: 0.1,
-                  backgroundColor: 'rgba(75,192,192,0.4)',
-                  borderColor: 'rgba(75,192,192,1)',
-                  borderCapStyle: 'butt',
-                  borderDash: [],
-                  borderDashOffset: 0.0,
-                  borderJoinStyle: 'miter',
-                  pointBorderColor: 'rgba(75,192,192,1)',
-                  pointBackgroundColor: '#fff',
-                  pointBorderWidth: 1,
-                  pointHoverRadius: 5,
-                  pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                  pointHoverBorderColor: 'rgba(220,220,220,1)',
-                  pointHoverBorderWidth: 2,
-                  pointRadius: 1,
-                  pointHitRadius: 10,
-                  data: y
-                }
-              ]
+              datasets: datasets
             }}
           />
         </Col>
