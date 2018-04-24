@@ -20,7 +20,8 @@ class Path extends Component {
       changeBenchmark,
       changeDataset,
       onAddPath,
-      onRemovePath
+      onRemovePath,
+      colors
     } = this.props
 
     const {
@@ -38,6 +39,10 @@ class Path extends Component {
 
     return (
       <Row gutter={16} style={{marginBottom: "10px"}}>
+        <Col span={1}>
+          <span style={{backgroundColor: `rgb(${colors[index]})`, width: "40px", height: "32px", display: "block"}}>
+          </span>
+        </Col>
         <Col span={2}>
           { backends !== null &&
             <Select

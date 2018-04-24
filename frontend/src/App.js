@@ -197,6 +197,17 @@ class App extends Component {
       )
     }
 
+    const colors = [
+      "75,192,192", // Green
+      "255,138,128", // Red
+      "48,79,254",
+      "0,105,92",
+      "76,175,80",
+      "238,255,65",
+      "255,193,7", // Orange
+      "121,85,72" // Brown
+    ]
+
     this.downloadData()
 
     return (
@@ -262,6 +273,7 @@ class App extends Component {
 
               { selected.map((path, index) => (
                 <Path
+                  colors={colors}
                   benchmarks={benchmarks}
                   path={path}
                   key={index}
@@ -278,6 +290,7 @@ class App extends Component {
               ))}
 
               <Graph
+                colors={colors}
                 commits={commits}
                 skeleton={skeleton}
                 selected={selected}
