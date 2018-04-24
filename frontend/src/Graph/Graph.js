@@ -30,7 +30,6 @@ class Graph extends Component {
       return null
 
     let datasets = []
-    let x = []
 
     const colors = [
       "75,192,192", // Green
@@ -74,19 +73,18 @@ class Graph extends Component {
         }
 
         refinedData = refinedData.sort((a, b) => a.date - b.date)
-        refinedData = refinedData.map(e => [e.date, e.avg])
-        const unzipped = _.unzip(refinedData)
-        let xValues = unzipped[0]
-        x = x.concat(xValues)
-        let y = unzipped[1]
+        let XY = refinedData.map(e => ({x: e.date, y: e.avg}))
+        let Y = refinedData.map(e => e.avg)
+        let X = refinedData.map(e => e.date)
         
-        if (graphType === 'speedup' && y !== undefined) {
-          const minY = Math.min(...y)
-          y = y.map(e => (e / minY).toFixed(2))
+        if (graphType === 'speedup' && Y !== undefined) {
+          const minY = Math.min(...Y)
+          XY = XY.map(({x,y}) => ({x, y: (y / minY).toFixed(2)}))
         }
 
         datasets.push({
           label: `${backend}/${machine}/${benchmark}/${dataset}`,
+          labels: X,
           fill: false,
           lineTension: 0.1,
           backgroundColor: `rgba(${colors[pathIndex]},0.4)`,
@@ -104,14 +102,10 @@ class Graph extends Component {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-            data: y
+            data: XY
         })
       }
     }
-
-    x = x.sort((a, b) => {
-      return new Date(a) - new Date(b)
-    })
 
     return (
       <Row>
@@ -147,7 +141,6 @@ class Graph extends Component {
               }
             }}
             data={{
-              labels: x,
               datasets: datasets
             }}
           />
