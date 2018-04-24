@@ -15,7 +15,7 @@ const commitsMap = {}
 for (commit of commits) {
 	//console.log(commit)
 	try {
-		commitsMap[commit] = execSync(`git -C ../../futhark show -s --format=%cI ${commit}`).toString('utf8').trim()
+		commitsMap[commit] = execSync(`git -C ../../futhark show -s --format=%ci ${commit}`).toString('utf8').trim()
 	} catch (e) {
 		//console.error(`Bad commit hash: ${commit}`)
 	}
