@@ -26,7 +26,8 @@ class Graph extends Component {
       benchmark,
       machine,
       x,
-      y
+      y,
+      xCommits,
     } = this.props
 
     if ( dataset === null || data === null )
@@ -37,6 +38,16 @@ class Graph extends Component {
         <Col span={24}>
           <Line
             height={300}
+            onElementsClick={(elements) => {
+              if (elements.length == 0)
+                return
+
+              const element = elements[0]
+              const revision = xCommits[element._index]
+              const githubUrl = `https://github.com/diku-dk/futhark/commit/${revision}`
+
+              window.open(githubUrl, '_blank')
+            }}
             options={{
               maintainAspectRatio: false,
               title: {

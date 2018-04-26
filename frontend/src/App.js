@@ -151,6 +151,8 @@ class App extends Component {
     let x = []
     let y = []
     let data = []
+    let yDev = []
+    let xCommits = []
 
     if (dataset !== null) {
       const rawData = skeleton[backend][machine]
@@ -174,11 +176,14 @@ class App extends Component {
       }
 
       refinedData = refinedData.sort((a, b) => a.date - b.date)
-      refinedData = refinedData.map(e => [e.date, e.avg])
+
+      refinedData = refinedData.map(e => [e.date, e.avg, e.stdDev, e.commit])
       data = refinedData
       const unzipped = _.unzip(refinedData)
       x = unzipped[0]
       y = unzipped[1]
+      yDev = unzipped[2]
+      xCommits = unzipped[3]
       
       if (graphType === 'speedup' && y !== undefined) {
         const minY = Math.min(...y)
@@ -361,6 +366,7 @@ class App extends Component {
                 machine={machine}
                 x={x}
                 y={y}
+                xCommits={xCommits}
               />
             </Content>
           </Layout>
