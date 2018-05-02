@@ -29,6 +29,9 @@ gzip:
 webserver:
 	yarn run http-server --cors out/
 
+run-dashboard:
+	node dashboard.js out/optimized.json
+
 run-commit-dates:
 	node find-commit-dates.js
 

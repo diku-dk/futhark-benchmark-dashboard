@@ -5,6 +5,7 @@ import {
 } from 'antd'
 import './App.css'
 import Compare from "./Compare/Compare"
+import Home from "./Home/Home"
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 const { Header, Content } = Layout
 
@@ -34,10 +35,10 @@ class App extends Component {
               </Menu>
             </Header>
             <Layout
-               style={{ padding: '24px', height: "calc(100vh - 64px)" }}
+               style={{ padding: '24px', minHeight: "calc(100vh - 64px)" }}
             >
               <Content>
-                <Route exact path="/" />
+                <Route exact path="/" component={Home} />
                 <Route exact path="/compare" component={Compare} />
               </Content>
             </Layout>
