@@ -3,7 +3,8 @@ import {
   Select,
   Row,
   Col,
-  Button
+  Button,
+  Tooltip
 } from 'antd'
 const Option = Select.Option
 
@@ -132,7 +133,9 @@ class Path extends Component {
             <Button shape="circle" icon="minus" onClick={() => onRemovePath(index)} style={{marginLeft: hasPlus ? "5px" : "0px"}} />
           }
           { benchmark !== null &&
-            <Button type="primary" shape="circle" icon="database" onClick={() => addAllDatasets(path, index)} style={{marginLeft: "5px"}} />
+            <Tooltip placement="bottom" title={"Add all the benchmarks datasets"}>
+              <Button type="primary" shape="circle" icon="database" onClick={() => addAllDatasets(path, index)} style={{marginLeft: "5px"}} />
+            </Tooltip>
           }
         </Col>
       </Row>
