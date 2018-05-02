@@ -21,6 +21,7 @@ class Path extends Component {
       changeDataset,
       onAddPath,
       onRemovePath,
+      addAllDatasets,
       colors
     } = this.props
 
@@ -123,12 +124,15 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col span={2}>
+        <Col span={4}>
           { hasPlus &&
               <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
           }
           { (index > 0 || (index === 0 && count > 1)) &&
             <Button shape="circle" icon="minus" onClick={() => onRemovePath(index)} style={{marginLeft: hasPlus ? "5px" : "0px"}} />
+          }
+          { benchmark !== null &&
+            <Button type="primary" shape="circle" icon="database" onClick={() => addAllDatasets(path, index)} style={{marginLeft: "5px"}} />
           }
         </Col>
       </Row>
