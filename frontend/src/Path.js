@@ -70,7 +70,7 @@ class Path extends Component {
               onChange={(value) => changeMachine(index, value)}
               showSearch={true}
               autoFocus={true}
-              value={machine != null ? machine : undefined}
+              value={machine}
             >
               {machines.map(machine => (
                 <Option
@@ -90,7 +90,7 @@ class Path extends Component {
               onChange={(value) => changeBenchmark(index, value)}
               showSearch={true}
               autoFocus={true}
-              value={benchmark != null ? benchmark : undefined}
+              value={benchmark}
             >
               {benchmarkKeys.map(benchmark => (
                 <Option
