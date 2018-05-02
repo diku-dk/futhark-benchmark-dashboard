@@ -196,7 +196,6 @@ class App extends Component {
         </div>
       )
     }
-
     const colors = [
       "75,192,192", // Green
       "255,138,128", // Red

@@ -91,6 +91,8 @@ for (run of runs) {
   // Checkout benchmark revision
   shell(`${benchmarkGitCommand} checkout ${benchmarkRevision}`)
 
+  shell(`${benchmarkGitCommand} clean -fd`)
+
   // Check benchmark checkout success
   const benchmarkRevisionCheck = shell(`${benchmarkGitCommand} rev-parse HEAD`)
   if (benchmarkRevisionCheck != benchmarkRevision) {
