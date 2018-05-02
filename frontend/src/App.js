@@ -51,6 +51,7 @@ class App extends Component {
     this.onChangeSpeedUpType = this.onChangeSpeedUpType.bind(this)
     this.onAddPath = this.onAddPath.bind(this)
     this.onRemovePath = this.onRemovePath.bind(this)
+    this.addAllDatasets = this.addAllDatasets.bind(this)
   }
 
   componentDidMount() {
@@ -84,6 +85,28 @@ class App extends Component {
     this.setState({
       graphType: value ? 'speedup' : 'absolute'
     })
+  }
+
+  addAllDatasets(path, index) {
+    const {benchmarks, selected} = this.state;
+
+    const selectionExists = toCheck => selected.find(element => _.isEqual(Object.values(element), Object.values(toCheck)) )
+
+    if ( benchmarks[path.benchmark] !== null ) {
+      for ( let dataset of benchmarks[path.benchmark] ) {
+        if ( path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))  ) {
+          selected.push(Object.assign({}, path, {dataset}))
+        }
+      }
+
+      if ( path.dataset === null ) {
+        this.onRemovePath(index)
+      }
+
+      this.setState({
+        selected
+      })
+    }
   }
 
   onAddPath() {
@@ -285,6 +308,7 @@ class App extends Component {
                   changeDataset={this.changeDataset}
                   onAddPath={this.onAddPath}
                   onRemovePath={this.onRemovePath}
+                  addAllDatasets={this.addAllDatasets}
                 />
               ))}
 
