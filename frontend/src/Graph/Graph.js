@@ -56,7 +56,6 @@ class Graph extends Component {
 
           datapoint['avg'] = datasetData['avg']
           datapoint['stdDev'] = datasetData['stdDev']
-          datapoint['pathIndex'] = pathIndex
 
           refinedData.push(datapoint)
         }
@@ -64,7 +63,6 @@ class Graph extends Component {
         refinedData = refinedData.sort((a, b) => a.date - b.date)
         let xCommits = refinedData.map(e => e.commit)
         xDatasetCommits[pathIndex] = xCommits
-        let yDev = refinedData.map(e => e.stdDev)
         let XY = refinedData.map(e => ({x: e.date, y: e.avg}))
         let Y = refinedData.map(e => e.avg)
         
@@ -103,11 +101,11 @@ class Graph extends Component {
           <Line
             height={300}
             onElementsClick={(elements) => {
-              if (elements.length == 0)
+              if (elements.length === 0)
                 return
 
               const element = elements[0]
-              const revision = xDatasetCommits[element.pathIndex][element._index]
+              const revision = xDatasetCommits[element._datasetIndex][element._index]
               const githubUrl = `https://github.com/diku-dk/futhark/commit/${revision}`
 
               window.open(githubUrl, '_blank')
