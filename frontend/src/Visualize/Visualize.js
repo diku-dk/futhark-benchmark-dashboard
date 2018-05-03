@@ -61,6 +61,7 @@ class Visualize extends Component {
         skeleton: parsed.skeleton,
         commits: parsed.commits,
       })
+      this.downloadData()
     })
     .catch(console.error)
   }
@@ -184,6 +185,7 @@ class Visualize extends Component {
           this.setState({
             skeleton: skeleton
           })
+          
           this.checkInput(pathIndex)
         })
         .catch(console.error)
