@@ -12,7 +12,7 @@ const { Header, Content } = Layout
 class App extends Component {
   render() {
     return (
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <div className="app">
           <Layout className="layout">
             <Header>
