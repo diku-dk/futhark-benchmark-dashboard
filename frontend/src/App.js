@@ -6,6 +6,7 @@ import {
 import './App.css'
 import Visualize from "./Visualize/Visualize"
 import Home from "./Home/Home"
+import Compare from "./Compare/Compare"
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 const { Header, Content } = Layout
 
@@ -32,6 +33,11 @@ class App extends Component {
                     Visualize
                   </Link>
                 </Menu.Item>
+                <Menu.Item key="compare">
+                  <Link to="/compare">
+                    Compare
+                  </Link>
+                </Menu.Item>
               </Menu>
             </Header>
             <Layout
@@ -40,6 +46,7 @@ class App extends Component {
               <Content>
                 <Route exact path="/" component={Home} />
                 <Route exact path="/visualize" component={Visualize} />
+                <Route exact path="/compare" component={Compare} />
               </Content>
             </Layout>
           </Layout>
