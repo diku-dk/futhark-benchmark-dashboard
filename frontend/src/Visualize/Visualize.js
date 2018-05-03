@@ -12,7 +12,7 @@ import Graph from '../Graph/Graph'
 import axios from 'axios'
 import _ from 'lodash'
 
-class Compare extends Component {
+class Visualize extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -345,4 +345,4 @@ class Compare extends Component {
   }
 }
 
-export default Compare
+export default Visualize
