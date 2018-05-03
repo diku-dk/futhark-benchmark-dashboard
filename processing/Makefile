@@ -13,6 +13,7 @@ run: \
 	run-commit-dates \
 	run-process-data \
 	run-split-data \
+	run-dashboard \
 	gzip
 
 run-optimized: \
@@ -21,6 +22,7 @@ run-optimized: \
 	run-process-data \
 	run-optimize-data \
 	run-split-data-optimized \
+	run-dashboard \
 	gzip
 
 gzip:
@@ -30,7 +32,7 @@ webserver:
 	yarn run http-server --cors out/
 
 run-dashboard:
-	node dashboard.js out/optimized.json
+	node dashboard.js out/combined.json
 
 run-commit-dates:
 	node find-commit-dates.js
