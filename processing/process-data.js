@@ -1,6 +1,7 @@
 const fs = require('fs');
 const glob = require("glob")
 var _ = require('lodash')
+const settings = require('./settings.json')
 
 const benchmarkResultsFolder = './benchmark-results'
 
@@ -22,10 +23,10 @@ Promise.all(files.map(file => {
   return new Promise((resolve, reject) => {
     const [backend, machine, commit] = file.replace('.json', '').split('-').splice(1)
 
-    if (!(backend in largeObject))
+    if (!(backend in largeObject) && _.get(settings, ["whitelist", backend]))
       largeObject[backend] = {}
 
-    if (!(machine in largeObject[backend]))
+    if (!(machine in largeObject[backend]) && _.get(settings, ["whitelist", backend, machine]))
       largeObject[backend][machine] = {}
 
     resolve([file, backend, machine, commit])
@@ -36,6 +37,9 @@ Promise.all(files.map(file => {
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
       if (!(commit in commits))
+        return resolve()
+
+      if (! _.get(settings, ["whitelist", backend]) || ! _.get(settings, ["whitelist", backend, machine]))
         return resolve()
 
       const data = require(`${benchmarkResultsFolder}/${file}`)
