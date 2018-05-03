@@ -14,7 +14,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    axios('http://localhost:8080/dashboard.json', {
+    axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/dashboard.json`, {
       mode: "cors"
     })
     .then(response => {

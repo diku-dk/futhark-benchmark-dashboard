@@ -51,7 +51,7 @@ class Compare extends Component {
   }
 
   componentDidMount() {
-    axios('http://localhost:8080/metadata.json', {
+    axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/metadata.json`, {
       mode: "cors"
     })
     .then(response => {
@@ -177,7 +177,7 @@ class Compare extends Component {
         machine != null &&
         Object.keys(skeleton[backend][machine]).length === 0
       ) {
-        axios(`http://localhost:8080/data-split/${backend}/${machine}.json`, {
+        axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/data-split/${backend}/${machine}.json`, {
           mode: "cors"
         })
         .then(response => {
