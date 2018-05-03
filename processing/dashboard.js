@@ -55,7 +55,7 @@ for (const backendKey in input) {
             dataset: datasetKey,
             commit: newestCommitKey,
             before: secondNewestCommitKey,
-            key: datasetKey
+            key: [machineKey, backendKey, benchmarkKey, datasetKey].join("-")
           })
         }
       }

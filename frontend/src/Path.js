@@ -57,7 +57,7 @@ class Path extends Component {
               {backends.map(backend => (
                 <Option
                   value={backend}
-                  key={backend}
+                  key={'path-' + backend}
                 >
                   {backend}
                 </Option>
@@ -76,8 +76,8 @@ class Path extends Component {
             >
               {machines.map(machine => (
                 <Option
-                  key={machine}
                   value={machine}
+                  key={'path-' + machine}
                 >
                   {machine}
                 </Option>
@@ -96,8 +96,8 @@ class Path extends Component {
             >
               {benchmarkKeys.map(benchmark => (
                 <Option
-                  key={benchmark}
                   value={benchmark}
+                  key={'path-' + benchmark}
                 >
                   {benchmark.replace("futhark-benchmarks/", "")}
                 </Option>
@@ -116,8 +116,8 @@ class Path extends Component {
             >
               {datasets.map(dataset => (
                 <Option
-                  key={dataset}
                   value={dataset}
+                  key={'path-' + dataset}
                 >
                   {dataset}
                 </Option>

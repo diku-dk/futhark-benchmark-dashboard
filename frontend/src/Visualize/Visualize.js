@@ -12,7 +12,7 @@ import Graph from '../Graph/Graph'
 import axios from 'axios'
 import _ from 'lodash'
 
-class Compare extends Component {
+class Visualize extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -131,8 +131,6 @@ class Compare extends Component {
   changeMachine(index, machine) {
     const {selected} = this.state
     selected[index] = _.merge(selected[index], {
-      benchmark: null,
-      dataset: null,
       machine
     })
     this.setState(selected)
@@ -158,23 +156,23 @@ class Compare extends Component {
   changeBackend(index, backend) {
     const {selected} = this.state
     selected[index] = _.merge(selected[index], {
-      machine: null,
-      benchmark: null,
-      dataset: null,
       backend
     })
     this.setState(selected)
+    this.checkInput(index)
   }
 
   downloadData() {
     const {selected, skeleton} = this.state
 
-    for ( let path of selected ) {
+    for ( let pathIndex in selected ) {
+      const path = selected[pathIndex]
       const {backend, machine} = path
       if (
-        skeleton != null &&
-        backend != null &&
-        machine != null &&
+        skeleton !== null &&
+        backend !== null &&
+        machine !== null &&
+        _.get(skeleton, [backend, machine]) &&
         Object.keys(skeleton[backend][machine]).length === 0
       ) {
         axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/data-split/${backend}/${machine}.json`, {
@@ -186,10 +184,53 @@ class Compare extends Component {
           this.setState({
             skeleton: skeleton
           })
+          this.checkInput(pathIndex)
         })
         .catch(console.error)
       }
     }
+  }
+
+  checkInput(pathIndex) {
+    const {selected, skeleton, benchmarks} = this.state
+    let path = selected[pathIndex]
+    let {backend, machine, benchmark, dataset} = path
+
+    if ( [backend, machine, benchmark, dataset].every(e => e === null) ) {
+      if ( selected.length > 1 ) this.onRemovePath(pathIndex)
+        return
+    }
+
+    if ( ! _.get(benchmarks, [benchmark]) )
+      benchmark = null
+
+    if ( benchmark === null || ! benchmarks[benchmark].includes(dataset) )
+      dataset = null 
+
+    if ( ! _.get(skeleton, [backend, machine]) ) {
+      machine = null
+      dataset = null
+      benchmark = null
+    }
+
+    if ( ! _.get(skeleton, [backend]) )
+      backend = null
+
+    const newPath = _.merge(selected[pathIndex], {
+      dataset,
+      benchmark,
+      backend,
+      machine
+    })
+
+    if ( ! _.isEqual(newPath, selected[pathIndex]) ) {
+      selected[pathIndex] = newPath
+      this.setState(selected)
+    }
+  }
+
+  componentWillUpdate() {
+    this.downloadData()
   }
 
   render() {
@@ -225,8 +266,6 @@ class Compare extends Component {
       "255,193,7", // Orange
       "121,85,72" // Brown
     ]
-
-    this.downloadData()
 
     return (
       <div>
@@ -306,4 +345,4 @@ class Compare extends Component {
   }
 }
 
-export default Compare
+export default Visualize
