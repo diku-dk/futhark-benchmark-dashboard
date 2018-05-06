@@ -5,7 +5,8 @@ import {
   Switch,
   Slider,
   InputNumber,
-  Spin
+  Spin,
+  Card
 } from 'antd'
 import Path from '../Path'
 import Graph from '../Graph/Graph'
@@ -271,77 +272,83 @@ class Visualize extends Component {
 
     return (
       <div>
-        <Row gutter={16} style={{marginBottom: "10px"}}>
-          <Col span={3}>
-            <span style={{marginRight: "5px"}}>
-              Absolute
-            </span>
-            <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType === "speedup"} />
-            <span style={{marginLeft: "5px"}}>
-              Speedup
-            </span>
-          </Col>
-          <Col span={9}>
-            { this.state.graphType === "speedup" &&
-              <div>
-                <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
-                  Speedup max: 
-                </span>
-                <Slider
-                  style={{
-                    width: "150px",
-                    display: "inline-block",
-                    marginTop: "5px"
-                  }}
-                  min={2}
-                  max={10}
-                  onChange={this.onSpeedupMaxChange}
-                  value={speedUpMax}
-                />
-                <InputNumber
-                  min={2}
-                  max={10}
-                  style={{ 
-                    marginLeft: 16,
-                    position: "relative",
-                    top: "-10px",
-                    width: "60px"
-                  }}
-                  value={speedUpMax}
-                  onChange={this.onSpeedupMaxChange}
-                />
-              </div>
-            }
-          </Col>
-        </Row>
+        <Card style={{marginBottom: "10px"}}>
+          <Row gutter={16} style={{marginBottom: "10px"}}>
+            <Col span={3}>
+              <span style={{marginRight: "5px"}}>
+                Absolute
+              </span>
+              <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType === "speedup"} />
+              <span style={{marginLeft: "5px"}}>
+                Speedup
+              </span>
+            </Col>
+            <Col span={9}>
+              { this.state.graphType === "speedup" &&
+                <div>
+                  <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
+                    Speedup max: 
+                  </span>
+                  <Slider
+                    style={{
+                      width: "150px",
+                      display: "inline-block",
+                      marginTop: "5px"
+                    }}
+                    min={2}
+                    max={10}
+                    onChange={this.onSpeedupMaxChange}
+                    value={speedUpMax}
+                  />
+                  <InputNumber
+                    min={2}
+                    max={10}
+                    style={{ 
+                      marginLeft: 16,
+                      position: "relative",
+                      top: "-10px",
+                      width: "60px"
+                    }}
+                    value={speedUpMax}
+                    onChange={this.onSpeedupMaxChange}
+                  />
+                </div>
+              }
+            </Col>
+          </Row>
+        </Card>
 
-        { selected.map((path, index) => (
-          <Path
+        <Card style={{marginBottom: "10px"}}>
+          { selected.map((path, index) => (
+            <Path
+              key={index}
+              colors={colors}
+              benchmarks={benchmarks}
+              path={path}
+              index={index}
+              count={selected.length}
+              skeleton={skeleton}
+              changeBackend={this.changeBackend}
+              changeMachine={this.changeMachine}
+              changeBenchmark={this.changeBenchmark}
+              changeDataset={this.changeDataset}
+              onAddPath={this.onAddPath}
+              onRemovePath={this.onRemovePath}
+              addAllDatasets={this.addAllDatasets}
+            />
+          ))}
+        </Card>
+
+        <Card>
+          <Graph
             colors={colors}
-            benchmarks={benchmarks}
-            path={path}
-            key={index}
-            index={index}
-            count={selected.length}
+            commits={commits}
             skeleton={skeleton}
-            changeBackend={this.changeBackend}
-            changeMachine={this.changeMachine}
-            changeBenchmark={this.changeBenchmark}
-            changeDataset={this.changeDataset}
-            onAddPath={this.onAddPath}
-            onRemovePath={this.onRemovePath}
-            addAllDatasets={this.addAllDatasets}
+            selected={selected}
+            speedUpMax={speedUpMax}
+            graphType={graphType}
           />
-        ))}
-
-        <Graph
-          colors={colors}
-          commits={commits}
-          skeleton={skeleton}
-          selected={selected}
-          speedUpMax={speedUpMax}
-          graphType={graphType}
-        />
+        </Card>
       </div>
     )
   }

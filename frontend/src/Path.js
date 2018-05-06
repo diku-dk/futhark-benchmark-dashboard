@@ -139,7 +139,7 @@ class Path extends Component {
           }
         </Col>
       </Row>
-    );
+    )
   }
 }
 
