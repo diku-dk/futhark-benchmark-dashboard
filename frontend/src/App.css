@@ -1,3 +1,11 @@
 .ant-table-row {
 	background-color: white !important;
 }
+
+.row-green td:last-child {
+	background-color: green !important;
+}
+
+.row-red td:last-child {
+	background-color: red !important;
+}
