@@ -1,0 +1,5 @@
+all:
+	install
+	
+install:
+	yarn
