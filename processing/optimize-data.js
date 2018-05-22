@@ -15,7 +15,6 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
 
       const filterCommits = (commitKeys) => {
         let lastInserted = {}
-        let lastNotInserted = {}
 
         for (const commitKey of commitKeys) {
           const commit = machine[commitKey]

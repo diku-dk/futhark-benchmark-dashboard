@@ -37,7 +37,7 @@ if (require.main === module) {
   // Map for output
   const commitsMap = {}
 
-  for (commit of commits) {
+  for (const commit of commits) {
     const date = getRevisionDate(commit)
 
     if (date != null)
