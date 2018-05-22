@@ -4,23 +4,18 @@ const _ = require('lodash')
 const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
   for (const backendKey in input) {
     const backend = input[backendKey]
-
     let filteredBackend = {}
 
     for (const machineKey in backend) {
       const machine = backend[machineKey]
-
       const sortedCommitKeys = Object.keys(machine).sort((a, b) => {
         return new Date(commitDates[a]) - new Date(commitDates[b])
       })
-
       const reversedSortedCommitKeys = sortedCommitKeys.slice().reverse()
 
       const filterCommits = (commitKeys) => {
         let lastInserted = {}
-        let lastInsertedDatasetCommitKey = {}
         let lastNotInserted = {}
-        let lastNotInsertedDatasetCommitKey = {}
 
         for (const commitKey of commitKeys) {
           const commit = machine[commitKey]
@@ -30,32 +25,19 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
 
             for (const datasetKey in benchmark['datasets']) {
               const dataset = benchmark['datasets'][datasetKey]
-              const lastNotInsertedDataset = _.get(lastNotInserted, [benchmarkKey, datasetKey], false)
-              const lastNotInsertedCommitKey = _.get(lastNotInsertedDatasetCommitKey, [benchmarkKey, datasetKey], false)
 
               if (_.get(lastInserted, [benchmarkKey, datasetKey], false)) {
                 const previousDataset = _.get(lastInserted, [benchmarkKey, datasetKey], false)
 
-                const diff = Math.abs((previousDataset['avg'] - dataset['avg']) / previousDataset['avg'])
+                const diff = Math.abs((previousDataset.avg - dataset.avg) / previousDataset.avg)
 
                 if ( diff < diffThreshold) {
-                  if ( _.get(lastInsertedDatasetCommitKey, [benchmarkKey, datasetKey], false) == lastNotInsertedCommitKey ) {
-                    _.set(filteredBackend, [machineKey, commitKey, benchmarkKey, 'datasets', datasetKey], dataset)
-                  }
-
-                  _.set(lastNotInserted, [benchmarkKey, datasetKey], dataset)
-                  _.set(lastNotInsertedDatasetCommitKey, [benchmarkKey, datasetKey], commitKey)
                   continue
                 }
               }
 
               _.set(lastInserted, [benchmarkKey, datasetKey], dataset)
-              _.set(lastInsertedDatasetCommitKey, [benchmarkKey, datasetKey], commitKey)
               _.set(filteredBackend, [machineKey, commitKey, benchmarkKey, 'datasets', datasetKey], dataset)
-
-              if (lastNotInsertedDataset && lastNotInsertedCommitKey) {
-                _.set(filteredBackend, [machineKey, lastNotInsertedCommitKey , benchmarkKey, 'datasets', datasetKey], lastNotInsertedDataset)
-              }
             }
           }
         }
