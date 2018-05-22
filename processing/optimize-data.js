@@ -14,7 +14,7 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
         return new Date(commitDates[a]) - new Date(commitDates[b])
       })
 
-      const reversedSortedCommitKeys = sortedCommitKeys.reverse()
+      const reversedSortedCommitKeys = sortedCommitKeys.slice().reverse()
 
       const filterCommits = (commitKeys) => {
         let lastInserted = {}
