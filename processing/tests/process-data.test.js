@@ -108,8 +108,6 @@ test('tests processData', () => {
     },
     "metadata": {
       "benchmarks": {
-        "failedtest2.fut": [],
-        "failedtest3.fut": [],
         "test.fut": [
           "dataset1",
           "dataset2",
