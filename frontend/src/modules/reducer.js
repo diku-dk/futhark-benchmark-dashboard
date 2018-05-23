@@ -16,28 +16,43 @@ const initialState = {
   ],
   topScores: [],
   bottomScores: [],
-  loading: false
+  loading: []
+
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'GET_FETCH_BACKEND_MACHINE_START': {
+      let {loading} = state
+      const {
+        backend,
+        machine
+      } = action.meta
+      loading.push(`${backend}/${machine}`)
       return {
         ...state,
-        loading: true
+        loading
       }
     }
     case 'GET_FETCH_BACKEND_MACHINE_SUCCESS': {
-      let {skeleton} = state
+      let {
+        skeleton,
+        loading
+      } = state
       const {
         backend,
         machine
       } = action.payload
       _.set(skeleton, [backend, machine], action.payload.data)
+
+      if (loading.indexOf(`${backend}/${machine}`) > -1) {
+        loading.splice(loading.indexOf(`${backend}/${machine}`), 1)
+      }
+
       return {
         ...state,
         skeleton,
-        loading: false
+        loading: loading
       }
     }
     case 'GET_METADATA_SUCCESS': {

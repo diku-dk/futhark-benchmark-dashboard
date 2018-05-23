@@ -6,7 +6,6 @@ import {
   Row
 } from 'antd'
 import Commit from '../modules/Commit'
-import _ from 'lodash'
 import Comparison from './Comparison'
 import * as actions from '../modules/actions'
 import * as compareActions from './actions'
@@ -16,7 +15,6 @@ class Compare extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      queue: {}
     }
   }
 
@@ -32,7 +30,7 @@ class Compare extends Component {
   }
 
   componentDidUpdate() {
-    this.downloadData()
+    //this.downloadData()
   }
 
   downloadData() {
@@ -42,28 +40,12 @@ class Compare extends Component {
       },
       fetchBackendMachine
     } = this.props
-    const {queue} = this.state
 
-    for ( let pathIndex in selected ) {
+    for (let pathIndex in selected) {
       const path = selected[pathIndex]
       const {backend, machine} = path
 
-      if ( ! _.get(queue, [backend, machine]) ) {
-        const promise = fetchBackendMachine(backend, machine)
-
-        if ( promise.then !== undefined  ) {
-          _.set(queue, [backend, machine], true)
-          this.setState({
-            queue
-          })
-          promise.then(() => {
-            _.set(queue, [backend, machine], false)
-            this.setState({
-              queue
-            })
-          })
-        }
-      }
+      fetchBackendMachine(backend, machine)
     }
   }
 
@@ -71,7 +53,8 @@ class Compare extends Component {
     const {
       data: {
         skeleton,
-        commits
+        commits,
+        loading
       },
       compare: {
         selected
@@ -81,7 +64,7 @@ class Compare extends Component {
       changeCommit
     } = this.props
 
-    if (skeleton === null || commits === null || selected == null) {
+    if (skeleton === null || commits === null || selected == null || loading.length > 0) {
       return (
         <div>
           <Row>

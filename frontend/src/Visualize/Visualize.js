@@ -19,7 +19,6 @@ class Visualize extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      queue: {}
     }
 
     this.addAllDatasets = this.addAllDatasets.bind(this)
@@ -70,28 +69,12 @@ class Visualize extends Component {
       },
       fetchBackendMachine
     } = this.props
-    const {queue} = this.state
 
     for ( let pathIndex in selected ) {
       const path = selected[pathIndex]
       const {backend, machine} = path
 
-      if ( ! _.get(queue, [backend, machine]) ) {
-        const promise = fetchBackendMachine(backend, machine)
-
-        if ( promise.then !== undefined  ) {
-          _.set(queue, [backend, machine], true)
-          this.setState({
-            queue
-          })
-          promise.then(() => {
-            _.set(queue, [backend, machine], false)
-            this.setState({
-              queue
-            })
-          })
-        }
-      }
+      fetchBackendMachine(backend, machine)
     }
   }
 
@@ -123,7 +106,7 @@ class Visualize extends Component {
       changeDataset
     } = this.props
 
-    if (skeleton === null || selected === null || loading) {
+    if (skeleton === null || selected === null || loading.length > 0) {
       return (
         <div>
           <Row>

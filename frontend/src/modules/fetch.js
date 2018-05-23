@@ -30,8 +30,11 @@ const fetch = (name, file, skip, options = {}) => {
 
     return {
       type: `GET_${name}`,
+      meta: {
+        ...options
+      },
       payload: {
-        promise: getPromise()
+        promise: getPromise(),
       }
     }
   }
