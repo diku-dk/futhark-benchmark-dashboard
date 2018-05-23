@@ -5,7 +5,7 @@ import {
   Col,
   Row
 } from 'antd'
-import Commit from '../Commit'
+import Commit from '../modules/Commit'
 import axios from 'axios'
 import _ from 'lodash'
 import Comparison from './Comparison'

@@ -3,10 +3,10 @@ import {
   Layout,
 } from 'antd'
 import './App.css'
-import Visualize from "./Visualize/Visualize"
-import Home from "./Home/Home"
-import Compare from "./Compare/Compare"
-import HeaderNavigation from './HeaderNavigation'
+import Visualize from "../Visualize/Visualize"
+import Home from "../Home/Home"
+import Compare from "../Compare/Compare"
+import HeaderNavigation from '../modules/HeaderNavigation'
 import { BrowserRouter as Router, Route } from "react-router-dom"
 const { Content } = Layout
 
