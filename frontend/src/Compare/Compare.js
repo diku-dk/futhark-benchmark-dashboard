@@ -22,7 +22,7 @@ class Compare extends Component {
     const {fetchMetadata} = this.props
     const promise = fetchMetadata()
 
-    if ( promise.then !== undefined  ) {
+    if (promise.then != undefined) {
       promise.then((response) => {
         this.downloadData()
       })
@@ -95,7 +95,7 @@ class Compare extends Component {
           ))}
         </Card>
 
-        { selected.length === 2 && selected.every(path => path.machine !== null && path.backend !== null && path.commit !== null) &&
+        { selected.length === 2 && selected.every(path => path.machine != null && path.backend != null && path.commit != null) &&
           <Card>
             <Comparison
               selected={selected}
