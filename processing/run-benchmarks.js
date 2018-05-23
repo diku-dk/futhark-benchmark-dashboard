@@ -1,6 +1,5 @@
 const path = require('path')
 const fs = require('fs')
-const glob = require("glob")
 const execSync = require('child_process').execSync
 const chalk = require('chalk')
 const physicalCpuCount = require('physical-cpu-count')
@@ -39,7 +38,7 @@ const runBenchmarks = (backend, compilerRevision, outputFile) => {
   }
 }
 
-for (run of runs) {
+for (const run of runs) {
   // Extract backend and compiler revision from filename
   let [backend, _, compilerRevision] = run.replace('.json', '').split('-').splice(1)
   if (backend == null || compilerRevision == null) {
