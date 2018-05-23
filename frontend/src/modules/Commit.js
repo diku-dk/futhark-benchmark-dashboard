@@ -3,7 +3,6 @@ import {
   Select,
   Row,
   Col,
-  Button,
   Input
 } from 'antd'
 const Option = Select.Option
@@ -14,12 +13,9 @@ class Commit extends Component {
       skeleton,
       index,
       path,
-      count,
       changeBackend,
       changeMachine,
-      changeCommit,
-      onRemovePath,
-      onAddPath
+      changeCommit
     } = this.props
 
     const {
@@ -30,13 +26,12 @@ class Commit extends Component {
 
     const machines = backend !== null && skeleton[backend] !== null ? Object.keys(skeleton[backend]) : []
     const backends = skeleton !== null ? Object.keys(skeleton) : []
-    const hasPlus = index === 0 && machine !== null && backend !== null && commit !== null
 
     return (
       <div>
         <Row gutter={16} style={{marginBottom: "10px"}}>
           <Col span={2}>
-            { backends !== null &&
+            {backends !== null &&
               <Select
                 onChange={(value) => changeBackend(index, value)}
                 style={{ width: "100%", display: "block" }}
@@ -56,7 +51,7 @@ class Commit extends Component {
             }
           </Col>
           <Col span={2}>
-            { backend !== null && skeleton[backend] !== null &&
+            {backend !== null && skeleton[backend] !== null &&
               <Select
                 style={{ width: "100%", display: "block" }}
                 onChange={(value) => changeMachine(index, value)}
@@ -76,20 +71,12 @@ class Commit extends Component {
             }
           </Col>
           <Col span={5}>
-            { machine !== null && skeleton[backend][machine] !== null &&
+            {machine !== null && skeleton[backend][machine] !== null &&
               <Input
                 style={{width: "100%"}}
                 onChange={(e) => changeCommit(index, e.target.value)}
                 value={(commit !== null) ? commit : undefined}
               />
-            }
-          </Col>
-          <Col span={4}>
-            { hasPlus &&
-                <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
-            }
-            { (index > 0 || (index === 0 && count > 1)) &&
-              <Button shape="circle" icon="minus" onClick={() => onRemovePath(index)} style={{marginLeft: hasPlus ? "5px" : "0px"}} />
             }
           </Col>
         </Row>

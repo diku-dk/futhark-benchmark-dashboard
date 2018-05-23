@@ -10,243 +10,103 @@ import {
 } from 'antd'
 import Path from '../modules/Path'
 import Graph from '../Graph/Graph'
-import axios from 'axios'
 import _ from 'lodash'
+import {connect} from 'react-redux'
+import * as actions from '../modules/actions'
+import * as visualizeActions from './actions'
 
 class Visualize extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      skeleton: null,
-      benchmarks: null,
-      selected: [
-        {
-          backend: 'opencl',
-          machine: 'GTX780',
-          benchmark: "futhark-benchmarks/misc/radix_sort/radix_sort.fut",
-          dataset: 'data/radix_sort_100.in'
-        },
-        {
-          backend: 'opencl',
-          machine: 'GTX780',
-          benchmark: "futhark-benchmarks/misc/radix_sort/radix_sort.fut",
-          dataset: '#0'
-        }
-      ],
-      commits: [],
-      graphType: "speedup",
-      speedUpMax: 2,
-      speedUpType: "average"
     }
 
-    this.changeBackend = this.changeBackend.bind(this)
-    this.changeMachine = this.changeMachine.bind(this)
-    this.changeBenchmark = this.changeBenchmark.bind(this)
-    this.changeDataset = this.changeDataset.bind(this)
-    this.changeGraphType = this.changeGraphType.bind(this)
-    this.onSpeedupMaxChange = this.onSpeedupMaxChange.bind(this)
-    this.onChangeSpeedUpType = this.onChangeSpeedUpType.bind(this)
-    this.onAddPath = this.onAddPath.bind(this)
-    this.onRemovePath = this.onRemovePath.bind(this)
     this.addAllDatasets = this.addAllDatasets.bind(this)
   }
 
   componentDidMount() {
-    axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/metadata.json`, {
-      mode: "cors"
-    })
-    .then(response => {
-      const parsed = response.data
-      this.setState({
-        benchmarks: parsed.benchmarks,
-        skeleton: parsed.skeleton,
-        commits: parsed.commits,
+    const {fetchMetadata} = this.props
+    const promise = fetchMetadata()
+
+    if (promise.then != null) {
+      promise.then((response) => {
+        this.downloadData()
       })
-      this.downloadData()
-    })
-    .catch(console.error)
-  }
-
-  onChangeSpeedUpType(value) {
-    this.setState({
-      speedUpType: value ? 'minimum' : 'average'
-    })
-  }
-
-  onSpeedupMaxChange(speedUpMax) {
-    this.setState({
-      speedUpMax
-    })
-  }
-  
-  changeGraphType(value) {
-    this.setState({
-      graphType: value ? 'speedup' : 'absolute'
-    })
+    }
   }
 
   addAllDatasets(path, index) {
-    const {benchmarks, selected} = this.state;
+    const {benchmarks} = this.state;
+    const {
+      removePath,
+      changeSelected,
+      visualize: {
+        selected
+      }
+    } = this.props
 
     const selectionExists = toCheck => selected.find(element => _.isEqual(Object.values(element), Object.values(toCheck)) )
 
-    if ( benchmarks[path.benchmark] !== null ) {
-      for ( let dataset of benchmarks[path.benchmark] ) {
-        if ( path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))  ) {
+    if (benchmarks[path.benchmark] != null) {
+      for (let dataset of benchmarks[path.benchmark]) {
+        if (path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))) {
           selected.push(Object.assign({}, path, {dataset}))
         }
       }
 
-      if ( path.dataset === null ) {
-        this.onRemovePath(index)
+      if (path.dataset == null) {
+        removePath(index)
       }
 
-      this.setState({
-        selected
-      })
+      changeSelected(selected)
     }
-  }
-
-  onAddPath() {
-    const {selected} = this.state
-
-    selected.push({
-      backend: null,
-      machine: null,
-      benchmark: null,
-      dataset: null
-    })
-    this.setState({
-      selected
-    })
-  }
-
-  onRemovePath(index) {
-    const {selected} = this.state
-
-    selected.splice(index, 1)
-    this.setState({
-      selected
-    })
-  }
-
-  changeMachine(index, machine) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      machine
-    })
-    this.setState(selected)
-  }
-
-  changeDataset(index, dataset) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      dataset
-    })
-    this.setState(selected)
-  }
-
-  changeBenchmark(index, benchmark) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      dataset: null,
-      benchmark
-    })
-    this.setState(selected)
-  }
-
-  changeBackend(index, backend) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      backend
-    })
-    this.setState(selected)
-    this.checkInput(index)
   }
 
   downloadData() {
-    const {selected, skeleton} = this.state
+    const {
+      visualize: {
+        selected
+      },
+      fetchBackendMachine
+    } = this.props
 
-    for ( let pathIndex in selected ) {
+    for (let pathIndex in selected) {
       const path = selected[pathIndex]
       const {backend, machine} = path
-      if (
-        skeleton !== null &&
-        backend !== null &&
-        machine !== null &&
-        _.get(skeleton, [backend, machine]) &&
-        Object.keys(skeleton[backend][machine]).length === 0
-      ) {
-        axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/data-split/${backend}/${machine}.json`, {
-          mode: "cors"
-        })
-        .then(response => {
-          const parsed = response.data
-          skeleton[backend][machine] = parsed
-          this.setState({
-            skeleton: skeleton
-          })
-          
-          this.checkInput(pathIndex)
-        })
-        .catch(console.error)
-      }
+
+      fetchBackendMachine(backend, machine)
     }
   }
 
-  checkInput(pathIndex) {
-    const {selected, skeleton, benchmarks} = this.state
-    let path = selected[pathIndex]
-    let {backend, machine, benchmark, dataset} = path
-
-    if ( [backend, machine, benchmark, dataset].every(e => e === null) ) {
-      if ( selected.length > 1 ) this.onRemovePath(pathIndex)
-        return
-    }
-
-    if ( ! _.get(benchmarks, [benchmark]) )
-      benchmark = null
-
-    if ( benchmark === null || ! benchmarks[benchmark].includes(dataset) )
-      dataset = null 
-
-    if ( ! _.get(skeleton, [backend, machine]) ) {
-      machine = null
-      dataset = null
-      benchmark = null
-    }
-
-    if ( ! _.get(skeleton, [backend]) )
-      backend = null
-
-    const newPath = _.merge(selected[pathIndex], {
-      dataset,
-      benchmark,
-      backend,
-      machine
-    })
-
-    if ( ! _.isEqual(newPath, selected[pathIndex]) ) {
-      selected[pathIndex] = newPath
-      this.setState(selected)
-    }
-  }
-
-  componentWillUpdate() {
+  componentDidUpdate() {
     this.downloadData()
   }
 
   render() {
     const {
-      benchmarks,
-      skeleton,
-      commits,
-      selected,
-      graphType,
-      speedUpMax
-    } = this.state
+      visualize: {
+        graphType,
+        speedUpMax,
+        selected
+      },
+      data: {
+        colors,
+        benchmarks,
+        skeleton,
+        commits,
+        loading
+      },
+      removePath,
+      addPath,
+      changeGraphType,
+      changeSpeedMax,
+      changeBackend,
+      changeBenchmark,
+      changeMachine,
+      changeDataset
+    } = this.props
 
-    if (skeleton === null) {
+    if (skeleton == null || selected == null || loading.length > 0) {
       return (
         <div>
           <Row>
@@ -259,16 +119,6 @@ class Visualize extends Component {
         </div>
       )
     }
-    const colors = [
-      "75,192,192", // Green
-      "255,138,128", // Red
-      "48,79,254",
-      "0,105,92",
-      "76,175,80",
-      "238,255,65",
-      "255,193,7", // Orange
-      "121,85,72" // Brown
-    ]
 
     return (
       <div>
@@ -278,13 +128,13 @@ class Visualize extends Component {
               <span style={{marginRight: "5px"}}>
                 Absolute
               </span>
-              <Switch defaultChecked onChange={this.changeGraphType} checked={this.state.graphType === "speedup"} />
+              <Switch defaultChecked onChange={changeGraphType} checked={graphType === "speedup"} />
               <span style={{marginLeft: "5px"}}>
                 Speedup
               </span>
             </Col>
             <Col span={9}>
-              { this.state.graphType === "speedup" &&
+              {graphType === "speedup" &&
                 <div>
                   <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
                     Speedup max: 
@@ -297,7 +147,7 @@ class Visualize extends Component {
                     }}
                     min={2}
                     max={10}
-                    onChange={this.onSpeedupMaxChange}
+                    onChange={changeSpeedMax}
                     value={speedUpMax}
                   />
                   <InputNumber
@@ -310,7 +160,7 @@ class Visualize extends Component {
                       width: "60px"
                     }}
                     value={speedUpMax}
-                    onChange={this.onSpeedupMaxChange}
+                    onChange={changeSpeedMax}
                   />
                 </div>
               }
@@ -319,7 +169,7 @@ class Visualize extends Component {
         </Card>
 
         <Card style={{marginBottom: "10px"}}>
-          { selected.map((path, index) => (
+          {selected.map((path, index) => (
             <Path
               key={index}
               colors={colors}
@@ -328,12 +178,12 @@ class Visualize extends Component {
               index={index}
               count={selected.length}
               skeleton={skeleton}
-              changeBackend={this.changeBackend}
-              changeMachine={this.changeMachine}
-              changeBenchmark={this.changeBenchmark}
-              changeDataset={this.changeDataset}
-              onAddPath={this.onAddPath}
-              onRemovePath={this.onRemovePath}
+              changeBackend={changeBackend}
+              changeMachine={changeMachine}
+              changeBenchmark={changeBenchmark}
+              changeDataset={changeDataset}
+              onAddPath={addPath}
+              onRemovePath={removePath}
               addAllDatasets={this.addAllDatasets}
             />
           ))}
@@ -354,4 +204,6 @@ class Visualize extends Component {
   }
 }
 
-export default Visualize
+export default connect(
+  state => state, {...actions, ...visualizeActions}
+)(Visualize)
