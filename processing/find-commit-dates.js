@@ -1,6 +1,6 @@
 const fs = require('fs')
 const glob = require('glob')
-const execSync = require('child_process').execSync
+const {execSync} = require('child_process')
 const _ = require('lodash')
 
 // Constants
