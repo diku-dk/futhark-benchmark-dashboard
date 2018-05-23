@@ -31,8 +31,12 @@ let extract = ({selected, data, dates}) => {
 // Convert to speedup data
 let speedup = (datasets) => {
   return datasets.map(dataset => {
+    if (dataset == null) return null
     let {y: y_min} = _.minBy(dataset, d => d.y)
-    dataset.forEach(d => d.y = d.y / y_min)
+    for (let d of dataset) {
+      d.stdDev /= y_min
+      d.y /= y_min
+    }
     return dataset
   })
 }

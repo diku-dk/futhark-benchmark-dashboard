@@ -133,6 +133,12 @@ class D3Graph extends Component {
       .x(d => this.o_x_scale(d.x))
       .y(d => this.o_y_scale(d.y))
 
+    // Standard deviation area
+    this.std_area = d3.area()
+      .x(d => this.s_x_scale(d.x))
+      .y0(d => this.s_y_scale(d.y - d.stdDev))
+      .y1(d => this.s_y_scale(d.y + d.stdDev))
+
     // Initialize axes
     this.x_axis = this.selected.append('g')
     this.y_axis = this.selected.append('g')
@@ -179,7 +185,8 @@ class D3Graph extends Component {
 
     // Redraw graphs
     for (let dataset of this.datasets) {
-      let {data, s_path} = dataset
+      let {data, a_path, s_path} = dataset
+      a_path.attr('d', this.std_area(data))
       s_path.attr('d', this.s_valueline(data))
     }
 
@@ -238,7 +245,8 @@ class D3Graph extends Component {
 
     // Resize graph paths
     for (let dataset of this.datasets) {
-      let {data, s_path, o_path} = dataset
+      let {data, a_path, s_path, o_path} = dataset
+      a_path.attr('d', this.std_area(data))
       s_path.attr('d', this.s_valueline(data))
       o_path.attr('d', this.o_valueline(data))
     }
@@ -248,7 +256,8 @@ class D3Graph extends Component {
   _clear = () => {
     // Remove all path elements
     for (let dataset of this.datasets) {
-      let {s_path, o_path} = dataset
+      let {a_path, s_path, o_path} = dataset
+      a_path.remove()
       s_path.remove()
       o_path.remove()
     }
@@ -308,20 +317,25 @@ class D3Graph extends Component {
     for (let dataset of this.datasets) {
       let {data, color} = dataset
 
+      let a_path = this.s_graphs.append('path')
       let s_path = this.s_graphs.append('path')
       let o_path = this.o_graphs.append('path')
 
+      a_path.classed('d3-area', true)
       s_path.classed('graph', true)
       o_path.classed('graph', true)
 
+      a_path.attr('d', this.std_area(data))
       s_path.attr('d', this.s_valueline(data))
       o_path.attr('d', this.o_valueline(data))
 
+      dataset.a_path = a_path
       dataset.s_path = s_path
       dataset.o_path = o_path
 
       if (color) {
         // Set graph colour
+        a_path.style('fill', `rgb(${color})`)
         s_path.style('stroke', `rgb(${color})`)
         o_path.style('stroke', `rgb(${color})`)
       }

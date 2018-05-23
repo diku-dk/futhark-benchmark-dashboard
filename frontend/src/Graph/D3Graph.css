@@ -69,3 +69,8 @@
   stroke: #999;
   shape-rendering: crispEdges;
 }
+
+.d3-area {
+  fill-opacity: 0.3;
+  filter: grayscale(100%);
+}
