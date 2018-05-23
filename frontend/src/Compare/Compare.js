@@ -30,7 +30,7 @@ class Compare extends Component {
   }
 
   componentDidUpdate() {
-    //this.downloadData()
+    this.downloadData()
   }
 
   downloadData() {
