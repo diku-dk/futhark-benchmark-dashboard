@@ -2,10 +2,10 @@ import * as d3 from 'd3'
 
 // Generic slider drag
 let slider = d3.drag()
-  .on('start', () => {
+  .on('start', function() {
     d3.event.sourceEvent.stopPropagation()
   })
-  .on('drag.move', () => {
+  .on('drag.move', function() {
     // Horizontal movement only
     let {dx, x} = d3.event
     if (dx === 0) return
@@ -37,10 +37,10 @@ let slider = d3.drag()
 
 // Generic handle drag
 let handle = d3.drag()
-  .on('start', () => {
+  .on('start', function() {
     d3.event.sourceEvent.stopPropagation()
   })
-  .on('drag.move', () => {
+  .on('drag.move', function() {
     // Horizontal movement only
     let {dx, x} = d3.event
     if (dx === 0) return

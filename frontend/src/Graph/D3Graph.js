@@ -4,8 +4,8 @@ import ReactResizeDetector from 'react-resize-detector'
 import * as d3 from 'd3'
 import _ from 'lodash'
 
+import {extract, speedup} from './utils'
 import {slider, handle} from './drag'
-import {extract} from './extract'
 import './D3Graph.css'
 
 class D3Graph extends Component {
@@ -253,7 +253,6 @@ class D3Graph extends Component {
       o_path.remove()
     }
 
-    // Reset datasets
     this.datasets = []
   }
 
@@ -262,74 +261,74 @@ class D3Graph extends Component {
     // Clear previous renditions
     this._clear()
 
-    let {y_max, type} = this.props
+    let {y_max, type, colors} = this.props
+    let datasets = extract(this.props)
 
-    // TODO: Make y_max 0 - 1
-
-    let dat = extract(this.props) //this._extract_data()
-
-    for (let idx in dat) {
-      if (dat[idx] == null) continue
-      if (type === 'speedup') {
-        const minY = d3.min(dat[idx], d => d.y)
-
-        for (let idx2 in dat[idx]) {
-          dat[idx][idx2].y = dat[idx][idx2].y / minY
-        }
-      }
+    // Apply speedup processing
+    if (type === 'speedup') {
+      datasets = speedup(datasets)
     }
 
-    let dat2 = dat.filter(x => x != null)
-    let all = _.flatten(dat2)
+    // Apply colors to datasets
+    for (let i in datasets) {
+      let dataset = datasets[i]
+      if (dataset == null) continue
 
-    // Check if all
-    var x_domain = d3.extent(all, function(d) { return d.x; })
-    var y_domain = [0, d3.max(all, function(d) { return d.y; })]
+      this.datasets.push({
+        data: dataset,
+        color: colors[i]
+      })
+    }
 
-    // Expand / set new domain
+    datasets = this.datasets.map(x => x.data)
+    let combined = _.flatten(datasets)
+
+    // Find domain of all data
+    let x_domain = d3.extent(combined, d => d.x)
+    let y_domain = [0, d3.max(combined, d => d.y)]
+
+    // Set new domain
     this.o_x_scale.domain(x_domain)
     this.o_y_scale.domain(y_domain)
 
-    if (type === 'speedup')
+    // TODO: Make y_max 0 - 1
+    // and not dependent on speedup
+    if (type === 'speedup') {
       y_domain[1] = Math.min(y_domain[1], +y_max)
+    }
+
     this.s_x_scale.domain(x_domain)
     this.s_y_scale.domain(y_domain)
+
     // Redraw axes
     this.x_axis.call(this.x_component)
     this.y_axis.call(this.y_component)
 
-    for (let idx in dat) {
-      if (dat[idx] == null) continue
-      this._add(dat[idx], idx)
+    // Creat paths and insert data
+    for (let dataset of this.datasets) {
+      let {data, color} = dataset
+
+      let s_path = this.s_graphs.append('path')
+      let o_path = this.o_graphs.append('path')
+
+      s_path.classed('graph', true)
+      o_path.classed('graph', true)
+
+      s_path.attr('d', this.s_valueline(data))
+      o_path.attr('d', this.o_valueline(data))
+
+      dataset.s_path = s_path
+      dataset.o_path = o_path
+
+      if (color) {
+        // Set graph colour
+        s_path.style('stroke', `rgb(${color})`)
+        o_path.style('stroke', `rgb(${color})`)
+      }
     }
 
     // Rescale to slider %
     this._sl_x_rescale()
-  }
-
-  _add = (data, idx) => {
-    // Create paths and insert data
-    var s_path = this.s_graphs.append('path')
-    var o_path = this.o_graphs.append('path')
-
-    s_path.classed('graph', true)
-    o_path.classed('graph', true)
-
-    s_path.attr('d', this.s_valueline(data))
-    o_path.attr('d', this.o_valueline(data))
-
-    //var colour = this.scheme.shift()
-
-    let colour = this.props.colors[idx]
-    if (colour) {
-      // Set graph colour
-      s_path.style('stroke', `rgba(${colour}, 1)`)
-      o_path.style('stroke', `rgba(${colour}, 1)`)
-    }
-
-    // Return index
-    var dataset = {s_path, o_path, data}
-    return this.datasets.push(dataset) - 1
   }
 }
 

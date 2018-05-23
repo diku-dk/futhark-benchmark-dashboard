@@ -28,4 +28,13 @@ let extract = ({selected, data, dates}) => {
   })
 }
 
-export {extract}
+// Convert to speedup data
+let speedup = (datasets) => {
+  return datasets.map(dataset => {
+    let {y: y_min} = _.minBy(dataset, d => d.y)
+    dataset.forEach(d => d.y = d.y / y_min)
+    return dataset
+  })
+}
+
+export {extract, speedup}
