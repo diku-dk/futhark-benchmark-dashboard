@@ -41,9 +41,7 @@ const runBenchmarks = (backend, compilerRevision, outputFile) => {
 for (const run of runs) {
   // Extract backend and compiler revision from filename
   // runSplit = [backend, machine, revision]
-  const runSplit = run.replace('.json', '').split('-').splice(1)
-  let backend = runSplit[0]
-  const compilerRevision = runSplit[2]
+  let [backend, , compilerRevision] = run.replace('.json', '').split('-').splice(1)
   if (backend == null || compilerRevision == null) {
     console.error(`Couldn't parse run "${run}"`)
     continue
