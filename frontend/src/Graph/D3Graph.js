@@ -1,4 +1,3 @@
-
 import React, {Component} from 'react'
 import {findDOMNode} from 'react-dom'
 import ReactResizeDetector from 'react-resize-detector'
@@ -6,6 +5,7 @@ import * as d3 from 'd3'
 import _ from 'lodash'
 
 import {slider, handle} from './drag'
+import './D3Graph.css'
 
 class D3Graph extends Component {
 
