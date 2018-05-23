@@ -345,7 +345,7 @@ class Visualize extends Component {
             dates={commits}
             selected={selected}
             colors={colors}
-            y_max={speedUpMax}
+            yMax={speedUpMax}
             type={graphType}
           />
         </Card>

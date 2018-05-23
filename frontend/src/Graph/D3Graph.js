@@ -9,12 +9,92 @@ import {slider, handle} from './drag'
 import './D3Graph.css'
 
 class D3Graph extends Component {
+  datasets = []
+
+  // Initialize chart container
   componentDidMount() {
     this._initialize()
   }
 
+  // Render via d3
   componentDidUpdate() {
-    this._render()
+    this._clear()
+
+    let {yMax, type, colors} = this.props
+    let datasets = extract(this.props)
+
+    // Apply speedup processing
+    if (type === 'speedup') {
+      datasets = speedup(datasets)
+    }
+
+    // Apply colors to datasets
+    for (let i in datasets) {
+      let dataset = datasets[i]
+      if (dataset == null) continue
+      this.datasets.push({
+        data: dataset,
+        color: colors[i]
+      })
+    }
+
+    // Combine datasets into one
+    datasets = this.datasets.map(x => x.data)
+    let combined = _.flatten(datasets)
+
+    // Find domain of all data
+    let xDomain = d3.extent(combined, d => d.x)
+    let yDomain = [0, d3.max(combined, d => d.y)]
+
+    // Set new domains
+    this.overviewXScale.domain(xDomain)
+    this.overviewYScale.domain(yDomain)
+
+    // TODO: Make yMax 0 - 1
+    // and independent of speedup
+    if (type === 'speedup') {
+      yDomain[1] = Math.min(yDomain[1], +yMax)
+    }
+
+    this.selectedXScale.domain(xDomain)
+    this.selectedYScale.domain(yDomain)
+
+    // Redraw axes
+    this.x_axis.call(this.x_component)
+    this.y_axis.call(this.y_component)
+
+    for (let dataset of this.datasets) {
+      let {data, color} = dataset
+
+      // Create paths for the dataset
+      let stdDevPath = this.s_graphs.append('path')
+      let selectedPath = this.s_graphs.append('path')
+      let overviewPath = this.o_graphs.append('path')
+
+      stdDevPath.classed('d3-area', true)
+      selectedPath.classed('d3-graph', true)
+      overviewPath.classed('d3-graph', true)
+
+      stdDevPath.attr('d', this.stdDevArea(data))
+      selectedPath.attr('d', this.s_valueline(data))
+      overviewPath.attr('d', this.o_valueline(data))
+
+      // Store references to paths
+      dataset.stdDevPath = stdDevPath
+      dataset.selectedPath = selectedPath
+      dataset.overviewPath = overviewPath
+
+      if (color) {
+        // Set graph color
+        stdDevPath.style('fill', `rgb(${color})`)
+        selectedPath.style('stroke', `rgb(${color})`)
+        overviewPath.style('stroke', `rgb(${color})`)
+      }
+    }
+
+    // Rescale to the size
+    // of the slider
+    this._rescale()
   }
 
   render() {
@@ -25,9 +105,7 @@ class D3Graph extends Component {
     )
   }
 
-  datasets = []
 
-  // Initialize chart container
   _initialize() {
     // Initialize selected view
     let at = findDOMNode(this)
@@ -40,7 +118,7 @@ class D3Graph extends Component {
 
       let bisect = d3.bisector(d => d.x).left;
       let x = d3.mouse(this.selected.node())[0]
-      let actual = this.s_x_scale.invert(x)
+      let actual = this.selectedXScale.invert(x)
 
       // Find potential closest
       // points to the cursor
@@ -70,7 +148,7 @@ class D3Graph extends Component {
       p = p.filter(x => p[0].d.commit === x.d.commit)
 
       // Find offset
-      x = this.s_x_scale(p[0].d.x)
+      x = this.selectedXScale(p[0].d.x)
 
       d3.select('.caret')
         .attr('x1', x)
@@ -85,7 +163,7 @@ class D3Graph extends Component {
     this.overview = this.container.append('svg')
     this.overview.classed('x-overview', true)
 
-    // Additional rescale drag handler
+    // Additional rescale drag handlers
     slider.on('drag', this._rescale)
     handle.on('drag', this._rescale)
 
@@ -115,29 +193,29 @@ class D3Graph extends Component {
       .call(handle)
 
     // Initialize scales
-    this.s_x_scale = d3.scaleTime()
-    this.s_y_scale = d3.scaleLinear()
-    this.o_x_scale = d3.scaleTime()
-    this.o_y_scale = d3.scaleLinear()
+    this.selectedXScale = d3.scaleTime()
+    this.selectedYScale = d3.scaleLinear()
+    this.overviewXScale = d3.scaleTime()
+    this.overviewYScale = d3.scaleLinear()
 
     // Keep valueline within range
-    this.s_x_scale.clamp(true)
+    this.selectedXScale.clamp(true)
 
     // Selected valueline
     this.s_valueline = d3.line()
-      .x(d => this.s_x_scale(d.x))
-      .y(d => this.s_y_scale(d.y))
+      .x(d => this.selectedXScale(d.x))
+      .y(d => this.selectedYScale(d.y))
 
     // x-overview valueline
     this.o_valueline = d3.line()
-      .x(d => this.o_x_scale(d.x))
-      .y(d => this.o_y_scale(d.y))
+      .x(d => this.overviewXScale(d.x))
+      .y(d => this.overviewYScale(d.y))
 
     // Standard deviation area
-    this.std_area = d3.area()
-      .x(d => this.s_x_scale(d.x))
-      .y0(d => this.s_y_scale(d.y - d.stdDev))
-      .y1(d => this.s_y_scale(d.y + d.stdDev))
+    this.stdDevArea = d3.area()
+      .x(d => this.selectedXScale(d.x))
+      .y0(d => this.selectedYScale(d.y - d.stdDev))
+      .y1(d => this.selectedYScale(d.y + d.stdDev))
 
     // Initialize axes
     this.x_axis = this.selected.append('g')
@@ -146,12 +224,11 @@ class D3Graph extends Component {
     this.x_axis.classed('y-axis', true)
     this.y_axis.classed('x-axis', true)
 
-    this.x_component = d3.axisBottom(this.s_x_scale)
-    this.y_component = d3.axisLeft(this.s_y_scale)
+    this.x_component = d3.axisBottom(this.selectedXScale)
+    this.y_component = d3.axisLeft(this.selectedYScale)
 
     this.x_component.tickSizeOuter(0)
     this.y_component.tickSizeOuter(0)
-
     this.x_component.tickPadding(8)
     this.y_component.tickPadding(8)
 
@@ -178,20 +255,20 @@ class D3Graph extends Component {
     let to = from + parseFloat(this.slider.attr('width')) / 100
 
     // Current total domain as integers
-    let [x0, x1] = this.o_x_scale.domain()
+    let [x0, x1] = this.overviewXScale.domain()
     x0 = x0.getTime()
     x1 = x1.getTime()
 
     // Calculate new domain
-    let new_x0 = new Date(x0 + from * (x1 - x0))
-    let new_x1 = new Date(x0 + to * (x1 - x0))
-    this.s_x_scale.domain([new_x0, new_x1])
+    let newX0 = new Date(x0 + from * (x1 - x0))
+    let newX1 = new Date(x0 + to * (x1 - x0))
+    this.selectedXScale.domain([newX0, newX1])
 
     // Redraw graphs
     for (let dataset of this.datasets) {
-      let {data, a_path, s_path} = dataset
-      a_path.attr('d', this.std_area(data))
-      s_path.attr('d', this.s_valueline(data))
+      let {data, stdDevPath, selectedPath} = dataset
+      stdDevPath.attr('d', this.stdDevArea(data))
+      selectedPath.attr('d', this.s_valueline(data))
     }
 
     // Redraw axes
@@ -205,30 +282,29 @@ class D3Graph extends Component {
     // Get dimensions
     let selected = this.selected.node()
     let overview = this.overview.node()
-    let s_rect = selected.getBoundingClientRect()
-    let o_rect = overview.getBoundingClientRect()
+    let selectedRect = selected.getBoundingClientRect()
+    let overviewRect = overview.getBoundingClientRect()
 
     // Resize axes
-    this.s_x_scale.range([0, s_rect.width])
-    this.s_y_scale.range([s_rect.height, 0])
-    this.o_x_scale.range([0, o_rect.width])
-    this.o_y_scale.range([o_rect.height, 0])
+    this.selectedXScale.range([0, selectedRect.width])
+    this.selectedYScale.range([selectedRect.height, 0])
+    this.overviewXScale.range([0, overviewRect.width])
+    this.overviewYScale.range([overviewRect.height, 0])
 
-    // Recalculate tick amount. The value
-    // doesn't translate directly to the
-    // amount of ticks since d3 decides
-    let x_ticks = Math.max(2, s_rect.width / 100)
-    let y_ticks = Math.max(2, s_rect.height / 30)
+    // Recalculate tick amount. The value doesn't translate
+    // directly to the amount of ticks since D3 decides
+    let xTicks = Math.max(2, selectedRect.width / 100)
+    let yTicks = Math.max(2, selectedRect.height / 30)
 
-    this.x_component.ticks(x_ticks)
-    this.y_component.ticks(y_ticks)
+    this.x_component.ticks(xTicks)
+    this.y_component.ticks(yTicks)
 
     // Update tick line width / height
-    this.x_component.tickSizeInner(-s_rect.height)
-    this.y_component.tickSizeInner(-s_rect.width)
+    this.x_component.tickSizeInner(-selectedRect.height)
+    this.y_component.tickSizeInner(-selectedRect.width)
 
     // Move x-axis to the bottom
-    this.x_axis.attr('transform', 'translate(0,' + s_rect.height + ')')
+    this.x_axis.attr('transform', `translate(0,${selectedRect.height})`)
 
     // Redraw axes
     this.x_axis.call(this.x_component)
@@ -236,10 +312,10 @@ class D3Graph extends Component {
 
     // Resize graph paths
     for (let dataset of this.datasets) {
-      let {data, a_path, s_path, o_path} = dataset
-      a_path.attr('d', this.std_area(data))
-      s_path.attr('d', this.s_valueline(data))
-      o_path.attr('d', this.o_valueline(data))
+      let {data, stdDevPath, selectedPath, overviewPath} = dataset
+      stdDevPath.attr('d', this.stdDevArea(data))
+      selectedPath.attr('d', this.s_valueline(data))
+      overviewPath.attr('d', this.o_valueline(data))
     }
   }
 
@@ -247,93 +323,13 @@ class D3Graph extends Component {
   _clear = () => {
     // Remove all path elements
     for (let dataset of this.datasets) {
-      let {a_path, s_path, o_path} = dataset
-      a_path.remove()
-      s_path.remove()
-      o_path.remove()
+      let {stdDevPath, selectedPath, overviewPath} = dataset
+      stdDevPath.remove()
+      selectedPath.remove()
+      overviewPath.remove()
     }
 
     this.datasets = []
-  }
-
-  // Render paths via d3
-  _render = () => {
-    // Clear previous renditions
-    this._clear()
-
-    let {y_max, type, colors} = this.props
-    let datasets = extract(this.props)
-
-    // Apply speedup processing
-    if (type === 'speedup') {
-      datasets = speedup(datasets)
-    }
-
-    // Apply colors to datasets
-    for (let i in datasets) {
-      let dataset = datasets[i]
-      if (dataset == null) continue
-
-      this.datasets.push({
-        data: dataset,
-        color: colors[i]
-      })
-    }
-
-    datasets = this.datasets.map(x => x.data)
-    let combined = _.flatten(datasets)
-
-    // Find domain of all data
-    let x_domain = d3.extent(combined, d => d.x)
-    let y_domain = [0, d3.max(combined, d => d.y)]
-
-    // Set new domain
-    this.o_x_scale.domain(x_domain)
-    this.o_y_scale.domain(y_domain)
-
-    // TODO: Make y_max 0 - 1
-    // and not dependent on speedup
-    if (type === 'speedup') {
-      y_domain[1] = Math.min(y_domain[1], +y_max)
-    }
-
-    this.s_x_scale.domain(x_domain)
-    this.s_y_scale.domain(y_domain)
-
-    // Redraw axes
-    this.x_axis.call(this.x_component)
-    this.y_axis.call(this.y_component)
-
-    // Creat paths and insert data
-    for (let dataset of this.datasets) {
-      let {data, color} = dataset
-
-      let a_path = this.s_graphs.append('path')
-      let s_path = this.s_graphs.append('path')
-      let o_path = this.o_graphs.append('path')
-
-      a_path.classed('d3-area', true)
-      s_path.classed('graph', true)
-      o_path.classed('graph', true)
-
-      a_path.attr('d', this.std_area(data))
-      s_path.attr('d', this.s_valueline(data))
-      o_path.attr('d', this.o_valueline(data))
-
-      dataset.a_path = a_path
-      dataset.s_path = s_path
-      dataset.o_path = o_path
-
-      if (color) {
-        // Set graph colour
-        a_path.style('fill', `rgb(${color})`)
-        s_path.style('stroke', `rgb(${color})`)
-        o_path.style('stroke', `rgb(${color})`)
-      }
-    }
-
-    // Rescale to slider %
-    this._rescale()
   }
 }
 
