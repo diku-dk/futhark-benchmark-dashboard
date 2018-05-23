@@ -1,9 +1,9 @@
-.g3-container {
+.d3-container {
   margin: 0 40px;
   height: 300px;
 }
 
-.g3-container svg {
+.d3-container svg {
   overflow: visible !important;
 }
 
@@ -27,7 +27,7 @@
   /* cursor: crosshair; */
 }
 
-#clip rect {
+#d3-clip rect {
   width: 200%;
   height: 100%;
   x: -50%;

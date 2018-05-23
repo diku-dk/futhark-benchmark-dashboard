@@ -5,30 +5,27 @@ import * as d3 from 'd3'
 import _ from 'lodash'
 
 import {slider, handle} from './drag'
+import {extract} from './extract'
 import './D3Graph.css'
 
 class D3Graph extends Component {
-
-  datasets = []
-
-  // Initialize chart
   componentDidMount() {
     this._initialize()
   }
 
   componentDidUpdate() {
-    this._resize() // Todo: rem
-    //this._extract_data()
     this._render()
   }
 
   render() {
     return (
-      <div className='g3-container'>
+      <div className='d3-container'>
         <ReactResizeDetector handleWidth handleHeight onResize={this._resize}/>
       </div>
     )
   }
+
+  datasets = []
 
   // Initialize chart container
   _initialize() {
@@ -41,9 +38,9 @@ class D3Graph extends Component {
     this.selected.on('mousemove', () => {
       if (this.datasets.length === 0) return
 
-      var bisect = d3.bisector(d => d.x).left;
-      var x = d3.mouse(this.selected.node())[0]
-      var actual = this.s_x_scale.invert(x)
+      let bisect = d3.bisector(d => d.x).left;
+      let x = d3.mouse(this.selected.node())[0]
+      let actual = this.s_x_scale.invert(x)
 
       // Find potential closest
       // points to the cursor
@@ -70,7 +67,7 @@ class D3Graph extends Component {
 
       // Only keep the commits with
       // the same hash as the closest
-      p = p.filter(x => p[0].d.commit == x.d.commit)
+      p = p.filter(x => p[0].d.commit === x.d.commit)
 
       // Find offset
       x = this.s_x_scale(p[0].d.x)
@@ -78,7 +75,6 @@ class D3Graph extends Component {
       d3.select('.caret')
         .attr('x1', x)
         .attr('x2', x)
-
     })
 
     this.selected.append('line')
@@ -153,15 +149,16 @@ class D3Graph extends Component {
     this.x_component.tickPadding(8)
     this.y_component.tickPadding(8)
 
-    // Clamp y-axis to height
-    let s_defs = this.selected.append('defs')
-    let c_path = s_defs.append('clipPath')
-    c_path.attr('id', 'clip')
-    c_path.append('rect')
-
     // Initialize graph containers
-    this.s_graphs = this.selected.append('g').attr("clip-path", "url(#clip)")
+    this.s_graphs = this.selected.append('g')
     this.o_graphs = this.overview.append('g')
+
+    // Clamp y-axis to height
+    this.selected.append('defs')
+      .append('clipPath')
+      .attr('id', 'd3-clip')
+      .append('rect')
+    this.s_graphs.attr('clip-path', 'url(#d3-clip)')
 
     // Size the chart
     this._resize()
@@ -256,25 +253,20 @@ class D3Graph extends Component {
       o_path.remove()
     }
 
+    // Reset datasets
     this.datasets = []
   }
 
   // Render paths via d3
   _render = () => {
-    // Clear previous
+    // Clear previous renditions
     this._clear()
 
-    let {
-      colors,
-      commits,
-      skeleton,
-      selected,
-      y_max,
-      type
-    } = this.props
+    let {y_max, type} = this.props
 
+    // TODO: Make y_max 0 - 1
 
-    let dat = this._extract_data()
+    let dat = extract(this.props) //this._extract_data()
 
     for (let idx in dat) {
       if (dat[idx] == null) continue
@@ -289,10 +281,10 @@ class D3Graph extends Component {
 
     let dat2 = dat.filter(x => x != null)
     let all = _.flatten(dat2)
+
     // Check if all
     var x_domain = d3.extent(all, function(d) { return d.x; })
     var y_domain = [0, d3.max(all, function(d) { return d.y; })]
-
 
     // Expand / set new domain
     this.o_x_scale.domain(x_domain)
@@ -314,43 +306,6 @@ class D3Graph extends Component {
     // Rescale to slider %
     this._sl_x_rescale()
   }
-
-  _extract_data = () => {
-    // Extract properties
-    let {data, dates, selected} = this.props
-
-    // Get datasets for selected paths
-    return selected.map(path => {
-      // Is selected path complete?
-      if (path.dataset == null) return null
-
-      let {backend, machine, benchmark, dataset} = path
-      let at = [benchmark, 'datasets', dataset]
-      let commits = data[backend][machine]
-      let result = []
-
-      // Extract points
-      for (let commit in commits) {
-        let benchmarks = commits[commit]
-        let d = _.get(benchmarks, at, null)
-        if (d == null) continue
-
-        d = _.clone(d)
-        d.commit = commit
-        d.x = new Date(dates[commit])
-        d.y = d.avg
-
-        delete d.avg
-
-        result.push(d)
-      }
-
-      result.sort((x, y) => d3.ascending(x.x, y.x))
-
-      return result
-    })
-  }
-
 
   _add = (data, idx) => {
     // Create paths and insert data
