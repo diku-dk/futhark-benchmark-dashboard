@@ -32,6 +32,11 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
 
     const data = JSON.parse(fs.readFileSync(`${benchmarkResultsFolder}/${file}`))
 
+    // TODO: remove
+    if (_.get(largeObject, [backend, machine, commit]) == null) {
+      _.set(largeObject, [backend, machine, commit], {})
+    }
+
     for (const benchmarkKey in data) {
       const benchmark = data[benchmarkKey]
       if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length === 0) {
@@ -44,6 +49,12 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
       for (const datasetKey in benchmark['datasets']) {
         const dataset = benchmark['datasets'][datasetKey]
         const runtimes = dataset['runtimes']
+        
+        // TODO: remove
+        if (_.get(largeObject, [backend, machine, commit, benchmarkKey, 'datasets']) == null) {
+          _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets'], {})
+        }
+
         if (runtimes === undefined) {
           continue
         }
@@ -51,9 +62,11 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
         metadata.benchmarks[benchmarkKey].push(datasetKey)
 
         _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
+          stderr: dataset['stderr'] != null ? dataset['stderr'] : undefined,
           avg: Math.round(average(runtimes)),
-          stdDev: Math.round(standardDeviation(runtimes))
+          stdDev: Math.round(standardDeviation(runtimes)),
         })
+
       }
     }
 
