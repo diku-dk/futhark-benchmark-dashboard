@@ -12,16 +12,16 @@ let extract = ({selected, data, dates}) => {
     let commits = data[backend][machine]
 
     return _.map(commits, (benchmarks, commit) => {
-      let d = _.get(benchmarks, at, null)
-      if (d == null) return null
+      let datum = _.get(benchmarks, at, null)
+      if (datum == null) return null
 
-      d = _.clone(d)
-      d.commit = commit
-      d.x = new Date(dates[commit])
-      d.y = d.avg
+      datum = _.clone(datum)
+      datum.commit = commit
+      datum.x = new Date(dates[commit])
+      datum.y = datum.avg
 
-      delete d.avg
-      return d
+      delete datum.avg
+      return datum
     })
     .filter(d => d != null)
     .sort((a, b) => a.x - b.x)
@@ -32,11 +32,13 @@ let extract = ({selected, data, dates}) => {
 let speedup = (datasets) => {
   return datasets.map(dataset => {
     if (dataset == null) return null
-    let {y: y_min} = _.minBy(dataset, d => d.y)
-    for (let d of dataset) {
-      d.stdDev /= y_min
-      d.y /= y_min
+
+    let y_min = _.minBy(dataset, d => d.y).y
+    for (let datum of dataset) {
+      datum.stdDev /= y_min
+      datum.y /= y_min
     }
+
     return dataset
   })
 }

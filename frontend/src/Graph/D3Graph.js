@@ -86,8 +86,8 @@ class D3Graph extends Component {
     this.overview.classed('x-overview', true)
 
     // Additional rescale drag handler
-    slider.on('drag', this._sl_x_rescale)
-    handle.on('drag', this._sl_x_rescale)
+    slider.on('drag', this._rescale)
+    handle.on('drag', this._rescale)
 
     // Slider group
     var g = this.overview.append('g')
@@ -170,18 +170,22 @@ class D3Graph extends Component {
     this._resize()
   }
 
-  // Rescale the x-axis. It rescales
-  // the slider if `slider` is true
-  _x_rescale = (from, to, slider = false) => {
-    // Current total domain as integers
-    let [c_x1, c_x2] = this.o_x_scale.domain()
-    c_x1 = c_x1.getTime()
-    c_x2 = c_x2.getTime()
+  // Rescale the x-axis based on the
+  // position and size of the slider
+  _rescale = () => {
+    // From and to values between 0 to 1
+    let from = parseFloat(this.slider.attr('x')) / 100
+    let to = from + parseFloat(this.slider.attr('width')) / 100
 
-    // New domain
-    let x1 = new Date(c_x1 + from * (c_x2 - c_x1))
-    let x2 = new Date(c_x1 + to * (c_x2 - c_x1))
-    this.s_x_scale.domain([x1, x2])
+    // Current total domain as integers
+    let [x0, x1] = this.o_x_scale.domain()
+    x0 = x0.getTime()
+    x1 = x1.getTime()
+
+    // Calculate new domain
+    let new_x0 = new Date(x0 + from * (x1 - x0))
+    let new_x1 = new Date(x0 + to * (x1 - x0))
+    this.s_x_scale.domain([new_x0, new_x1])
 
     // Redraw graphs
     for (let dataset of this.datasets) {
@@ -193,19 +197,6 @@ class D3Graph extends Component {
     // Redraw axes
     this.x_axis.call(this.x_component)
     this.y_axis.call(this.y_component)
-
-    if (!slider) return
-
-    // TODO: Rescale slider
-    // Not used atm. either way
-  }
-
-  // Rescale based on the dimensions
-  // of the x-overview slider
-  _sl_x_rescale = () => {
-    let sl_x = parseFloat(this.slider.attr('x'))
-    let sl_w = parseFloat(this.slider.attr('width'))
-    this._x_rescale(sl_x / 100, (sl_x + sl_w) / 100)
   }
 
   // Resize the chart to the
@@ -342,7 +333,7 @@ class D3Graph extends Component {
     }
 
     // Rescale to slider %
-    this._sl_x_rescale()
+    this._rescale()
   }
 }
 
