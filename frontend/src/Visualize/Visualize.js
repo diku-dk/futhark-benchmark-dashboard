@@ -63,54 +63,6 @@ class Visualize extends Component {
     }
   }
 
-  checkInput(pathIndex) {
-    const {
-      removePath,
-      changeSelected,
-      visualize: {
-        selected
-      },
-      data: {
-        skeleton,
-        benchmarks
-      }
-    } = this.props
-    let path = selected[pathIndex]
-    let {backend, machine, benchmark, dataset} = path
-
-    if ( [backend, machine, benchmark, dataset].every(e => e === null) ) {
-      if ( selected.length > 1 ) removePath(pathIndex)
-      return
-    }
-
-    if ( ! _.get(benchmarks, [benchmark]) )
-      benchmark = null
-
-    if ( benchmark === null || ! benchmarks[benchmark].includes(dataset) )
-      dataset = null 
-
-    if ( ! _.get(skeleton, [backend, machine]) ) {
-      machine = null
-      dataset = null
-      benchmark = null
-    }
-
-    if ( ! _.get(skeleton, [backend]) )
-      backend = null
-
-    const newPath = _.merge(selected[pathIndex], {
-      dataset,
-      benchmark,
-      backend,
-      machine
-    })
-
-    if ( ! _.isEqual(newPath, selected[pathIndex]) ) {
-      selected[pathIndex] = newPath
-      changeSelected(selected)
-    }
-  }
-
   downloadData() {
     const {
       visualize: {
@@ -144,16 +96,6 @@ class Visualize extends Component {
   }
 
   componentDidUpdate() {
-    const {
-      visualize: {
-        selected
-      }
-    } = this.props
-
-    for ( let pathIndex in selected ) {
-      this.checkInput(pathIndex)
-    }
-
     this.downloadData()
   }
 
