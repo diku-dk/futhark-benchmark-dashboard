@@ -19,14 +19,9 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
     benchmarks: {}
   }
 
-  const parsedFiles = files.map(file => {
+  for (file of files) {
     const [backend, machine, commit] = file.replace('.json', '').split('-').splice(1)
-    return [file, backend, machine, commit]
-  })
 
-  metadata.skeleton = _.cloneDeep(largeObject)
-
-  for (const [file, backend, machine, commit] of parsedFiles) {
     if (!(commit in commitData)) {
       continue
     }
@@ -50,19 +45,18 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
         const dataset = benchmark['datasets'][datasetKey]
         const runtimes = dataset['runtimes']
         if (runtimes === undefined) {
-          delete benchmark['datasets'][datasetKey]
           continue
         }
 
         metadata.benchmarks[benchmarkKey].push(datasetKey)
 
-        delete dataset['runtimes']
-        dataset['avg'] = Math.round(average(runtimes))
-        dataset['stdDev'] = Math.round(standardDeviation(runtimes))
+        _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
+          avg: Math.round(average(runtimes)),
+          stdDev: Math.round(standardDeviation(runtimes))
+        })
       }
     }
 
-    _.set(largeObject, [backend, machine, commit], data)
     _.set(metadata.skeleton, [backend, machine], {})
   }
 
