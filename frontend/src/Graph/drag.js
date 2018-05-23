@@ -2,29 +2,29 @@ import * as d3 from 'd3'
 
 // Generic slider drag
 let slider = d3.drag()
-  .on('start', function() {
+  .on('start', () => {
     d3.event.sourceEvent.stopPropagation()
   })
-  .on('drag.move', function() {
+  .on('drag.move', () => {
     // Horizontal movement only
-    var {dx, x} = d3.event
+    let {dx, x} = d3.event
     if (dx === 0) return
 
     // Get parent SVG & its dimensions
-    var top = this.parentNode.parentNode
-    var {width} = top.getBoundingClientRect()
-    var parent = d3.select(top)
+    let top = this.parentNode.parentNode
+    let {width} = top.getBoundingClientRect()
+    let parent = d3.select(top)
 
     // Inside range only
     if (x < 0 || x > width) return
 
     // Get slider
-    var s = d3.select(this)
+    let s = d3.select(this)
 
     // Calulate new offsets
     dx = 100 * dx / width
-    var s_x = parseFloat(s.attr('x'))
-    var s_w = parseFloat(s.attr('width'))
+    let s_x = parseFloat(s.attr('x'))
+    let s_w = parseFloat(s.attr('width'))
     s_x = Math.max(Math.min(s_x + dx, 100 - s_w), 0)
 
     // Reset offset
@@ -32,38 +32,36 @@ let slider = d3.drag()
 
     // Move handles
     parent.selectAll('.handle')
-      .attr('x', function(_, i) {
-        return s_x + i * s_w + '%'
-      })
+      .attr('x', (_, i) => (s_x + i * s_w) + '%')
   })
 
 // Generic handle drag
 let handle = d3.drag()
-  .on('start', function() {
+  .on('start', () => {
     d3.event.sourceEvent.stopPropagation()
   })
-  .on('drag.move', function() {
+  .on('drag.move', () => {
     // Horizontal movement only
-    var {dx, x} = d3.event
+    let {dx, x} = d3.event
     if (dx === 0) return
 
     // Get parent SVG & its dimensions
-    var top = this.parentNode.parentNode
-    var {width} = top.getBoundingClientRect()
-    var parent = d3.select(top)
+    let top = this.parentNode.parentNode
+    let {width} = top.getBoundingClientRect()
+    let parent = d3.select(top)
 
     // Get slider & handles
-    var s = parent.select('.slider')
-    var h0 = d3.select(this).classed('selected', true)
-    var h1 = parent.select('.handle:not(.selected)')
-    h0.classed('selected', false)
+    let s = parent.select('.slider')
+    let h0 = d3.select(this).classed('d3-selected', true)
+    let h1 = parent.select('.handle:not(.d3-selected)')
+    h0.classed('d3-selected', false)
 
     // Calculate new offsets & slider width
     x = 100 * x / width
-    var h1_x = parseFloat(h1.attr('x'))
-    var h0_x = Math.max(Math.min(x, 100), 0)
-    var s_x = h0_x >= h1_x ? h1_x : h0_x
-    var s_w = Math.abs(h0_x - h1_x)
+    let h1_x = parseFloat(h1.attr('x'))
+    let h0_x = Math.max(Math.min(x, 100), 0)
+    let s_x = h0_x >= h1_x ? h1_x : h0_x
+    let s_w = Math.abs(h0_x - h1_x)
 
     // Reset attributes
     s.attr('width', s_w + '%');
