@@ -12,11 +12,11 @@ const inputData = JSON.parse(fs.readFileSync(process.argv[2]))
 rimraf.sync(baseDir)
 fs.mkdirSync(baseDir)
 
-for (backendIndex in inputData) {
+for (const backendIndex in inputData) {
 	const backend = inputData[backendIndex]
 	fs.mkdirSync(`${baseDir}/${backendIndex}`)
 
-	for (machineIndex in backend) {
+	for (const machineIndex in backend) {
 		const machine = backend[machineIndex]
 		const json = JSON.stringify(machine)
 
