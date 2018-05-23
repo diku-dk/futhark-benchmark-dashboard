@@ -1,6 +1,6 @@
-const fs = require('fs');
-const glob = require("glob")
-const execSync = require('child_process').execSync;
+const fs = require('fs')
+const glob = require('glob')
+const {execSync} = require('child_process')
 const _ = require('lodash')
 
 // Constants
@@ -18,7 +18,9 @@ const getRevisions = (files) => {
 // Gets commit date from one revision hash
 const getRevisionDate = (revision) => {
   try {
-    return execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+    return new Date(
+      execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+    ).toISOString()
   } catch (e) {
     return null
   }
@@ -27,7 +29,7 @@ const getRevisionDate = (revision) => {
 // If this script was executed directly
 if (require.main === module) {
   // Find all benchmark files
-  const files = glob.sync("*.json", {
+  const files = glob.sync('*.json', {
     cwd: benchmarkResultsFolder
   })
 
@@ -37,14 +39,15 @@ if (require.main === module) {
   // Map for output
   const commitsMap = {}
 
-  for (commit of commits) {
+  for (const commit of commits) {
     const date = getRevisionDate(commit)
 
-    if (date != null)
+    if (date != null) {
       commitsMap[commit] = date
+    }
   }
 
-  fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap));
+  fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap))
 }
 
 module.exports = {getRevisions, getRevisionDate}

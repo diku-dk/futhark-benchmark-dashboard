@@ -1,0 +1,20 @@
+{
+  "test.fut":{
+    "datasets":{
+      "dataset1":{
+        "runtimes":[
+          1,
+          2,
+          3
+        ]
+      },
+      "dataset2":{
+        "runtimes":[
+          10,
+          20,
+          30
+        ]
+      }
+    }
+  }
+}

@@ -11,12 +11,16 @@
     "rimraf": "^2.6.2"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "standard *.js"
   },
   "name": "futhark-benchmark-dashboard",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:boh1996/futhark-benchmark-dashboard.git",
   "author": "Frederik Lassen <frederiklassen@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
 }
