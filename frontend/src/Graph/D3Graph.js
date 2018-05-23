@@ -32,29 +32,31 @@ class D3Graph extends Component {
       for (let i in this.datasets) {
         let {data} = this.datasets[i]
         let j = bisect(data, actual, 1)
-        p.push({data: data[j], i})
-        p.push({data: data[j - 1], i})
+        potentials.push({data: data[j], i})
+        potentials.push({data: data[j - 1], i})
       }
 
       // Remove undefined
-      potentials = potentials.filter(x => x.d)
+      potentials = potentials.filter(x => x.data)
 
       // Sort by closest
-      potentials = p.sort((a, b) => {
+      potentials = potentials.sort((a, b) => {
         let x0 = Math.abs(a.data.x - actual)
         let x1 = Math.abs(b.data.x - actual)
         return d3.descending(x1, x0)
       })
 
       // Return if no points
-      if (p.length === 0) return
+      if (potentials.length === 0) return
 
       // Only keep the commits with
       // the same hash as the closest
-      potentials = p.filter(x => potentials[0].d.commit === x.d.commit)
+      potentials = potentials.filter(x => {
+        return potentials[0].data.commit === x.data.commit
+      })
 
       // Find offset
-      x = this.selectedXScale(potentials[0].d.x)
+      x = this.selectedXScale(potentials[0].data.x)
 
       d3.select('.caret')
         .attr('x1', x)
