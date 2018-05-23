@@ -74,8 +74,8 @@ if (require.main === module) {
   })
 
   const commitData = JSON.parse(fs.readFileSync('./out/commits.json'))
-  const {largeObject, metadata} = processData({files, commitData, benchmarkResultsFolder, settings})
+  const {combined, metadata} = processData({files, commitData, benchmarkResultsFolder, settings})
 
-  fs.writeFileSync('./out/combined.json', JSON.stringify(largeObject))
+  fs.writeFileSync('./out/combined.json', JSON.stringify(combined))
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 }
