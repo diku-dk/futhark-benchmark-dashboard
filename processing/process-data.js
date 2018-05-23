@@ -1,11 +1,11 @@
-const fs = require('fs');
-const glob = require("glob")
+const fs = require('fs')
+const glob = require('glob')
 var _ = require('lodash')
 const settings = require('./settings.json')
 
 const benchmarkResultsFolder = './benchmark-results'
 
-const files = glob.sync("*.json", {
+const files = glob.sync('*.json', {
   cwd: benchmarkResultsFolder
 })
 
@@ -16,18 +16,20 @@ const largeObject = {}
 const metadata = {
   skeleton: {},
   commits: commits,
-  benchmarks: {},
+  benchmarks: {}
 }
 
 Promise.all(files.map(file => {
   return new Promise((resolve, reject) => {
     const [backend, machine, commit] = file.replace('.json', '').split('-').splice(1)
 
-    if (!(backend in largeObject) && _.get(settings, ["whitelist", backend]))
+    if (!(backend in largeObject) && _.get(settings, ['whitelist', backend])) {
       largeObject[backend] = {}
+    }
 
-    if (!(machine in largeObject[backend]) && _.get(settings, ["whitelist", backend, machine]))
+    if (!(machine in largeObject[backend]) && _.get(settings, ['whitelist', backend, machine])) {
       largeObject[backend][machine] = {}
+    }
 
     resolve([file, backend, machine, commit])
   })
@@ -36,11 +38,13 @@ Promise.all(files.map(file => {
 
   return Promise.all(results.map(([file, backend, machine, commit]) => {
     return new Promise((resolve, reject) => {
-      if (!(commit in commits))
+      if (!(commit in commits)) {
         return resolve()
+      }
 
-      if (! _.get(settings, ["whitelist", backend]) || ! _.get(settings, ["whitelist", backend, machine]))
+      if (!_.get(settings, ['whitelist', backend]) || !_.get(settings, ['whitelist', backend, machine])) {
         return resolve()
+      }
 
       const data = require(`${benchmarkResultsFolder}/${file}`)
 
@@ -50,7 +54,7 @@ Promise.all(files.map(file => {
           delete data[benchmarkKey]
           continue
         }
-        
+
         _.set(metadata.benchmarks, [benchmarkKey], [])
 
         for (const datasetKey in benchmark['datasets']) {
@@ -66,9 +70,9 @@ Promise.all(files.map(file => {
           delete dataset['runtimes']
           dataset['avg'] = Math.round(average(runtimes))
           dataset['stdDev'] = Math.round(standardDeviation(runtimes))
-        } 
+        }
       }
-      
+
       largeObject[backend][machine][commit] = data
       resolve()
     })
@@ -77,12 +81,11 @@ Promise.all(files.map(file => {
   const json = JSON.stringify(largeObject)
   fs.writeFileSync('./out/combined.json', json)
 
-  metadata.benchmarks = _.mapValues(metadata.benchmarks, (datasets => _.uniq(datasets)))
+  metadata.benchmarks = _.mapValues(metadata.benchmarks, datasets => _.uniq(datasets))
 
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
-
 }).then(results => {
-  console.log("Done! :)")
+  console.log('Done! :)')
 })
 
 const average = (data) => data.reduce((sum, value) => sum + value, 0) / data.length

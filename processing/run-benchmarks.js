@@ -5,7 +5,7 @@ const chalk = require('chalk')
 const physicalCpuCount = require('physical-cpu-count')
 
 if (process.argv[2] == null || process.argv[3] == null) {
-  console.log("Please run: run-benchmarks.js <machine name> <input file>")
+  console.log('Please run: run-benchmarks.js <machine name> <input file>')
   process.exit()
 }
 
@@ -20,13 +20,13 @@ const runs = fs.readFileSync(process.argv[3]).toString().split('\n')
 const shell = (...args) => (execSync(...args) || '').toString('utf8').trim()
 
 const compileCompiler = () => {
-  console.log("Running stack setup...")
+  console.log('Running stack setup...')
   shell(`stack setup`, {cwd: compilerDir, stdio: 'inherit'})
 
-  console.log("Running stack clean...")
+  console.log('Running stack clean...')
   shell(`stack clean`, {cwd: compilerDir, stdio: 'inherit'})
 
-  console.log("Running stack build...")
+  console.log('Running stack build...')
   shell(`stack build --ghc-options="-j${physicalCpuCount}"`, {cwd: compilerDir, stdio: 'inherit'})
 }
 
@@ -52,7 +52,7 @@ for (const run of runs) {
   backend = `futhark-${backend}`
 
   const outputFilename = `${backend}-${machine}-${compilerRevision}.json`
-  const outputFile = `${path.resolve(__dirname,outDir)}/${outputFilename}`
+  const outputFile = `${path.resolve(__dirname, outDir)}/${outputFilename}`
 
   if (fs.existsSync(outputFile)) {
     console.log(chalk.green(`Build for ${compilerRevision} exists, skipping...`))
@@ -86,7 +86,7 @@ for (const run of runs) {
     benchmarkRevision = shell(`${benchmarkGitCommand} rev-list -1 --before="${currentCompilerRevisionDate}" master`)
   }
   console.log(chalk.yellow(`Found benchmark revision: ${benchmarkRevision}`))
-  
+
   // Checkout benchmark revision
   shell(`${benchmarkGitCommand} checkout ${benchmarkRevision}`)
 
