@@ -1,43 +1,30 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import { Table } from 'antd';
+import { Table, Spin } from 'antd'
+import {connect} from 'react-redux' 
+import * as actions from './actions'
 const { Column } = Table;
 
 class Home extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      topScores: [],
-      bottomScores: []
-    }
-  }
-
   componentDidMount() {
-    axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/dashboard.json`, {
-      mode: "cors"
-    })
-    .then(response => {
-      const parsed = response.data
-      this.setState({
-        topScores: parsed.topScores,
-        bottomScores: parsed.bottomScores
-      })
-    })
-    .catch(console.error)
+    const {fetchDashboard} = this.props 
+    fetchDashboard()
   }
 
   render() {
-    const {topScores, bottomScores} = this.state;
+    const {home: {topScores, bottomScores, loading}} = this.props
 
     return (
-      <div>
+      <Spin
+        spinning={loading}
+        size="large"
+      >
         <h1>Improvements</h1>
         <Table
           dataSource={topScores}
           pagination={false}
           bordered
           style={{maxWidth: "1100px"}}
+          rowClassName={(record) => record.diff > 10 ? 'row-green' : (record.diff < -10) ? 'row-red' : ''}
         >
           <Column
             title="Backend"
@@ -79,6 +66,7 @@ class Home extends Component {
           dataSource={bottomScores}
           pagination={false}
           bordered
+          rowClassName={(record) => record.diff > 10 ? 'row-green' : (record.diff < -10) ? 'row-red' : ''}
           style={{maxWidth: "1100px"}}
         >
           <Column
@@ -115,9 +103,11 @@ class Home extends Component {
             )}
           />
         </Table>
-      </div>
+      </Spin>
     )
   }
 }
 
-export default Home
+export default connect(
+  state => state, {...actions}
+)(Home)

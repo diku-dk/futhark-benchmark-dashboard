@@ -6,155 +6,82 @@ import {
   Row
 } from 'antd'
 import Commit from '../modules/Commit'
-import axios from 'axios'
 import _ from 'lodash'
 import Comparison from './Comparison'
+import * as actions from '../modules/actions'
+import * as compareActions from './actions'
+import {connect} from 'react-redux'
 
 class Compare extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      skeleton: null,
-      benchmarks: null,
-      selected: [
-        {
-          backend: 'opencl',
-          machine: 'GTX780',
-          commit: '0397438e8fc6cd2e5549a9d883d1e5a5c11110f7'
-        },
-        {
-          backend: 'opencl',
-          machine: 'GTX780',
-          commit: '009795e2ccdf19374113efe74586a472cba40581'
-        }
-      ],
-      commits: [],
-      sortedCommitKeys: []
+      queue: {}
     }
-
-    this.changeBackend = this.changeBackend.bind(this)
-    this.changeMachine = this.changeMachine.bind(this)
-    this.changeCommit = this.changeCommit.bind(this)
-    this.onRemovePath = this.onRemovePath.bind(this)
-    this.onAddPath = this.onAddPath.bind(this)
   }
 
   componentDidMount() {
-    axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/metadata.json`, {
-      mode: "cors"
-    })
-    .then(response => {
-      const parsed = response.data
-      const {commits, skeleton} = parsed
-      const sortedCommitKeys = Object.keys(commits).sort((a, b) => {
-        return new Date(commits[a]) - new Date(commits[b])
+    const {fetchMetadata} = this.props
+    const promise = fetchMetadata()
+
+    if ( promise.then !== undefined  ) {
+      promise.then((response) => {
+        this.downloadData()
       })
-      this.setState({
-        skeleton: skeleton,
-        commits: commits,
-        sortedCommitKeys: sortedCommitKeys
-      })
-      this.downloadData()
-    })
-    .catch(console.error)
+    }
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     this.downloadData()
   }
 
-  onAddPath() {
-    const {selected} = this.state
-
-    selected.push({
-      backend: null,
-      machine: null,
-      commit: null
-    })
-    this.setState({
-      selected
-    })
-  }
-
-  onRemovePath(index) {
-    const {selected} = this.state
-
-    selected.splice(index, 1)
-    this.setState({
-      selected
-    })
-  }
-
-  changeCommit(index, commit) {
-    const {selected, commits, skeleton} = this.state
-    const path = selected[index]
-    const {backend, machine} = path
-
-    if ( ! (commit in commits) || skeleton[backend][machine][commit] === null ) {
-      selected[index] = _.merge(selected[index], {
-        commit: null
-      })
-      return this.setState(selected)
-    }
-
-    selected[index] = _.merge(selected[index], {
-      commit
-    })
-    this.setState(selected)
-  }
-
-  changeMachine(index, machine) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      machine
-    })
-    this.setState(selected)
-  }
-
-  changeBackend(index, backend) {
-    const {selected} = this.state
-    selected[index] = _.merge(selected[index], {
-      backend
-    })
-    this.setState(selected)
-  }
-
   downloadData() {
-    const {skeleton, selected} = this.state
+    const {
+      compare: {
+        selected
+      },
+      fetchBackendMachine
+    } = this.props
+    const {queue} = this.state
 
     for ( let pathIndex in selected ) {
       const path = selected[pathIndex]
       const {backend, machine} = path
-      if (
-        skeleton !== null &&
-        backend !== null &&
-        machine !== null &&
-        _.get(skeleton, [backend, machine]) &&
-        Object.keys(skeleton[backend][machine]).length === 0
-      ) {
-        axios(`${process.env.REACT_APP_DATA_URL || 'http://localhost:8080'}/data-split/${backend}/${machine}.json`, {
-          mode: "cors"
-        })
-        .then(response => {
-          const parsed = response.data
-          skeleton[backend][machine] = parsed
+
+      if ( ! _.get(queue, [backend, machine]) ) {
+        const promise = fetchBackendMachine(backend, machine)
+
+        if ( promise.then !== undefined  ) {
+          _.set(queue, [backend, machine], true)
           this.setState({
-            skeleton: skeleton
+            queue
           })
-        })
-        .catch(console.error)
+          promise.then(() => {
+            _.set(queue, [backend, machine], false)
+            this.setState({
+              queue
+            })
+          })
+        }
       }
     }
   }
 
   render() {
     const {
-      skeleton,
-      commits,
-      selected
-    } = this.state
+      data: {
+        skeleton,
+        commits
+      },
+      compare: {
+        selected
+      },
+      changeBackend,
+      changeMachine,
+      changeCommit
+    } = this.props
 
-    if (skeleton === null || commits === null) {
+    if (skeleton === null || commits === null || selected == null) {
       return (
         <div>
           <Row>
@@ -178,11 +105,9 @@ class Compare extends Component {
               skeleton={skeleton}
               path={path}
               index={index}
-              changeBackend={this.changeBackend}
-              changeMachine={this.changeMachine}
-              changeCommit={this.changeCommit}
-              onRemovePath={this.onRemovePath}
-              onAddPath={this.onAddPath}
+              changeBackend={changeBackend}
+              changeMachine={changeMachine}
+              changeCommit={changeCommit}
             />
           ))}
         </Card>
@@ -200,4 +125,6 @@ class Compare extends Component {
   }
 }
 
-export default Compare;
+export default connect(
+  state => state, {...actions, ...compareActions}
+)(Compare)

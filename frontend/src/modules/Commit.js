@@ -3,7 +3,6 @@ import {
   Select,
   Row,
   Col,
-  Button,
   Input
 } from 'antd'
 const Option = Select.Option
@@ -14,12 +13,9 @@ class Commit extends Component {
       skeleton,
       index,
       path,
-      count,
       changeBackend,
       changeMachine,
-      changeCommit,
-      onRemovePath,
-      onAddPath
+      changeCommit
     } = this.props
 
     const {
@@ -30,7 +26,6 @@ class Commit extends Component {
 
     const machines = backend !== null && skeleton[backend] !== null ? Object.keys(skeleton[backend]) : []
     const backends = skeleton !== null ? Object.keys(skeleton) : []
-    const hasPlus = index === 0 && machine !== null && backend !== null && commit !== null
 
     return (
       <div>
@@ -82,14 +77,6 @@ class Commit extends Component {
                 onChange={(e) => changeCommit(index, e.target.value)}
                 value={(commit !== null) ? commit : undefined}
               />
-            }
-          </Col>
-          <Col span={4}>
-            { hasPlus &&
-                <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
-            }
-            { (index > 0 || (index === 0 && count > 1)) &&
-              <Button shape="circle" icon="minus" onClick={() => onRemovePath(index)} style={{marginLeft: hasPlus ? "5px" : "0px"}} />
             }
           </Col>
         </Row>
