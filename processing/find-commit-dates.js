@@ -18,7 +18,9 @@ const getRevisions = (files) => {
 // Gets commit date from one revision hash
 const getRevisionDate = (revision) => {
   try {
-    return execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+    return new Date(
+      execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+    ).toISOString()
   } catch (e) {
     return null
   }
