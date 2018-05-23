@@ -4,7 +4,7 @@ const fetch = (name, file, skip, options = {}) => {
   return ({dispatch, getState}) => {
     const state = getState()
 
-    if ( skip(state) ) {
+    if (skip(state)) {
       return {
         type: ''
       }
@@ -16,13 +16,15 @@ const fetch = (name, file, skip, options = {}) => {
           mode: "cors"
         })
 
-        if ( response.status !== 200 && response.status !== 304 ) throw response
+        if (response.status !== 200 && response.status !== 304) {
+          throw response
+        }
         return {
           data: response.data,
           ...options
         }
       } catch (e) {
-        if ( process.env.NODE_ENV !== 'production' ) {
+        if (process.env.NODE_ENV !== 'production') {
           throw e
         }
       }

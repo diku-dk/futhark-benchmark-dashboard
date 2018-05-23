@@ -45,7 +45,7 @@ export default (state = initialState, action) => {
       } = action.payload
       _.set(skeleton, [backend, machine], action.payload.data)
 
-      if (loading.indexOf(`${backend}/${machine}`) > -1) {
+      if (loading.includes(`${backend}/${machine}`)) {
         loading.splice(loading.indexOf(`${backend}/${machine}`), 1)
       }
 

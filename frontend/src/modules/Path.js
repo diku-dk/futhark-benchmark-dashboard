@@ -33,11 +33,11 @@ class Path extends Component {
       dataset
     } = path
 
-    const machines = backend !== null && skeleton[backend] !== null ? Object.keys(skeleton[backend]) : []
-    const backends = skeleton !== null ? Object.keys(skeleton) : []
-    const benchmarkKeys = benchmarks !== null ? Object.keys(benchmarks) : []
-    const datasets = ( benchmarks !== null && benchmark !== null ) ? benchmarks[benchmark] : []
-    const hasPlus = index === (count - 1) && benchmark !== null && datasets !== null && dataset !== null
+    const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
+    const backends = skeleton != null ? Object.keys(skeleton) : []
+    const benchmarkKeys = benchmarks != null ? Object.keys(benchmarks) : []
+    const datasets = (benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
+    const hasPlus = index === (count - 1) && benchmark != null && datasets != null && dataset != null
 
     return (
       <Row gutter={16} style={{marginBottom: "10px"}}>
@@ -46,13 +46,13 @@ class Path extends Component {
           </span>
         </Col>
         <Col span={2}>
-          { backends !== null &&
+          {backends != null &&
             <Select
               onChange={(value) => changeBackend(index, value)}
               style={{ width: "100%", display: "block" }}
               showSearch={true}
               autoFocus={true}
-              value={backend !== null ? backend : undefined}
+              value={backend != null ? backend : undefined}
             >
               {backends.map(backend => (
                 <Option
@@ -66,7 +66,7 @@ class Path extends Component {
           }
         </Col>
         <Col span={2}>
-          { backend !== null && skeleton[backend] !== null &&
+          {backend != null && skeleton[backend] != null &&
             <Select
               style={{ width: "100%", display: "block" }}
               onChange={(value) => changeMachine(index, value)}
@@ -86,7 +86,7 @@ class Path extends Component {
           }
         </Col>
         <Col span={4}>
-          { machine !== null && benchmarks !== null &&
+          {machine != null && benchmarks != null &&
             <Select
               style={{ width: "100%", display: "block" }}
               onChange={(value) => changeBenchmark(index, value)}
@@ -106,7 +106,7 @@ class Path extends Component {
           }
         </Col>
         <Col span={4}>
-          { benchmark !== null && datasets !== null &&
+          { benchmark != null && datasets != null &&
             <Select
               style={{ width: "100%", display: "block" }}
               onChange={(value) => changeDataset(index, value)}
@@ -126,13 +126,13 @@ class Path extends Component {
           }
         </Col>
         <Col span={4}>
-          { hasPlus &&
+          {hasPlus &&
               <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
           }
-          { (index > 0 || (index === 0 && count > 1)) &&
+          {(index > 0 || (index === 0 && count > 1)) &&
             <Button shape="circle" icon="minus" onClick={() => onRemovePath(index)} style={{marginLeft: hasPlus ? "5px" : "0px"}} />
           }
-          { benchmark !== null &&
+          {benchmark != null &&
             <Tooltip placement="bottom" title={"Add all the benchmarks datasets"}>
               <Button type="primary" shape="circle" icon="database" onClick={() => addAllDatasets(path, index)} style={{marginLeft: "5px"}} />
             </Tooltip>

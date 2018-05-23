@@ -28,7 +28,7 @@ class Visualize extends Component {
     const {fetchMetadata} = this.props
     const promise = fetchMetadata()
 
-    if ( promise.then !== undefined  ) {
+    if ( promise.then != null  ) {
       promise.then((response) => {
         this.downloadData()
       })
@@ -47,14 +47,14 @@ class Visualize extends Component {
 
     const selectionExists = toCheck => selected.find(element => _.isEqual(Object.values(element), Object.values(toCheck)) )
 
-    if ( benchmarks[path.benchmark] !== null ) {
-      for ( let dataset of benchmarks[path.benchmark] ) {
-        if ( path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))  ) {
+    if (benchmarks[path.benchmark] != null) {
+      for (let dataset of benchmarks[path.benchmark]) {
+        if (path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))) {
           selected.push(Object.assign({}, path, {dataset}))
         }
       }
 
-      if ( path.dataset === null ) {
+      if (path.dataset == null) {
         removePath(index)
       }
 
@@ -70,7 +70,7 @@ class Visualize extends Component {
       fetchBackendMachine
     } = this.props
 
-    for ( let pathIndex in selected ) {
+    for (let pathIndex in selected) {
       const path = selected[pathIndex]
       const {backend, machine} = path
 
@@ -134,7 +134,7 @@ class Visualize extends Component {
               </span>
             </Col>
             <Col span={9}>
-              { graphType === "speedup" &&
+              {graphType === "speedup" &&
                 <div>
                   <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
                     Speedup max: 
@@ -169,7 +169,7 @@ class Visualize extends Component {
         </Card>
 
         <Card style={{marginBottom: "10px"}}>
-          { selected.map((path, index) => (
+          {selected.map((path, index) => (
             <Path
               key={index}
               colors={colors}

@@ -13,6 +13,8 @@ class Home extends Component {
   render() {
     const {home: {topScores, bottomScores, loading}} = this.props
 
+    const changeThreshold = 10
+
     return (
       <Spin
         spinning={loading}
@@ -24,7 +26,7 @@ class Home extends Component {
           pagination={false}
           bordered
           style={{maxWidth: "1100px"}}
-          rowClassName={(record) => record.diff > 10 ? 'row-green' : (record.diff < -10) ? 'row-red' : ''}
+          rowClassName={(record) => record.diff > changeThreshold ? 'row-green' : ''}
         >
           <Column
             title="Backend"
@@ -66,7 +68,7 @@ class Home extends Component {
           dataSource={bottomScores}
           pagination={false}
           bordered
-          rowClassName={(record) => record.diff > 10 ? 'row-green' : (record.diff < -10) ? 'row-red' : ''}
+          rowClassName={(record) => (record.diff < -changeThreshold) ? 'row-red' : ''}
           style={{maxWidth: "1100px"}}
         >
           <Column
