@@ -109,3 +109,5 @@ if (require.main === module) {
   fs.writeFileSync('./out/combined.json', JSON.stringify(combined))
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 }
+
+module.exports = {average, standardDeviation, processData}
