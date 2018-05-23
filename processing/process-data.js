@@ -32,15 +32,9 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
 
     const data = JSON.parse(fs.readFileSync(`${benchmarkResultsFolder}/${file}`))
 
-    // TODO: remove
-    if (_.get(largeObject, [backend, machine, commit]) == null) {
-      _.set(largeObject, [backend, machine, commit], {})
-    }
-
     for (const benchmarkKey in data) {
       const benchmark = data[benchmarkKey]
       if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length === 0) {
-        delete data[benchmarkKey]
         continue
       }
 
@@ -49,20 +43,14 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
       for (const datasetKey in benchmark['datasets']) {
         const dataset = benchmark['datasets'][datasetKey]
         const runtimes = dataset['runtimes']
-        
-        // TODO: remove
-        if (_.get(largeObject, [backend, machine, commit, benchmarkKey, 'datasets']) == null) {
-          _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets'], {})
-        }
 
-        if (runtimes === undefined) {
+        if (runtimes == null) {
           continue
         }
 
         metadata.benchmarks[benchmarkKey].push(datasetKey)
 
         _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
-          stderr: dataset['stderr'] != null ? dataset['stderr'] : undefined,
           avg: Math.round(average(runtimes)),
           stdDev: Math.round(standardDeviation(runtimes)),
         })
@@ -93,4 +81,3 @@ if (require.main === module) {
   fs.writeFileSync('./out/combined.json', JSON.stringify(largeObject))
   fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 }
-
