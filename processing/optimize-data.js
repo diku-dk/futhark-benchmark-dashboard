@@ -22,7 +22,7 @@ function optimizeBenchmarks( input ) {
         return new Date(commits[a]) - new Date(commits[b])
       })
 
-      const reversedSortedCommitKeys = sortedCommitKeys.reverse()
+      const reversedSortedCommitKeys = sortedCommitKeys.slice().reverse()
 
       const filterCommits = (commitKeys) => {
         let lastInserted = {}

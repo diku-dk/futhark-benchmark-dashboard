@@ -8,7 +8,7 @@ import {
   Spin,
   Card
 } from 'antd'
-import Path from '../Path'
+import Path from '../modules/Path'
 import Graph from '../Graph/Graph'
 import D3Graph from '../Graph/D3Graph'
 import axios from 'axios'

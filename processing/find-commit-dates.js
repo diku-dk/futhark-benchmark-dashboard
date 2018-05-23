@@ -1,36 +1,50 @@
 const fs = require('fs');
 const glob = require("glob")
 const execSync = require('child_process').execSync;
+const _ = require('lodash')
 
+// Constants
 const benchmarkResultsFolder = './benchmark-results'
 
-const files = glob.sync("*.json", {
-  cwd: benchmarkResultsFolder
-})
+// Gets revision hashes from an array of benchmark files
+const getRevisions = (files) => {
+  let revisions = files.map(file => file.replace('.json', '').split('-')[3])
+  revisions = _.uniq(revisions)
+  revisions = revisions.filter(revision => /^[0-9A-F]+$/i.test(revision))
 
-const commits = uniq(files.map(file => file.replace('.json', '').split('-')[3]))
-
-const commitsMap = {}
-
-for (commit of commits) {
-	//console.log(commit)
-	try {
-		commitsMap[commit] = execSync(`git -C ../../futhark show -s --format=%ci ${commit}`).toString('utf8').trim()
-	} catch (e) {
-		//console.error(`Bad commit hash: ${commit}`)
-	}
+  return revisions
 }
 
-fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap));
-
-function uniq(a) {
-    var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
-
-    return a.filter(function(item) {
-        var type = typeof item;
-        if(type in prims)
-            return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
-        else
-            return objs.indexOf(item) >= 0 ? false : objs.push(item);
-    });
+// Gets commit date from one revision hash
+const getRevisionDate = (revision) => {
+  try {
+    return execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+  } catch (e) {
+    return null
+  }
 }
+
+// If this script was executed directly
+if (require.main === module) {
+  // Find all benchmark files
+  const files = glob.sync("*.json", {
+    cwd: benchmarkResultsFolder
+  })
+
+  // Extract revision hashes
+  const commits = getRevisions(files)
+
+  // Map for output
+  const commitsMap = {}
+
+  for (commit of commits) {
+    const date = getRevisionDate(commit)
+
+    if (date != null)
+      commitsMap[commit] = date
+  }
+
+  fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap));
+}
+
+module.exports = {getRevisions, getRevisionDate}
