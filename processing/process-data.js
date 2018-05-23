@@ -33,7 +33,7 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
     }
 
     // Don't include the benchmark run if it's not whitelisted
-    if (_.get(settings, ['whitelist', backend, machine]) == null) {
+    if (!_.has(settings, ['whitelist', backend, machine])) {
       continue
     }
 
@@ -48,6 +48,11 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
       // Don't include the benchmark if it has no datasets
       if (datasets == null || Object.keys(datasets).length === 0) {
         continue
+      }
+
+      // Update the metadata with the current benchmark
+      if (!_.has(metadata.benchmarks, [benchmarkKey])) {
+        _.set(metadata.benchmarks, [benchmarkKey], [])
       }
 
       // For each dataset in the benchmark
