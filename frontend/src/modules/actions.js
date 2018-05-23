@@ -8,7 +8,7 @@ export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MA
     backend !== null &&
     machine !== null &&
     loading.indexOf(`${backend}/${machine}`) < 0 &&
-    _.get(skeleton, [backend, machine]) &&
+    _.has(skeleton, [backend, machine]) &&
     Object.keys(skeleton[backend][machine]).length === 0
   )
 }, {backend, machine})

@@ -64,7 +64,7 @@ class Compare extends Component {
       changeCommit
     } = this.props
 
-    if (skeleton === null || commits === null || selected == null || loading.length > 0) {
+    if (skeleton == null || commits == null || selected == null || loading.length > 0) {
       return (
         <div>
           <Row>
