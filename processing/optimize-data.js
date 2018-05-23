@@ -30,7 +30,7 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
 
                 const diff = Math.abs((previousDataset.avg - dataset.avg) / previousDataset.avg)
 
-                if ( diff < diffThreshold) {
+                if (diff < diffThreshold) {
                   continue
                 }
               }
@@ -55,7 +55,7 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
 // If this script was executed directly
 if (require.main === module) {
   if (process.argv[2] == null) {
-    console.log("Please run: optimize-data.js <input file>")
+    console.log('Please run: optimize-data.js <input file>')
     process.exit()
   }
 
