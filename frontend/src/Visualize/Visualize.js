@@ -9,7 +9,6 @@ import {
   Card
 } from 'antd'
 import Path from '../modules/Path'
-import Graph from '../Graph/Graph'
 import D3Graph from '../Graph/D3Graph'
 import axios from 'axios'
 import _ from 'lodash'
@@ -79,7 +78,7 @@ class Visualize extends Component {
       speedUpMax
     })
   }
-  
+
   changeGraphType(value) {
     this.setState({
       graphType: value ? 'speedup' : 'absolute'
@@ -187,7 +186,7 @@ class Visualize extends Component {
           this.setState({
             skeleton: skeleton
           })
-          
+
           this.checkInput(pathIndex)
         })
         .catch(console.error)
@@ -209,7 +208,7 @@ class Visualize extends Component {
       benchmark = null
 
     if ( benchmark === null || ! benchmarks[benchmark].includes(dataset) )
-      dataset = null 
+      dataset = null
 
     if ( ! _.get(skeleton, [backend, machine]) ) {
       machine = null
@@ -288,7 +287,7 @@ class Visualize extends Component {
               { this.state.graphType === "speedup" &&
                 <div>
                   <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
-                    Speedup max: 
+                    Speedup max:
                   </span>
                   <Slider
                     style={{
@@ -304,7 +303,7 @@ class Visualize extends Component {
                   <InputNumber
                     min={2}
                     max={10}
-                    style={{ 
+                    style={{
                       marginLeft: 16,
                       position: "relative",
                       top: "-10px",
@@ -348,17 +347,6 @@ class Visualize extends Component {
             colors={colors}
             y_max={speedUpMax}
             type={graphType}
-          />
-        </Card>
-
-        <Card>
-          <Graph
-            colors={colors}
-            commits={commits}
-            skeleton={skeleton}
-            selected={selected}
-            speedUpMax={speedUpMax}
-            graphType={graphType}
           />
         </Card>
       </div>
