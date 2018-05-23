@@ -7,7 +7,7 @@ export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MA
     skeleton !== null &&
     backend !== null &&
     machine !== null &&
-    loading.includes(`${backend}/${machine}`) &&
+    ! loading.includes(`${backend}/${machine}`) &&
     _.has(skeleton, [backend, machine]) &&
     Object.keys(skeleton[backend][machine]).length === 0
   )
