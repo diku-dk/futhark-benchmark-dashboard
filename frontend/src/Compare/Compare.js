@@ -22,7 +22,7 @@ class Compare extends Component {
     const {fetchMetadata} = this.props
     const promise = fetchMetadata()
 
-    if (promise.then != undefined) {
+    if (promise.then != null) {
       promise.then((response) => {
         this.downloadData()
       })
