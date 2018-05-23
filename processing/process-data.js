@@ -50,11 +50,6 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
         continue
       }
 
-      // Update the metadata with the current benchmark
-      if (!_.has(metadata.benchmarks, [benchmarkKey])) {
-        _.set(metadata.benchmarks, [benchmarkKey], [])
-      }
-
       // For each dataset in the benchmark
       for (const datasetKey in datasets) {
         const dataset = datasets[datasetKey]
@@ -66,6 +61,9 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
         }
 
         // Update the metadata with the current benchmark/dataset combination
+        if (!_.has(metadata.benchmarks, [benchmarkKey])) {
+          _.set(metadata.benchmarks, [benchmarkKey], [])
+        }
         _.get(metadata.benchmarks, [benchmarkKey], []).push(datasetKey)
 
         // Insert the avg. and stddev. of the dataset into the output
