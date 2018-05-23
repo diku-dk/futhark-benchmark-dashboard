@@ -44,7 +44,7 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
     for (const benchmarkKey in data) {
       const benchmark = data[benchmarkKey]
       const {datasets} = benchmark
-      
+
       // Don't include the benchmark if it has no datasets
       if (datasets == null || Object.keys(datasets).length === 0) {
         continue
@@ -90,7 +90,7 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
 if (require.main === module) {
   // Load settings
   const settings = JSON.parse(fs.readFileSync('./settings.json'))
-  
+
   // Directory containing all .json benchmark files
   const benchmarkResultsFolder = './benchmark-results'
 
