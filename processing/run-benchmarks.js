@@ -40,7 +40,10 @@ const runBenchmarks = (backend, compilerRevision, outputFile) => {
 
 for (const run of runs) {
   // Extract backend and compiler revision from filename
-  let [backend, _, compilerRevision] = run.replace('.json', '').split('-').splice(1)
+  // runSplit = [backend, machine, revision]
+  const runSplit = run.replace('.json', '').split('-').splice(1)
+  let backend = runSplit[0]
+  const compilerRevision = runSplit[2]
   if (backend == null || compilerRevision == null) {
     console.error(`Couldn't parse run "${run}"`)
     continue
@@ -64,7 +67,7 @@ for (const run of runs) {
 
   // Check compiler checkout success
   const compilerRevisionCheck = shell(`${compilerGitCommand} rev-parse HEAD`)
-  if (compilerRevisionCheck != compilerRevision) {
+  if (compilerRevisionCheck !== compilerRevision) {
     console.error(`Checkout of compiler ${compilerRevision} failed`)
     continue
   }
@@ -94,7 +97,7 @@ for (const run of runs) {
 
   // Check benchmark checkout success
   const benchmarkRevisionCheck = shell(`${benchmarkGitCommand} rev-parse HEAD`)
-  if (benchmarkRevisionCheck != benchmarkRevision) {
+  if (benchmarkRevisionCheck !== benchmarkRevision) {
     console.error(`Checkout of benchmark ${benchmarkRevision} failed`)
     continue
   }

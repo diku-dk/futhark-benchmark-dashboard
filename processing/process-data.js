@@ -50,7 +50,7 @@ Promise.all(files.map(file => {
 
       for (const benchmarkKey in data) {
         const benchmark = data[benchmarkKey]
-        if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length == 0) {
+        if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length === 0) {
           delete data[benchmarkKey]
           continue
         }
