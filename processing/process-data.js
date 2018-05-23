@@ -26,7 +26,7 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
       continue
     }
 
-    if (!_.get(settings, ['whitelist', backend]) || !_.get(settings, ['whitelist', backend, machine])) {
+    if (_.get(settings, ['whitelist', backend, machine]) == null) {
       continue
     }
 
@@ -34,21 +34,21 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
 
     for (const benchmarkKey in data) {
       const benchmark = data[benchmarkKey]
-      if (!('datasets' in benchmark) || Object.keys(benchmark['datasets']).length === 0) {
+      const {datasets} = benchmark
+      
+      if (datasets == null || Object.keys(datasets).length === 0) {
         continue
       }
 
-      _.set(metadata.benchmarks, [benchmarkKey], [])
-
-      for (const datasetKey in benchmark['datasets']) {
-        const dataset = benchmark['datasets'][datasetKey]
-        const runtimes = dataset['runtimes']
+      for (const datasetKey in datasets) {
+        const dataset = datasets[datasetKey]
+        const {runtimes} = dataset
 
         if (runtimes == null) {
           continue
         }
 
-        metadata.benchmarks[benchmarkKey].push(datasetKey)
+        _.get(metadata.benchmarks, [benchmarkKey], []).push(datasetKey)
 
         _.set(combined, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
           avg: Math.round(average(runtimes)),
