@@ -11,7 +11,7 @@ let extract = ({selected, data, dates}) => {
     let at = [benchmark, 'datasets', dataset]
     let commits = data[backend][machine]
 
-    return _.map(commits, (benchmarks, commit) => {
+    let result = _.map(commits, (benchmarks, commit) => {
       let datum = _.get(benchmarks, at, null)
       if (datum == null) return null
 
@@ -25,6 +25,9 @@ let extract = ({selected, data, dates}) => {
     })
     .filter(d => d != null)
     .sort((a, b) => a.x - b.x)
+
+    // Don't bother w/ empty arrays
+    return _.isEmpty(result) ? null : result
   })
 }
 
