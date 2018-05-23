@@ -10,6 +10,7 @@ import {
 } from 'antd'
 import Path from '../Path'
 import Graph from '../Graph/Graph'
+import D3Graph from '../Graph/D3Graph'
 import axios from 'axios'
 import _ from 'lodash'
 
@@ -337,6 +338,17 @@ class Visualize extends Component {
               addAllDatasets={this.addAllDatasets}
             />
           ))}
+        </Card>
+
+        <Card>
+          <D3Graph
+            data={skeleton}
+            dates={commits}
+            selected={selected}
+            colors={colors}
+            y_max={speedUpMax}
+            type={graphType}
+          />
         </Card>
 
         <Card>
