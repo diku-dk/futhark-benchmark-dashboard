@@ -12,14 +12,14 @@ const standardDeviation = (values) => {
 }
 
 const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
-  const largeObject = {}
+  const combined = {}
   const metadata = {
     skeleton: {},
     commits: commitData,
     benchmarks: {}
   }
 
-  for (file of files) {
+  for (const file of files) {
     const [backend, machine, commit] = file.replace('.json', '').split('-').splice(1)
 
     if (!(commit in commitData)) {
@@ -50,21 +50,19 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
 
         metadata.benchmarks[benchmarkKey].push(datasetKey)
 
-        _.set(largeObject, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
+        _.set(combined, [backend, machine, commit, benchmarkKey, 'datasets', datasetKey], {
           avg: Math.round(average(runtimes)),
-          stdDev: Math.round(standardDeviation(runtimes)),
+          stdDev: Math.round(standardDeviation(runtimes))
         })
-
       }
     }
 
     _.set(metadata.skeleton, [backend, machine], {})
   }
 
-
   metadata.benchmarks = _.mapValues(metadata.benchmarks, datasets => _.uniq(datasets))
 
-  return {largeObject, metadata}
+  return {combined, metadata}
 }
 
 // If this script was executed directly
