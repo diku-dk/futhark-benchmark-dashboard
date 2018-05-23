@@ -14,11 +14,12 @@ export default (state = initialState, action) => {
     }
     
     case 'GET_HOME_DASHBOARD_SUCCESS': {
+      const {topScores, bottomScores} = action.payload.data
       return {
         ...state,
         loading: false,
-        topScores: action.payload.topScores,
-        bottomScores: action.payload.bottomScores
+        topScores: topScores,
+        bottomScores: bottomScores
       }
     }
     default:
