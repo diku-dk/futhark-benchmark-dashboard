@@ -17,6 +17,13 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case 'COMPARE_CHANGE_SELECTED': {
+      const {selected} = action.payload
+      return {
+        ...state,
+        selected
+      }
+    }
     case 'COMPARE_CHANGE_MACHINE':
     case 'COMPARE_CHANGE_BACKEND': {
       const {selected} = state

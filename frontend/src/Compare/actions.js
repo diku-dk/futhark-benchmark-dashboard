@@ -21,3 +21,10 @@ export const changeCommit = (index, commit) => ({
     commit
   }  
 })
+
+export const changeSelected = (selected) => ({
+  type: 'COMPARE_CHANGE_SELECTED',
+  payload: {
+    selected
+  }
+})

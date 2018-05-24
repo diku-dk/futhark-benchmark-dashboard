@@ -39,7 +39,7 @@ class Graph extends Component {
         dataset
       } = path
 
-      if ( dataset != null ) {
+      if ( dataset != null && skeleton != null && _.has(skeleton, [backend, machine]) ) {
         const rawData = skeleton[backend][machine]
         let refinedData = []
 

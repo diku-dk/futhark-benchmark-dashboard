@@ -19,8 +19,37 @@ class Compare extends Component {
   }
 
   componentDidMount() {
-    const {fetchMetadata} = this.props
+    const {
+      fetchMetadata,
+      changeSelected
+    } = this.props
     const promise = fetchMetadata()
+
+    const url = new URL(window.location)
+
+    if (url != null && url.searchParams.get('selected') != null) {
+      try {
+        var json = JSON.parse(url.searchParams.get('selected'))
+        if (Array.isArray(json)) {
+          let selected = []
+          for (let selection of json) {
+            if (Array.isArray(selection)) {
+              const [backend, machine, commit] = selection
+              selected.push({
+                backend,
+                machine,
+                commit
+              })
+            }
+          }
+
+          if (selected.length > 0) {
+            changeSelected(selected)
+          }
+        }
+      } catch (e) {
+      }
+    }
 
     if (promise.then != null) {
       promise.then((response) => {

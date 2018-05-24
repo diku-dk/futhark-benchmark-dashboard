@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Table, Spin } from 'antd'
-import {connect} from 'react-redux' 
+import {connect} from 'react-redux'
+import { Link } from "react-router-dom"
 import * as actions from './actions'
 const { Column } = Table;
 
@@ -51,6 +52,11 @@ class Home extends Component {
             title="Dataset"
             dataIndex="dataset"
             key="dataset"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Difference (%)"
@@ -75,11 +81,21 @@ class Home extends Component {
             title="Backend"
             dataIndex="backend"
             key="backend"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Machine"
             dataIndex="machine"
             key="machine"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Benchmark"
@@ -94,6 +110,11 @@ class Home extends Component {
             title="Dataset"
             dataIndex="dataset"
             key="dataset"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Difference (%)"

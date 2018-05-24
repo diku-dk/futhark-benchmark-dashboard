@@ -25,8 +25,48 @@ class Visualize extends Component {
   }
 
   componentDidMount() {
-    const {fetchMetadata} = this.props
+    const {
+      fetchMetadata,
+      changeSelected,
+      changeGraphType,
+      changeSpeedMax
+    } = this.props
     const promise = fetchMetadata()
+
+    const url = new URL(window.location)
+
+    if (url != null) {
+      if (url.searchParams.get('speedup') != null) {
+        changeGraphType(true)
+        let value = parseInt(url.searchParams.get('speedup'), 10)
+        changeSpeedMax(value)
+      }
+
+      if (url.searchParams.get('selected') != null) {
+        try {
+          var json = JSON.parse(url.searchParams.get('selected'))
+          if (Array.isArray(json)) {
+            let selected = []
+            for (let selection of json) {
+              if (Array.isArray(selection)) {
+                const [backend, machine, benchmark, dataset] = selection
+                selected.push({
+                  backend,
+                  machine,
+                  benchmark,
+                  dataset
+                })
+              }
+            }
+
+            if (selected.length > 0) {
+              changeSelected(selected)
+            }
+          }
+        } catch ( e ) {
+        }
+      }
+    }
 
     if (promise.then != null) {
       promise.then((response) => {
