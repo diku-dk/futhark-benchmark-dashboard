@@ -41,11 +41,11 @@ export default class Comparison extends Component {
       for (const datasetKey in benchmark['datasets']) {
         const dataset = benchmark['datasets'][datasetKey]
 
-        if ( _.get(secondCommit, [benchmarkKey, 'datasets', datasetKey]) ) {
+        if (_.has(secondCommit, [benchmarkKey, 'datasets', datasetKey])) {
           const secondDataset = _.get(secondCommit, [benchmarkKey, 'datasets', datasetKey])
           const diff = (secondDataset['avg'] - dataset['avg']) / secondDataset['avg'] * 100
 
-          if ( Math.abs(diff) > 1 ) {
+          if (Math.abs(diff) > 1) {
             scores.push({
               diff,
               benchmark: benchmarkKey,

@@ -1,0 +1,35 @@
+{
+  "test.fut":{
+    "datasets":{
+      "dataset1":{
+        "runtimes":[
+          15,
+          20,
+          25
+        ]
+      },
+      "dataset2":{
+        "runtimes":[
+          300,
+          500,
+          700
+        ]
+      }
+    }
+  },
+  "failedtest1.fut":{
+    "datasets": {}
+  },
+  "failedtest2.fut":{
+    "datasets": {
+      "dataset1": {}
+    }
+  },
+  "failedtest3.fut":{
+    "datasets": {
+      "dataset1": {
+        "stderr": "There was an error"
+      }
+    }
+  }
+}
