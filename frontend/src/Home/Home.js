@@ -33,18 +33,28 @@ class Home extends Component {
             title="Backend"
             dataIndex="backend"
             key="backend"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Machine"
             dataIndex="machine"
             key="machine"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Benchmark"
             render={(text, record) => (
-              <span>
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
                 {record.benchmark.replace("futhark-benchmarks/", "")}
-              </span>
+              </Link>
             )}
             key="benchmark"
           />
@@ -100,9 +110,9 @@ class Home extends Component {
           <Column
             title="Benchmark"
             render={(text, record) => (
-              <span>
+              <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
                 {record.benchmark.replace("futhark-benchmarks/", "")}
-              </span>
+              </Link>
             )}
             key="benchmark"
           />
