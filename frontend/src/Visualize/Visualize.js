@@ -76,12 +76,14 @@ class Visualize extends Component {
   }
 
   addAllDatasets(path, index) {
-    const {benchmarks} = this.state;
     const {
       removePath,
       changeSelected,
       visualize: {
         selected
+      },
+      data: {
+        benchmarks
       }
     } = this.props
 
