@@ -152,6 +152,8 @@ class D3Graph extends Component {
 
     // Size the chart
     this._resize()
+
+    this.componentDidUpdate()
   }
 
   // Render via d3
