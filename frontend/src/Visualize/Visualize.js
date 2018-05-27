@@ -9,7 +9,7 @@ import {
   Card
 } from 'antd'
 import Path from '../modules/Path'
-import Graph from '../Graph/Graph'
+import D3Graph from '../Graph/D3Graph'
 import _ from 'lodash'
 import {connect} from 'react-redux'
 import * as actions from '../modules/actions'
@@ -76,12 +76,14 @@ class Visualize extends Component {
   }
 
   addAllDatasets(path, index) {
-    const {benchmarks} = this.state;
     const {
       removePath,
       changeSelected,
       visualize: {
         selected
+      },
+      data: {
+        benchmarks
       }
     } = this.props
 
@@ -177,7 +179,7 @@ class Visualize extends Component {
               {graphType === "speedup" &&
                 <div>
                   <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
-                    Speedup max: 
+                    Speedup max:
                   </span>
                   <Slider
                     style={{
@@ -193,7 +195,7 @@ class Visualize extends Component {
                   <InputNumber
                     min={2}
                     max={10}
-                    style={{ 
+                    style={{
                       marginLeft: 16,
                       position: "relative",
                       top: "-10px",
@@ -230,13 +232,13 @@ class Visualize extends Component {
         </Card>
 
         <Card>
-          <Graph
-            colors={colors}
-            commits={commits}
-            skeleton={skeleton}
+          <D3Graph
+            data={skeleton}
+            dates={commits}
             selected={selected}
-            speedUpMax={speedUpMax}
-            graphType={graphType}
+            colors={colors}
+            yMax={speedUpMax}
+            type={graphType}
           />
         </Card>
       </div>
