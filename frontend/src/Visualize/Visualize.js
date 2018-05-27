@@ -170,7 +170,7 @@ class Visualize extends Component {
               </span>
               <Switch defaultChecked onChange={changeGraphType} checked={graphType === "speedup"} />
               <span style={{marginLeft: "5px"}}>
-                Speedup
+                Slowdown
               </span>
             </Col>
             <Col span={9}>
