@@ -37,7 +37,7 @@ class D3Graph extends Component {
       }
 
       // Remove undefined
-      potentials = potentials.filter(x => x.data)
+      potentials = potentials.filter(x => x.data != null)
 
       // Sort by closest
       potentials = potentials.sort((a, b) => {
