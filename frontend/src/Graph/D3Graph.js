@@ -8,6 +8,8 @@ import {extract, speedup} from './utils'
 import {slider, handle} from './drag'
 import './D3Graph.css'
 
+let formatTime = d3.timeFormat('%B %d, %Y');
+
 class D3Graph extends Component {
   datasets = []
 
@@ -16,54 +18,99 @@ class D3Graph extends Component {
     // Initialize selected view
     let at = findDOMNode(this)
     this.container = d3.select(at)
+
+    // Create tooltip container
+    this.tooltip = this.container.append('div')
+      .classed('tooltip', true)
+
+    // Create <svg> for the zoomable
+    // visualization of the selected graphs
     this.selected = this.container.append('svg')
-    this.selected.classed('selected', true)
+      .classed('selected', true)
+      .on('mousemove', () => {
+        this._resetTooltip()
 
-    this.selected.on('mousemove', () => {
-      if (this.datasets.length === 0) return
+        if (_.isEmpty(this.datasets)) return
 
-      let bisect = d3.bisector(d => d.x).left;
-      let x = d3.mouse(this.selected.node())[0]
-      let actual = this.selectedXScale.invert(x)
+        let bisector = d3.bisector(d => d.x).left
+        let [x] = d3.mouse(this.selected.node())
+        let actual = this.selectedXScale.invert(x)
 
-      // Find potential closest
-      // points to the cursor
-      let potentials = []
-      for (let i in this.datasets) {
-        let {data} = this.datasets[i]
-        let j = bisect(data, actual, 1)
-        potentials.push({data: data[j], i})
-        potentials.push({data: data[j - 1], i})
-      }
+        // Find potential closest
+        // points to the cursor
+        let potentials = []
+        for (let i in this.datasets) {
+          let {data} = this.datasets[i]
+          let j = bisector(data, actual, 1)
+          potentials.push({data: data[j], i})
+          potentials.push({data: data[j - 1], i})
+        }
 
-      // Remove undefined
-      potentials = potentials.filter(x => x.data != null)
+        // Remove undefined data points
+        potentials = potentials.filter(x => x.data != null)
 
-      // Sort by closest
-      potentials = potentials.sort((a, b) => {
-        let x0 = Math.abs(a.data.x - actual)
-        let x1 = Math.abs(b.data.x - actual)
-        return d3.descending(x1, x0)
+        // Return if no points
+        if (_.isEmpty(potentials)) return
+
+        // Sort points by horizontal distance to cursor
+        potentials = potentials.sort((a, b) => {
+          let x0 = Math.abs(a.data.x - actual)
+          let x1 = Math.abs(b.data.x - actual)
+          return d3.descending(x1, x0)
+        })
+
+        let textAlign = 'left'
+        let [closest] = potentials
+        let caretX = this.selectedXScale(closest.data.x)
+
+        // Only keep the data points with
+        // the same commit as the closest
+        potentials = potentials.filter(x => {
+          return closest.data.commit === x.data.commit
+        })
+
+        this.hoveredCommit = closest.data.commit
+
+        // Get dimensions
+        let selectedRect = this.selected.node().getBoundingClientRect()
+        let tooltipRect = this.tooltip.node().getBoundingClientRect()
+
+        if (caretX > selectedRect.width / 2) {
+          caretX -= tooltipRect.width
+          textAlign = 'right'
+        }
+
+        this.caret.style('visibility', 'visible')
+          .attr('x1', caretX)
+          .attr('x2', caretX)
+
+        this.tooltip.style('visibility', 'visible')
+          .style('margin-left', caretX + 'px')
+          .style('text-align', textAlign)
+          .selectAll('p').remove()
+
+        // Append date to tooltip
+        this.tooltip.append('p')
+          .text(formatTime(closest.data.x))
+
+        // Append data y values to tooltip
+        for (let {data, i} of potentials) {
+          this.tooltip.append('p')
+            .text(data.y.toFixed(3))
+            .style('color', `rgb(${this.datasets[i].color})`)
+        }
+      })
+      .on('mouseout', () => {
+        this._resetTooltip()
+      })
+      .on('click', () => {
+        // Open commit on GitHub on click
+        if (this.hoveredCommit == null) return
+        window.open(`https://github.com/diku-dk/futhark/commit/${this.hoveredCommit}`)
       })
 
-      // Return if no points
-      if (potentials.length === 0) return
-
-      // Only keep the commits with
-      // the same hash as the closest
-      potentials = potentials.filter(x => {
-        return potentials[0].data.commit === x.data.commit
-      })
-
-      // Find offset
-      x = this.selectedXScale(potentials[0].data.x)
-
-      d3.select('.caret')
-        .attr('x1', x)
-        .attr('x2', x)
-    })
-
-    this.selected.append('line')
+    // Append data point caret
+    this.caret = this.selected.append('line')
       .classed('caret', true)
       .attr('y2', '100%')
 
@@ -278,10 +325,8 @@ class D3Graph extends Component {
   // size of the container
   _resize = () => {
     // Get dimensions
-    let selected = this.selected.node()
-    let overview = this.overview.node()
-    let selectedRect = selected.getBoundingClientRect()
-    let overviewRect = overview.getBoundingClientRect()
+    let selectedRect = this.selected.node().getBoundingClientRect()
+    let overviewRect = this.overview.node().getBoundingClientRect()
 
     // Resize axes
     this.selectedXScale.range([0, selectedRect.width])
@@ -328,6 +373,12 @@ class D3Graph extends Component {
     }
 
     this.datasets = []
+  }
+
+  _resetTooltip = () => {
+    this.hoveredCommit = null
+    this.caret.style('visibility', 'hidden')
+    this.tooltip.style('visibility', 'hidden')
   }
 }
 
