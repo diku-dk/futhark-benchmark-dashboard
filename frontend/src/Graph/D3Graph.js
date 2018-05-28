@@ -59,7 +59,6 @@ class D3Graph extends Component {
           return d3.descending(x1, x0)
         })
 
-        let textAlign = 'left'
         let [closest] = potentials
         let caretX = this.selectedXScale(closest.data.x)
 
@@ -75,14 +74,16 @@ class D3Graph extends Component {
         let selectedRect = this.selected.node().getBoundingClientRect()
         let tooltipRect = this.tooltip.node().getBoundingClientRect()
 
+        this.caret.style('visibility', 'visible')
+          .attr('x1', caretX)
+          .attr('x2', caretX)
+
+        let textAlign = 'left'
+
         if (caretX > selectedRect.width / 2) {
           caretX -= tooltipRect.width
           textAlign = 'right'
         }
-
-        this.caret.style('visibility', 'visible')
-          .attr('x1', caretX)
-          .attr('x2', caretX)
 
         this.tooltip.style('visibility', 'visible')
           .style('margin-left', caretX + 'px')
