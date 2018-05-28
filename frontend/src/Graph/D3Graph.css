@@ -1,6 +1,6 @@
 .d3-container {
-  margin: 0 40px;
-  height: 300px;
+  margin: 0 50px;
+  height: 320px;
 }
 
 .d3-container svg {
@@ -73,12 +73,14 @@
   stroke: #999;
   shape-rendering: crispEdges;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .tooltip {
   padding: 6px;
   position: absolute;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .tooltip p {

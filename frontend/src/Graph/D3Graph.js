@@ -115,6 +115,12 @@ class D3Graph extends Component {
       .classed('caret', true)
       .attr('y2', '100%')
 
+    this.yLabel = this.selected.append('text')
+      .style('text-anchor', 'middle')
+      .attr('transform', 'rotate(-90)')
+      .attr('dy', '-4em')
+      .attr('x', '-130')
+
     // Initialize x-overview
     this.overview = this.container.append('svg')
     this.overview.classed('x-overview', true)
@@ -226,6 +232,8 @@ class D3Graph extends Component {
       })
     }
 
+    if (_.isEmpty(this.datasets)) return
+
     // Combine datasets into one
     datasets = this.datasets.map(x => x.data)
     let combined = _.flatten(datasets)
@@ -242,6 +250,9 @@ class D3Graph extends Component {
     // and independent of speedup
     if (type === 'speedup') {
       yDomain[1] = Math.min(yDomain[1], +yMax)
+      this.yLabel.text('Slowdown compared to fastest')
+    } else {
+      this.yLabel.text('Benchmark runtime (ms)')
     }
 
     this.selectedXScale.domain(xDomain)
