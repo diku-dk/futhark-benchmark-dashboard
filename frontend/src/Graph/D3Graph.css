@@ -103,8 +103,8 @@
 .tooltip pre,
 .tooltip tr * {
   margin-bottom: 0px;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   white-space: nowrap;
 }
 

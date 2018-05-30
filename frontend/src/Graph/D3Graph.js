@@ -8,6 +8,7 @@ import {extract, speedup} from './utils'
 import {slider, handle} from './drag'
 import './D3Graph.css'
 
+let repoURL = 'https://github.com/diku-dk/futhark'
 let formatTime = d3.timeFormat('%B %d, %Y');
 
 class D3Graph extends Component {
@@ -110,7 +111,7 @@ class D3Graph extends Component {
       .on('click', () => {
         // Open commit on GitHub on click
         if (this.hoveredCommit == null) return
-        window.open(`https://github.com/diku-dk/futhark/commit/${this.hoveredCommit}`)
+        window.open(`${repoURL}/commit/${this.hoveredCommit}`)
       })
 
     // Cosmetic top line
