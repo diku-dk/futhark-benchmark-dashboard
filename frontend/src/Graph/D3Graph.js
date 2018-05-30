@@ -8,6 +8,9 @@ import {extract, speedup} from './utils'
 import {slider, handle} from './drag'
 import './D3Graph.css'
 
+let repoURL = 'https://github.com/diku-dk/futhark'
+let formatTime = d3.timeFormat('%B %d, %Y');
+
 class D3Graph extends Component {
   datasets = []
 
@@ -16,56 +19,116 @@ class D3Graph extends Component {
     // Initialize selected view
     let at = findDOMNode(this)
     this.container = d3.select(at)
+
+    // Create tooltip container
+    this.tooltip = this.container.append('div')
+      .classed('tooltip', true)
+
+    // Create <svg> for the zoomable
+    // visualization of the selected graphs
     this.selected = this.container.append('svg')
-    this.selected.classed('selected', true)
+      .classed('selected', true)
+      .on('mousemove', () => {
+        this._resetTooltip()
 
-    this.selected.on('mousemove', () => {
-      if (this.datasets.length === 0) return
+        if (_.isEmpty(this.datasets)) return
 
-      let bisect = d3.bisector(d => d.x).left;
-      let x = d3.mouse(this.selected.node())[0]
-      let actual = this.selectedXScale.invert(x)
+        let bisector = d3.bisector(d => d.x).left
+        let [x] = d3.mouse(this.selected.node())
+        let actual = this.selectedXScale.invert(x)
 
-      // Find potential closest
-      // points to the cursor
-      let potentials = []
-      for (let i in this.datasets) {
-        let {data} = this.datasets[i]
-        let j = bisect(data, actual, 1)
-        potentials.push({data: data[j], i})
-        potentials.push({data: data[j - 1], i})
-      }
+        // Find potential closest
+        // points to the cursor
+        let potentials = []
+        for (let i in this.datasets) {
+          let {data} = this.datasets[i]
+          let j = bisector(data, actual, 1)
+          potentials.push({data: data[j], i})
+          potentials.push({data: data[j - 1], i})
+        }
 
-      // Remove undefined
-      potentials = potentials.filter(x => x.data != null)
+        // Remove undefined data points
+        potentials = potentials.filter(x => x.data != null)
 
-      // Sort by closest
-      potentials = potentials.sort((a, b) => {
-        let x0 = Math.abs(a.data.x - actual)
-        let x1 = Math.abs(b.data.x - actual)
-        return d3.descending(x1, x0)
+        // Return if no points
+        if (_.isEmpty(potentials)) return
+
+        // Sort points by horizontal distance to cursor
+        potentials = potentials.sort((a, b) => {
+          let x0 = Math.abs(a.data.x - actual)
+          let x1 = Math.abs(b.data.x - actual)
+          return d3.descending(x1, x0)
+        })
+
+        let [closest] = potentials
+        let caretX = this.selectedXScale(closest.data.x)
+
+        // Only keep the data points with
+        // the same commit as the closest
+        potentials = potentials.filter(x => {
+          return closest.data.commit === x.data.commit
+        })
+
+        // Clear previous rendition
+        this.tooltip.selectAll('*').remove()
+
+        // Append date and commit hash to tooltip
+        this.hoveredCommit = closest.data.commit
+        this.tooltip.append('p').text(this.props.dates[this.hoveredCommit].message)
+        this.tooltip.append('p').text(formatTime(closest.data.x))
+        this.tooltip.append('pre').text(this.hoveredCommit.slice(0, 14))
+
+        // Create y-value / stdev table
+        let table = this.tooltip.append('table')
+        let header = table.append('tr')
+        header.append('th').text('Value')
+        header.append('th').text('Stdev')
+
+        // Append data table
+        for (let {data, i} of potentials) {
+          let entry = table.append('tr')
+            .style('color', `rgb(${this.datasets[i].color})`)
+          entry.append('td').text(data.y.toFixed(3))
+          entry.append('td').text(data.stdDev.toFixed(3))
+        }
+
+        let {width} = this.selected.node().getBoundingClientRect()
+        let acrossMiddle = caretX > width / 2
+
+        // Position caret
+        this.caret.style('visibility', 'visible')
+          .attr('x1', caretX)
+          .attr('x2', caretX)
+
+        // Position tooltip
+        this.tooltip.style('visibility', 'visible')
+          .classed('across-middle', acrossMiddle)
+          .style('margin-left', caretX + 'px')
+      })
+      .on('mouseout', () => {
+        this._resetTooltip()
+      })
+      .on('click', () => {
+        // Open commit on GitHub on click
+        if (this.hoveredCommit == null) return
+        window.open(`${repoURL}/commit/${this.hoveredCommit}`)
       })
 
-      // Return if no points
-      if (potentials.length === 0) return
-
-      // Only keep the commits with
-      // the same hash as the closest
-      potentials = potentials.filter(x => {
-        return potentials[0].data.commit === x.data.commit
-      })
-
-      // Find offset
-      x = this.selectedXScale(potentials[0].data.x)
-
-      d3.select('.caret')
-        .attr('x1', x)
-        .attr('x2', x)
-    })
-
+    // Cosmetic top line
     this.selected.append('line')
+      .classed('domain', true)
+      .attr('x2', '100%')
+
+    // Append data point caret
+    this.caret = this.selected.append('line')
       .classed('caret', true)
       .attr('y2', '100%')
+
+    this.yLabel = this.selected.append('text')
+      .style('text-anchor', 'middle')
+      .attr('transform', 'rotate(-90)')
+      .attr('dy', '-4em')
+      .attr('x', '-130')
 
     // Initialize x-overview
     this.overview = this.container.append('svg')
@@ -146,9 +209,9 @@ class D3Graph extends Component {
     // Clamp y-axis to height
     this.selected.append('defs')
       .append('clipPath')
-      .attr('id', 'd3-clip')
+      .attr('id', 'selected-clip')
       .append('rect')
-    this.selectedGraphs.attr('clip-path', 'url(#d3-clip)')
+    this.selectedGraphs.attr('clip-path', 'url(#selected-clip)')
 
     // Size the chart
     this._resize()
@@ -178,13 +241,15 @@ class D3Graph extends Component {
       })
     }
 
+    if (_.isEmpty(this.datasets)) return
+
     // Combine datasets into one
     datasets = this.datasets.map(x => x.data)
     let combined = _.flatten(datasets)
 
     // Find domain of all data
     let xDomain = d3.extent(combined, d => d.x)
-    let yDomain = [0, d3.max(combined, d => d.y)]
+    let yDomain = [1, d3.max(combined, d => d.y)]
 
     // Set new domains
     this.overviewXScale.domain(xDomain)
@@ -194,6 +259,9 @@ class D3Graph extends Component {
     // and independent of speedup
     if (type === 'speedup') {
       yDomain[1] = Math.min(yDomain[1], +yMax)
+      this.yLabel.text('Slowdown compared to fastest')
+    } else {
+      this.yLabel.text('Benchmark runtime (ms)')
     }
 
     this.selectedXScale.domain(xDomain)
@@ -211,9 +279,9 @@ class D3Graph extends Component {
       let selectedPath = this.selectedGraphs.append('path')
       let overviewPath = this.overviewGraphs.append('path')
 
-      stdDevPath.classed('d3-area', true)
-      selectedPath.classed('d3-graph', true)
-      overviewPath.classed('d3-graph', true)
+      stdDevPath.classed('area', true)
+      selectedPath.classed('graph', true)
+      overviewPath.classed('graph', true)
 
       stdDevPath.attr('d', this.stdDevArea(data))
       selectedPath.attr('d', this.selectedValueline(data))
@@ -239,7 +307,7 @@ class D3Graph extends Component {
 
   render() {
     return (
-      <div className='d3-container'>
+      <div className='graph-container'>
         <ReactResizeDetector handleWidth handleHeight onResize={this._resize}/>
       </div>
     )
@@ -278,10 +346,8 @@ class D3Graph extends Component {
   // size of the container
   _resize = () => {
     // Get dimensions
-    let selected = this.selected.node()
-    let overview = this.overview.node()
-    let selectedRect = selected.getBoundingClientRect()
-    let overviewRect = overview.getBoundingClientRect()
+    let selectedRect = this.selected.node().getBoundingClientRect()
+    let overviewRect = this.overview.node().getBoundingClientRect()
 
     // Resize axes
     this.selectedXScale.range([0, selectedRect.width])
@@ -328,6 +394,12 @@ class D3Graph extends Component {
     }
 
     this.datasets = []
+  }
+
+  _resetTooltip = () => {
+    this.hoveredCommit = null
+    this.caret.style('visibility', 'hidden')
+    this.tooltip.style('visibility', 'hidden')
   }
 }
 
