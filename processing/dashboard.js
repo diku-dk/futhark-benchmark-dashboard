@@ -1,11 +1,5 @@
 const fs = require('fs')
-const commitData = require('./out/commits.json')
 var _ = require('lodash')
-
-if (process.argv[2] == null) {
-  console.log('Please run: dashboard.js <input file>')
-  process.exit()
-}
 
 function compare (a, b) {
   if (a.diff < b.diff) { return -1 }
@@ -13,63 +7,79 @@ function compare (a, b) {
   return 0
 }
 
-const sortedCommitKeys = Object.keys(commitData).sort((a, b) => {
-  return new Date(commitData[a].date) - new Date(commitData[b].date)
-})
-const secondNewestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 2]
-const newestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 1]
+const dashboard = (commits, data) => {
+  const sortedCommitKeys = Object.keys(commits).sort((a, b) => {
+    return new Date(commits[a].date) - new Date(commits[b].date)
+  })
 
-const input = JSON.parse(fs.readFileSync(process.argv[2]))
+  const secondNewestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 2]
+  const newestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 1]
 
-let scores = []
+  let scores = []
 
-for (const backendKey in input) {
-  const backend = input[backendKey]
+  for (const backendKey in data) {
+    const backend = data[backendKey]
 
-  for (const machineKey in backend) {
-    const machine = backend[machineKey]
+    for (const machineKey in backend) {
+      const machine = backend[machineKey]
 
-    if (machine[newestCommitKey] == null || machine[secondNewestCommitKey] == null) {
-      continue
-    }
+      if (machine[newestCommitKey] == null || machine[secondNewestCommitKey] == null) {
+        continue
+      }
 
-    const secondNewestCommit = machine[secondNewestCommitKey]
-    const newestCommit = machine[newestCommitKey]
+      const secondNewestCommit = machine[secondNewestCommitKey]
+      const newestCommit = machine[newestCommitKey]
 
-    for (const benchmarkKey in newestCommit) {
-      const benchmark = newestCommit[benchmarkKey]
+      for (const benchmarkKey in newestCommit) {
+        const benchmark = newestCommit[benchmarkKey]
 
-      for (const datasetKey in benchmark['datasets']) {
-        const dataset = benchmark['datasets'][datasetKey]
+        for (const datasetKey in benchmark['datasets']) {
+          const dataset = benchmark['datasets'][datasetKey]
 
-        if (_.get(secondNewestCommit, [benchmarkKey, 'datasets', datasetKey])) {
-          const secondNewestDataset = _.get(secondNewestCommit, [benchmarkKey, 'datasets', datasetKey])
-          const diff = (secondNewestDataset['avg'] - dataset['avg']) / secondNewestDataset['avg'] * 100
+          if (_.get(secondNewestCommit, [benchmarkKey, 'datasets', datasetKey])) {
+            const secondNewestDataset = _.get(secondNewestCommit, [benchmarkKey, 'datasets', datasetKey])
+            const diff = (secondNewestDataset['avg'] - dataset['avg']) / secondNewestDataset['avg'] * 100
 
-          scores.push({
-            diff,
-            benchmark: benchmarkKey,
-            machine: machineKey,
-            backend: backendKey,
-            dataset: datasetKey,
-            commit: newestCommitKey,
-            before: secondNewestCommitKey,
-            key: [machineKey, backendKey, benchmarkKey, datasetKey].join('-')
-          })
+            scores.push({
+              diff,
+              benchmark: benchmarkKey,
+              machine: machineKey,
+              backend: backendKey,
+              dataset: datasetKey,
+              commit: newestCommitKey,
+              before: secondNewestCommitKey,
+              key: [machineKey, backendKey, benchmarkKey, datasetKey].join('-')
+            })
+          }
         }
       }
     }
   }
+
+  const positive = scores.filter(a => a.diff >= 0).sort(compare).reverse()
+  const negative = scores.filter(a => a.diff < 0).sort(compare)
+
+  const topScores = positive.slice(0, Math.min(positive.length, 10))
+  const bottomScores = negative.slice(0, Math.min(negative.length, 10))
+
+  return {
+    topScores,
+    bottomScores
+  }
 }
 
-const scoresSorted = scores.sort(compare)
-const topScores = scoresSorted.slice(Math.max(scoresSorted.length - 10, 1)).reverse()
-const bottomScores = scoresSorted.slice(0, 10)
+// If this script was executed directly
+if (require.main === module) {
+  if (process.argv[2] == null) {
+    console.log('Please run: dashboard.js <input file>')
+    process.exit()
+  }
 
-let dashboard = {
-  topScores,
-  bottomScores
+  const commitData = require('./out/commits.json')
+  const input = JSON.parse(fs.readFileSync(process.argv[2]))
+
+  const json = JSON.stringify(dashboard(commitData, input))
+  fs.writeFileSync('./out/dashboard.json', json)
 }
 
-const json = JSON.stringify(dashboard)
-fs.writeFileSync('./out/dashboard.json', json)
+module.exports = {dashboard}
