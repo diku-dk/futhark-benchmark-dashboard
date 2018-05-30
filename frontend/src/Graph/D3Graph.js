@@ -68,23 +68,21 @@ class D3Graph extends Component {
           return closest.data.commit === x.data.commit
         })
 
-
-        this.hoveredCommit = closest.data.commit
-
         // Clear previous rendition
         this.tooltip.selectAll('*').remove()
 
-        // Append date to tooltip
+        // Append date and commit hash to tooltip
+        this.hoveredCommit = closest.data.commit
         this.tooltip.append('p').text(formatTime(closest.data.x))
-        this.tooltip.append('pre').text(closest.data.commit.slice(0, 14))
+        this.tooltip.append('pre').text(this.hoveredCommit.slice(0, 14))
 
+        // Create y-value / stdev table
         let table = this.tooltip.append('table')
         let header = table.append('tr')
-
         header.append('th').text('Value')
         header.append('th').text('Stdev')
 
-        // Append data y values to tooltip
+        // Append data table
         for (let {data, i} of potentials) {
           let entry = table.append('tr')
             .style('color', `rgb(${this.datasets[i].color})`)
@@ -92,13 +90,15 @@ class D3Graph extends Component {
           entry.append('td').text(data.stdDev.toFixed(3))
         }
 
-        let selectedRect = this.selected.node().getBoundingClientRect()
-        let acrossMiddle = caretX > selectedRect.width / 2
+        let {width} = this.selected.node().getBoundingClientRect()
+        let acrossMiddle = caretX > width / 2
 
+        // Position caret
         this.caret.style('visibility', 'visible')
           .attr('x1', caretX)
           .attr('x2', caretX)
 
+        // Position tooltip
         this.tooltip.style('visibility', 'visible')
           .classed('across-middle', acrossMiddle)
           .style('margin-left', caretX + 'px')
