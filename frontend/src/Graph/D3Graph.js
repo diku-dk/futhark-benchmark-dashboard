@@ -73,6 +73,7 @@ class D3Graph extends Component {
 
         // Append date and commit hash to tooltip
         this.hoveredCommit = closest.data.commit
+        this.tooltip.append('p').text(this.props.dates[this.hoveredCommit].message)
         this.tooltip.append('p').text(formatTime(closest.data.x))
         this.tooltip.append('pre').text(this.hoveredCommit.slice(0, 14))
 
