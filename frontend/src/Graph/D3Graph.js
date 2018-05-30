@@ -68,38 +68,41 @@ class D3Graph extends Component {
           return closest.data.commit === x.data.commit
         })
 
+
         this.hoveredCommit = closest.data.commit
 
-        // Get dimensions
+        // Clear previous rendition
+        this.tooltip.selectAll('*').remove()
+
+        // Append date to tooltip
+        this.tooltip.append('p').text(formatTime(closest.data.x))
+        this.tooltip.append('pre').text(closest.data.commit.slice(0, 16))
+
+        let table = this.tooltip.append('table')
+        let header = table.append('tr')
+
+        header.append('th').text('Value')
+        header.append('th').text('Stdev')
+
+        // Append data y values to tooltip
+        for (let {data, i} of potentials) {
+          let entry = table.append('tr')
+            .style('color', `rgb(${this.datasets[i].color})`)
+
+          entry.append('td').text(data.y.toFixed(3))
+          entry.append('td').text(data.stdDev.toFixed(3))
+        }
+
         let selectedRect = this.selected.node().getBoundingClientRect()
-        let tooltipRect = this.tooltip.node().getBoundingClientRect()
+        let acrossMiddle = caretX > selectedRect.width / 2
 
         this.caret.style('visibility', 'visible')
           .attr('x1', caretX)
           .attr('x2', caretX)
 
-        let textAlign = 'left'
-
-        if (caretX > selectedRect.width / 2) {
-          caretX -= tooltipRect.width
-          textAlign = 'right'
-        }
-
         this.tooltip.style('visibility', 'visible')
+          .classed('across-middle', acrossMiddle)
           .style('margin-left', caretX + 'px')
-          .style('text-align', textAlign)
-          .selectAll('p').remove()
-
-        // Append date to tooltip
-        this.tooltip.append('p')
-          .text(formatTime(closest.data.x))
-
-        // Append data y values to tooltip
-        for (let {data, i} of potentials) {
-          this.tooltip.append('p')
-            .text(data.y.toFixed(3))
-            .style('color', `rgb(${this.datasets[i].color})`)
-        }
       })
       .on('mouseout', () => {
         this._resetTooltip()
@@ -109,6 +112,11 @@ class D3Graph extends Component {
         if (this.hoveredCommit == null) return
         window.open(`https://github.com/diku-dk/futhark/commit/${this.hoveredCommit}`)
       })
+
+    // Cosmetic top line
+    this.selected.append('line')
+      .classed('domain', true)
+      .attr('x2', '100%')
 
     // Append data point caret
     this.caret = this.selected.append('line')
@@ -240,7 +248,7 @@ class D3Graph extends Component {
 
     // Find domain of all data
     let xDomain = d3.extent(combined, d => d.x)
-    let yDomain = [0, d3.max(combined, d => d.y)]
+    let yDomain = [1, d3.max(combined, d => d.y)]
 
     // Set new domains
     this.overviewXScale.domain(xDomain)
@@ -298,7 +306,7 @@ class D3Graph extends Component {
 
   render() {
     return (
-      <div className='d3-container'>
+      <div className='graph-container'>
         <ReactResizeDetector handleWidth handleHeight onResize={this._resize}/>
       </div>
     )

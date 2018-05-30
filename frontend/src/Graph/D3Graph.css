@@ -1,18 +1,24 @@
-.d3-container {
+/* Container */
+.graph-container {
   margin: 0 50px;
   height: 320px;
 }
 
-.d3-container svg {
+.graph-container svg {
   overflow: visible !important;
 }
 
+/* Selected graphs */
 .selected {
   width: 100%;
   overflow: visible;
   height: calc(100% - 60px);
   border-top: 1px solid;
   border-color: #d0d1d5;
+}
+
+.selected line {
+  stroke: #d0d1d5;
 }
 
 .x-overview {
@@ -24,7 +30,6 @@
   border-right: 1px solid;
   border-color: #d0d1d5;
   background: #f0f2f5;
-  /* cursor: crosshair; */
 }
 
 #d3-clip rect {
@@ -70,24 +75,43 @@
 }
 
 .caret {
-  stroke: #999;
+  stroke: #999 !important;
   shape-rendering: crispEdges;
   visibility: hidden;
   pointer-events: none;
 }
 
-.tooltip {
-  padding: 6px;
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.tooltip p {
-  font-size: 12px;
-  margin-bottom: 1px;
-}
 
 .d3-area {
   fill-opacity: 0.4;
+}
+
+/* Tooltip */
+.tooltip {
+  padding: 8px;
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(1px, 1px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .15);
+  background: white;
+  font-size: 12px;
+}
+
+.tooltip p,
+.tooltip pre,
+.tooltip tr * {
+  margin-bottom: 0px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.across-middle {
+  transform: translateX(-100%) translate(-1px, 1px);
+}
+
+.across-middle > * {
+  margin-right: 0;
+  margin-left: auto;
+  text-align: right;
 }
