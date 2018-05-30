@@ -17,7 +17,7 @@ let extract = ({selected, data, dates}) => {
 
       datum = _.clone(datum)
       datum.commit = commit
-      datum.x = new Date(dates[commit])
+      datum.x = new Date(dates[commit].date)
       datum.y = datum.avg
 
       delete datum.avg
