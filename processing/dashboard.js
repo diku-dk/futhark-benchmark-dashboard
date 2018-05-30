@@ -1,5 +1,5 @@
 const fs = require('fs')
-const commits = require('./out/commits.json')
+const commitData = require('./out/commits.json')
 var _ = require('lodash')
 
 if (process.argv[2] == null) {
@@ -13,8 +13,8 @@ function compare (a, b) {
   return 0
 }
 
-const sortedCommitKeys = Object.keys(commits).sort((a, b) => {
-  return new Date(commits[a]) - new Date(commits[b])
+const sortedCommitKeys = Object.keys(commitData).sort((a, b) => {
+  return new Date(commitData[a].date) - new Date(commitData[b].date)
 })
 const secondNewestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 2]
 const newestCommitKey = sortedCommitKeys[sortedCommitKeys.length - 1]
