@@ -5,6 +5,7 @@
 }
 
 .graph-container svg {
+  /* Override standard styling */
   overflow: visible !important;
 }
 
@@ -21,6 +22,41 @@
   stroke: #d0d1d5;
 }
 
+#selected-clip rect {
+  width: 200%;
+  height: 100%;
+  x: -50%;
+}
+
+.graph {
+  stroke: #6a737d;
+  stroke-width: 2;
+  pointer-events: none;
+  fill: none;
+}
+
+.area {
+  fill-opacity: 0.4;
+}
+
+/* Axes */
+.x-axis, .y-axis {
+  pointer-events: none;
+}
+
+.x-axis .domain {
+  stroke: none;
+}
+
+.tick line,
+.x-overview line,
+.domain {
+  stroke: #d0d1d5;
+  pointer-events: none;
+  shape-rendering: crispEdges;
+}
+
+/* Overview graphs */
 .x-overview {
   width: 100%;
   height: 30px;
@@ -32,40 +68,10 @@
   background: #f0f2f5;
 }
 
-#d3-clip rect {
-  width: 200%;
-  height: 100%;
-  x: -50%;
-}
-
-.d3-graph {
-  stroke: #6a737d;
-  stroke-width: 2;
-  pointer-events: none;
-  fill: none;
-}
-
-/* Axes */
-.tick line,
-.x-overview line,
-.domain {
-  stroke: #d0d1d5;
-  pointer-events: none;
-  shape-rendering: crispEdges;
-}
-
-.x-axis, .y-axis {
-  pointer-events: none;
-}
-
-.x-axis .domain {
-  stroke: none;
-}
-
 .handle {
   opacity: 0;
   width: 10px;
-  transform: translate(-4px, 0);
+  transform: translateX(-5px);
   cursor: ew-resize;
 }
 
@@ -74,6 +80,7 @@
   cursor: move;
 }
 
+/* Caret / tooltip */
 .caret {
   stroke: #999 !important;
   shape-rendering: crispEdges;
@@ -81,12 +88,6 @@
   pointer-events: none;
 }
 
-
-.d3-area {
-  fill-opacity: 0.4;
-}
-
-/* Tooltip */
 .tooltip {
   padding: 8px;
   position: absolute;

@@ -76,7 +76,7 @@ class D3Graph extends Component {
 
         // Append date to tooltip
         this.tooltip.append('p').text(formatTime(closest.data.x))
-        this.tooltip.append('pre').text(closest.data.commit.slice(0, 16))
+        this.tooltip.append('pre').text(closest.data.commit.slice(0, 14))
 
         let table = this.tooltip.append('table')
         let header = table.append('tr')
@@ -88,7 +88,6 @@ class D3Graph extends Component {
         for (let {data, i} of potentials) {
           let entry = table.append('tr')
             .style('color', `rgb(${this.datasets[i].color})`)
-
           entry.append('td').text(data.y.toFixed(3))
           entry.append('td').text(data.stdDev.toFixed(3))
         }
@@ -208,9 +207,9 @@ class D3Graph extends Component {
     // Clamp y-axis to height
     this.selected.append('defs')
       .append('clipPath')
-      .attr('id', 'd3-clip')
+      .attr('id', 'selected-clip')
       .append('rect')
-    this.selectedGraphs.attr('clip-path', 'url(#d3-clip)')
+    this.selectedGraphs.attr('clip-path', 'url(#selected-clip)')
 
     // Size the chart
     this._resize()
@@ -278,9 +277,9 @@ class D3Graph extends Component {
       let selectedPath = this.selectedGraphs.append('path')
       let overviewPath = this.overviewGraphs.append('path')
 
-      stdDevPath.classed('d3-area', true)
-      selectedPath.classed('d3-graph', true)
-      overviewPath.classed('d3-graph', true)
+      stdDevPath.classed('area', true)
+      selectedPath.classed('graph', true)
+      overviewPath.classed('graph', true)
 
       stdDevPath.attr('d', this.stdDevArea(data))
       selectedPath.attr('d', this.selectedValueline(data))
