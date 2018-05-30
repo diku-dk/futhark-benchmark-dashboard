@@ -1,7 +1,7 @@
 const fs = require('fs')
 const _ = require('lodash')
 
-const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
+const optimizeBenchmarks = (input, diffThreshold, commitData) => {
   for (const backendKey in input) {
     const backend = input[backendKey]
     let filteredBackend = {}
@@ -9,7 +9,7 @@ const optimizeBenchmarks = (input, diffThreshold, commitDates) => {
     for (const machineKey in backend) {
       const machine = backend[machineKey]
       const sortedCommitKeys = Object.keys(machine).sort((a, b) => {
-        return new Date(commitDates[a]) - new Date(commitDates[b])
+        return new Date(commitData[a].date) - new Date(commitData[b].date)
       })
       const reversedSortedCommitKeys = sortedCommitKeys.slice().reverse()
 
@@ -59,9 +59,9 @@ if (require.main === module) {
     process.exit()
   }
 
-  const commitDates = require('./out/commits.json')
+  const commitData = require('./out/commits.json')
   const inputData = JSON.parse(fs.readFileSync(process.argv[2]))
-  const optimized = optimizeBenchmarks(inputData, 0.02, commitDates)
+  const optimized = optimizeBenchmarks(inputData, 0.02, commitData)
 
   fs.writeFileSync('./out/optimized.json', JSON.stringify(optimized))
 }
