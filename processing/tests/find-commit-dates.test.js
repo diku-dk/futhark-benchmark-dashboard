@@ -1,4 +1,4 @@
-const { getRevisions, getRevisionDate } = require('../find-commit-dates.js');
+const { getRevisions, getRevisionDate, getRevisionMessage } = require('../find-commit-dates.js');
 
 test('tests getRevisions', () => {
   expect(getRevisions([
@@ -22,6 +22,20 @@ test('tests getRevisionDate with existing hash', () => {
 
 test('tests getRevisionDate with nonexistent hash', () => {
   expect(getRevisionDate(
+    'aaaa676095acb726a9201c621bc2c83a167571e7'
+  )).toEqual(
+    null
+  )
+});
+
+test('tests getRevisionMessage with existing hash', () => {
+  expect(getRevisionMessage(
+    '7afc676095acb726a9201c621bc2c83a167571e7'
+  )).toEqual('Some doc fixes.')
+});
+
+test('tests getRevisionMessage with nonexistent hash', () => {
+  expect(getRevisionMessage(
     'aaaa676095acb726a9201c621bc2c83a167571e7'
   )).toEqual(
     null
