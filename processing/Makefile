@@ -25,6 +25,9 @@ run-optimized: \
 	run-dashboard \
 	gzip
 
+test:
+	yarn test
+
 gzip:
 	find out/ -type f ! -name "*.gz" -exec gzip -k -f --best {} \;
 
