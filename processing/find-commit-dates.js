@@ -26,6 +26,15 @@ const getRevisionDate = (revision) => {
   }
 }
 
+// Gets commit message from one revision hash
+const getRevisionMessage = (revision) => {
+  try {
+    return execSync(`git -C ../../futhark show -s --format=%s ${revision}`).toString('utf8').trim()
+  } catch (e) {
+    return null
+  }
+}
+
 // If this script was executed directly
 if (require.main === module) {
   // Find all benchmark files
@@ -41,13 +50,17 @@ if (require.main === module) {
 
   for (const commit of commits) {
     const date = getRevisionDate(commit)
+    const message = getRevisionMessage(commit)
 
     if (date != null) {
-      commitsMap[commit] = date
+      commitsMap[commit] = {
+        date,
+        message
+      }
     }
   }
 
   fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap))
 }
 
-module.exports = {getRevisions, getRevisionDate}
+module.exports = {getRevisions, getRevisionDate, getRevisionMessage}
