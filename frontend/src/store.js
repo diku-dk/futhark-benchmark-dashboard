@@ -4,7 +4,7 @@ import promiseMiddleware from 'redux-promise-middleware'
 import createHistory from 'history/createBrowserHistory'
 import rootReducer from './modules/rootReducer'
 
-export const history = createHistory()
+export const history = createHistory({basename: process.env.PUBLIC_URL})
 
 const injectMiddleware = deps => ({ dispatch, getState }) => next => action =>
   next(typeof action === 'function'
