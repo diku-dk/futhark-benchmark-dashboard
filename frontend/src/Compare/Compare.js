@@ -3,7 +3,8 @@ import {
   Card,
   Spin,
   Col,
-  Row
+  Row,
+  Divider
 } from 'antd'
 import Commit from '../modules/Commit'
 import Comparison from './Comparison'
@@ -123,6 +124,8 @@ class Compare extends Component {
             />
           ))}
         </Card>
+
+        <Divider />
 
         { selected.length === 2 && selected.every(path => path.machine != null && path.backend != null && path.commit != null) &&
           <Card>

@@ -17,7 +17,7 @@ class App extends Component {
         <Layout className="layout">
           <HeaderNavigation />
           <Layout
-             style={{ padding: '24px', minHeight: "calc(100vh - 64px)" }}
+             style={{ padding: '24px', minHeight: "calc(100vh - 64px)"}}
           >
             <Content>
               <Route exact path="/" component={Home} />

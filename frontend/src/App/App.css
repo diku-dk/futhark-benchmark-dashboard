@@ -9,3 +9,27 @@
 .row-red td:last-child {
 	background-color: red !important;
 }
+
+@media only screen and (max-width: 600px) {
+	.ant-table td,
+	.ant-table th {
+		font-size: 10px;
+	}
+
+	.ant-table th {
+		font-weight: bold !important;
+	}
+
+	.ant-layout {
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+
+	h1 {
+		padding-left: 10px;
+	}
+
+	.mobile-push-1x--bottom {
+		margin-bottom: 10px;
+	}
+}

@@ -14,6 +14,11 @@ import _ from 'lodash'
 import {connect} from 'react-redux'
 import * as actions from '../modules/actions'
 import * as visualizeActions from './actions'
+import {
+  isDesktop,
+  isMobile,
+  isTablet
+} from '../modules/utils'
 
 class Visualize extends Component {
   constructor(props) {
@@ -124,6 +129,48 @@ class Visualize extends Component {
     this.downloadData()
   }
 
+  renderPaths() {
+    const {
+      visualize: {
+        selected
+      },
+      data: {
+        colors,
+        benchmarks,
+        skeleton
+      },
+      removePath,
+      addPath,
+      changeBackend,
+      changeBenchmark,
+      changeMachine,
+      changeDataset
+    } = this.props
+
+    return (
+      <div>
+        {selected.map((path, index) => (
+          <Path
+            key={index}
+            colors={colors}
+            benchmarks={benchmarks}
+            path={path}
+            index={index}
+            count={selected.length}
+            skeleton={skeleton}
+            changeBackend={changeBackend}
+            changeMachine={changeMachine}
+            changeBenchmark={changeBenchmark}
+            changeDataset={changeDataset}
+            onAddPath={addPath}
+            onRemovePath={removePath}
+            addAllDatasets={this.addAllDatasets}
+          />
+        ))}
+      </div>
+    )
+  }
+
   render() {
     const {
       visualize: {
@@ -133,19 +180,12 @@ class Visualize extends Component {
       },
       data: {
         colors,
-        benchmarks,
         skeleton,
         commits,
         loading
       },
-      removePath,
-      addPath,
       changeGraphType,
-      changeSpeedMax,
-      changeBackend,
-      changeBenchmark,
-      changeMachine,
-      changeDataset
+      changeSpeedMax
     } = this.props
 
     if (skeleton == null || selected == null || loading.length > 0) {
@@ -162,11 +202,31 @@ class Visualize extends Component {
       )
     }
 
+    const speedUpStyle = (isDesktop()) ? {
+      position: "relative", 
+      top: "-10px", 
+      marginRight: "5px"
+    } : {
+      marginTop: "10px",
+      position: "relative"
+    }
+
+    const speedUpInputStyle = (isDesktop()) ? {
+      marginLeft: 16,
+      position: "relative",
+      top: "-10px",
+      width: "60px"
+    } : {
+      position: "relative",
+      top: "0px",
+      width: "100%"
+    }
+
     return (
-      <div>
+      <div style={{width: "100vw", "overflow": "hidden"}}>
         <Card style={{marginBottom: "10px"}}>
           <Row gutter={16} style={{marginBottom: "10px"}}>
-            <Col span={3}>
+            <Col xl={3} md={6} sm={24}>
               <span style={{marginRight: "5px"}}>
                 Absolute
               </span>
@@ -175,16 +235,16 @@ class Visualize extends Component {
                 Slowdown
               </span>
             </Col>
-            <Col span={9}>
+            <Col xl={9} md={12} sm={24}>
               {graphType === "speedup" &&
                 <div>
-                  <span style={{position: "relative", top: "-10px", marginRight: "5px"}}>
+                  <span style={speedUpStyle}>
                     Speedup max:
                   </span>
                   <Slider
                     style={{
-                      width: "150px",
-                      display: "inline-block",
+                      width: (isDesktop()) ? "150px" : "100%",
+                      display: (isDesktop()) ? "inline-block" : "block",
                       marginTop: "5px"
                     }}
                     min={2}
@@ -195,12 +255,7 @@ class Visualize extends Component {
                   <InputNumber
                     min={2}
                     max={10}
-                    style={{
-                      marginLeft: 16,
-                      position: "relative",
-                      top: "-10px",
-                      width: "60px"
-                    }}
+                    style={speedUpInputStyle}
                     value={speedUpMax}
                     onChange={changeSpeedMax}
                   />
@@ -210,26 +265,13 @@ class Visualize extends Component {
           </Row>
         </Card>
 
-        <Card style={{marginBottom: "10px"}}>
-          {selected.map((path, index) => (
-            <Path
-              key={index}
-              colors={colors}
-              benchmarks={benchmarks}
-              path={path}
-              index={index}
-              count={selected.length}
-              skeleton={skeleton}
-              changeBackend={changeBackend}
-              changeMachine={changeMachine}
-              changeBenchmark={changeBenchmark}
-              changeDataset={changeDataset}
-              onAddPath={addPath}
-              onRemovePath={removePath}
-              addAllDatasets={this.addAllDatasets}
-            />
-          ))}
-        </Card>
+        { isDesktop() &&
+          <Card style={{marginBottom: "10px"}}>
+            {this.renderPaths()}
+          </Card>
+        }
+
+        { (isMobile() || isTablet()) && this.renderPaths()}
 
         <Card>
           <D3Graph

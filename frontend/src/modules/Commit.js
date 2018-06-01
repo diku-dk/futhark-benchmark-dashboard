@@ -30,7 +30,7 @@ class Commit extends Component {
     return (
       <div>
         <Row gutter={16} style={{marginBottom: "10px"}}>
-          <Col span={2}>
+          <Col lg={2} sm={24} className="mobile-push-1x--bottom">
             {backends != null &&
               <Select
                 onChange={(value) => changeBackend(index, value)}
@@ -50,7 +50,7 @@ class Commit extends Component {
               </Select>
             }
           </Col>
-          <Col span={2}>
+          <Col lg={2} sm={24} className="mobile-push-1x--bottom">
             {backend != null && skeleton[backend] != null &&
               <Select
                 style={{ width: "100%", display: "block" }}
@@ -70,7 +70,7 @@ class Commit extends Component {
               </Select>
             }
           </Col>
-          <Col span={5}>
+          <Col lg={5} sm={24}>
             {machine != null && skeleton[backend][machine] != null &&
               <Input
                 style={{width: "100%"}}

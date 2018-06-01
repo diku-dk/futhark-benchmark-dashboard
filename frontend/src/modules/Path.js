@@ -4,8 +4,13 @@ import {
   Row,
   Col,
   Button,
-  Tooltip
+  Tooltip,
+  Card
 } from 'antd'
+import {
+  isMobile,
+  isTablet
+} from './utils'
 const Option = Select.Option
 
 class Path extends Component {
@@ -39,13 +44,13 @@ class Path extends Component {
     const datasets = (benchmarks != null && benchmark != null ) ? benchmarks[benchmark] : []
     const hasPlus = index === (count - 1) && benchmark != null && datasets != null && dataset != null
 
-    return (
+    const Content = () => (
       <Row gutter={16} style={{marginBottom: "10px"}}>
-        <Col span={1}>
+        <Col lg={1} sm={2} xs={4} className="mobile-push-1x--bottom">
           <span style={{backgroundColor: `rgb(${colors[index]})`, width: "40px", height: "32px", display: "block"}}>
           </span>
         </Col>
-        <Col span={2}>
+        <Col lg={2} sm={22} xs={20} className="mobile-push-1x--bottom">
           {backends != null &&
             <Select
               onChange={(value) => changeBackend(index, value)}
@@ -65,7 +70,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col span={2}>
+        <Col lg={2} sm={24} xs={24} className="mobile-push-1x--bottom">
           {backend != null && skeleton[backend] != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -85,7 +90,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col span={4}>
+        <Col lg={4} sm={24} xs={24} className="mobile-push-1x--bottom">
           {machine != null && benchmarks != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -105,7 +110,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col span={4}>
+        <Col lg={4} sm={24} xs={24} className="mobile-push-1x--bottom">
           { benchmark != null && datasets != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -125,7 +130,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col span={4}>
+        <Col lg={4} sm={24} xs={24}>
           {hasPlus &&
               <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
           }
@@ -140,6 +145,18 @@ class Path extends Component {
         </Col>
       </Row>
     )
+
+    if (isMobile() || isTablet()) {
+      return (
+        <div style={{marginBottom: "10px"}}>
+          <Card bordered>
+            <Content />
+          </Card>
+        </div>
+      )
+    } else {
+      return (<Content />)
+    }
   }
 }
 
