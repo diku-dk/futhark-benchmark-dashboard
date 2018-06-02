@@ -16,7 +16,7 @@ class D3Graph extends Component {
 
   // Initialize chart container
   componentDidMount() {
-    const {xLeft, xRight} = this.props
+    let {xLeft, xRight} = this.props
 
     // Initialize selected view
     let at = findDOMNode(this)
@@ -139,29 +139,31 @@ class D3Graph extends Component {
     // Additional rescale drag handlers
     slider.on('drag', this._rescale)
     handle.on('drag', this._rescale)
+    slider.on('end', this._updateURL)
+    handle.on('end', this._updateURL)
 
     var sliderGroup = this.overview.append('g')
 
     // Append slider
     this.slider = sliderGroup.append('rect')
       .classed('slider', true)
-      .attr('width', '100%')
+      .attr('width', `${xRight - xLeft}%`)
       .attr('height', '100%')
-      .attr('x', '0%')
+      .attr('x', `${xLeft}%`)
       .call(slider)
 
     // Append west handle
     sliderGroup.append('rect')
       .classed('handle', true)
       .attr('height', '100%')
-      .attr('x', `0%`)
+      .attr('x', `${xLeft}%`)
       .call(handle)
 
     // Append east handle
     sliderGroup.append('rect')
       .classed('handle', true)
       .attr('height', '100%')
-      .attr('x', `100%`)
+      .attr('x', `${xRight}%`)
       .call(handle)
 
     // Initialize scales
@@ -315,6 +317,12 @@ class D3Graph extends Component {
     )
   }
 
+  _updateURL = () => {
+    let x = parseFloat(this.slider.attr('x'))
+    let width = parseFloat(this.slider.attr('width'))
+    this.props.changeGraphZoom(Math.round(x), Math.round(x + width))
+  }
+
   // Rescale the x-axis based on the
   // position and size of the slider
   _rescale = () => {
@@ -326,7 +334,6 @@ class D3Graph extends Component {
     let [x0, x1] = this.overviewXScale.domain()
     x0 = x0.getTime()
     x1 = x1.getTime()
-
 
     // Calculate new domain
     let newX0 = new Date(x0 + from * (x1 - x0))
