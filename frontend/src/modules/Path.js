@@ -46,11 +46,11 @@ class Path extends Component {
 
     const Content = () => (
       <Row gutter={16} style={{marginBottom: "10px"}}>
-        <Col lg={1} sm={2} xs={4} className="mobile-push-1x--bottom">
+        <Col xxl={1} xl={1} lg={1} sm={2} xs={4} className="mobile-push-1x--bottom">
           <span style={{backgroundColor: `rgb(${colors[index]})`, width: "40px", height: "32px", display: "block"}}>
           </span>
         </Col>
-        <Col lg={2} sm={22} xs={20} className="mobile-push-1x--bottom">
+        <Col xxl={2} xl={3} lg={3} sm={22} xs={20} className="mobile-push-1x--bottom">
           {backends != null &&
             <Select
               onChange={(value) => changeBackend(index, value)}
@@ -70,7 +70,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col lg={2} sm={24} xs={24} className="mobile-push-1x--bottom">
+        <Col xxl={2} xl={3} lg={3} sm={24} xs={24} className="mobile-push-1x--bottom">
           {backend != null && skeleton[backend] != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -90,7 +90,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col lg={4} sm={24} xs={24} className="mobile-push-1x--bottom">
+        <Col xxl={4} xl={5} lg={7} sm={24} xs={24} className="mobile-push-1x--bottom">
           {machine != null && benchmarks != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -110,7 +110,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col lg={4} sm={24} xs={24} className="mobile-push-1x--bottom">
+        <Col xxl={4} xl={5} lg={6} sm={24} xs={24} className="mobile-push-1x--bottom">
           { benchmark != null && datasets != null &&
             <Select
               style={{ width: "100%", display: "block" }}
@@ -130,7 +130,7 @@ class Path extends Component {
             </Select>
           }
         </Col>
-        <Col lg={4} sm={24} xs={24}>
+        <Col xxl={4} xl={4} lg={4} sm={24} xs={24}>
           {hasPlus &&
               <Button type="primary" shape="circle" icon="plus" onClick={onAddPath} />
           }

@@ -226,7 +226,7 @@ class Visualize extends Component {
       <div style={{width: "100vw", "overflow": "hidden"}}>
         <Card style={{marginBottom: "10px"}}>
           <Row gutter={16} style={{marginBottom: "10px"}}>
-            <Col xl={3} md={6} sm={24}>
+            <Col xl= {5} xxl={3} md={6} sm={24}>
               <span style={{marginRight: "5px"}}>
                 Absolute
               </span>
@@ -235,7 +235,7 @@ class Visualize extends Component {
                 Slowdown
               </span>
             </Col>
-            <Col xl={9} md={12} sm={24}>
+            <Col xl={12} xxl={9} md={12} sm={24}>
               {graphType === "speedup" &&
                 <div>
                   <span style={speedUpStyle}>
