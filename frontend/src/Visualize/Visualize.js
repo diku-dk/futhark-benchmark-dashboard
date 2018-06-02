@@ -193,7 +193,9 @@ class Visualize extends Component {
       visualize: {
         graphType,
         slowdownMax,
-        selected
+        selected,
+        xLeft,
+        xRight
       },
       data: {
         colors,
@@ -202,7 +204,8 @@ class Visualize extends Component {
         loading
       },
       changeGraphType,
-      changeSlowdownMax
+      changeSlowdownMax,
+      changeGraphZoom
     } = this.props
 
     if (skeleton == null || selected == null || loading.length > 0) {
@@ -298,6 +301,9 @@ class Visualize extends Component {
             colors={colors}
             yMax={slowdownMax}
             type={graphType}
+            changeGraphZoom={changeGraphZoom}
+            xLeft={xLeft}
+            xRight={xRight}
           />
         </Card>
       </div>

@@ -16,6 +16,8 @@ class D3Graph extends Component {
 
   // Initialize chart container
   componentDidMount() {
+    const {xLeft, xRight} = this.props
+
     // Initialize selected view
     let at = findDOMNode(this)
     this.container = d3.select(at)
@@ -152,14 +154,14 @@ class D3Graph extends Component {
     sliderGroup.append('rect')
       .classed('handle', true)
       .attr('height', '100%')
-      .attr('x', '0%')
+      .attr('x', `0%`)
       .call(handle)
 
     // Append east handle
     sliderGroup.append('rect')
       .classed('handle', true)
       .attr('height', '100%')
-      .attr('x', '100%')
+      .attr('x', `100%`)
       .call(handle)
 
     // Initialize scales
