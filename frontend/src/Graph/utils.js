@@ -31,8 +31,8 @@ let extract = ({selected, data, dates}) => {
   })
 }
 
-// Convert to speedup data
-let speedup = (datasets) => {
+// Convert to slowdown data
+let slowdown = (datasets) => {
   return datasets.map(dataset => {
     if (dataset == null) return null
 
@@ -46,4 +46,4 @@ let speedup = (datasets) => {
   })
 }
 
-export {extract, speedup}
+export {extract, slowdown}

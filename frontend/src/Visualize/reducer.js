@@ -15,24 +15,24 @@ const initialState = {
       dataset: '#0'
     }
   ],
-  graphType: 'speedup',
-  speedUpMax: 2
+  graphType: 'slowdown',
+  slowdownMax: 2
 }
 
-export default (state = initialState, action) => {
+export const reduce = (state, action) => {
   switch (action.type) {
     case 'VISUALIZE_CHANGE_GRAPH_TYPE': {
       const {value} = action.payload
       return {
         ...state,
-        graphType: value ? 'speedup' : 'absolute'
+        graphType: value ? 'slowdown' : 'absolute'
       }
     }
-    case 'VISUALIZE_CHANGE_SPEEDUP_MAX': {
-      const {speedUpMax} = action.payload
+    case 'VISUALIZE_CHANGE_SLOWDOWN_MAX': {
+      const {slowdownMax} = action.payload
       return {
         ...state,
-        speedUpMax
+        slowdownMax
       }
     }
     case 'VISUALIZE_ADD_PATH': {
@@ -84,3 +84,5 @@ export default (state = initialState, action) => {
     }
   }
 }
+
+export default (state = initialState, action) => reduce(state, action)

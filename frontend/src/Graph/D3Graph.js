@@ -4,7 +4,7 @@ import ReactResizeDetector from 'react-resize-detector'
 import * as d3 from 'd3'
 import _ from 'lodash'
 
-import {extract, speedup} from './utils'
+import {extract, slowdown} from './utils'
 import {slider, handle} from './drag'
 import './D3Graph.css'
 
@@ -226,9 +226,9 @@ class D3Graph extends Component {
     let {yMax, type, colors} = this.props
     let datasets = extract(this.props)
 
-    // Apply speedup processing
-    if (type === 'speedup') {
-      datasets = speedup(datasets)
+    // Apply slowdown processing
+    if (type === 'slowdown') {
+      datasets = slowdown(datasets)
     }
 
     // Apply colors to datasets
@@ -256,8 +256,8 @@ class D3Graph extends Component {
     this.overviewYScale.domain(yDomain)
 
     // TODO: Make yMax 0 - 1
-    // and independent of speedup
-    if (type === 'speedup') {
+    // and independent of slowdown
+    if (type === 'slowdown') {
       yDomain[1] = Math.min(yDomain[1], +yMax)
       this.yLabel.text('Slowdown compared to fastest')
     } else {

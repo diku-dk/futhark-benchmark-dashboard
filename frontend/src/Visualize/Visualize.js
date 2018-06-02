@@ -34,17 +34,19 @@ class Visualize extends Component {
       fetchMetadata,
       changeSelected,
       changeGraphType,
-      changeSpeedMax
+      changeSlowdownMax
     } = this.props
     const promise = fetchMetadata()
 
     const url = new URL(window.location)
 
     if (url != null) {
-      if (url.searchParams.get('speedup') != null) {
-        changeGraphType(true)
-        let value = parseInt(url.searchParams.get('speedup'), 10)
-        changeSpeedMax(value)
+      if (url.searchParams.get('graphType') != null) {
+        changeGraphType((url.searchParams.get('graphType') === 'slowdown'))
+        if (url.searchParams.get('slowdownMax') != null) {
+          let value = parseInt(url.searchParams.get('slowdownMax'), 10)
+          changeSlowdownMax(value)
+        }
       }
 
       if (url.searchParams.get('selected') != null) {
@@ -55,6 +57,14 @@ class Visualize extends Component {
             for (let selection of json) {
               if (Array.isArray(selection)) {
                 const [backend, machine, benchmark, dataset] = selection
+                selected.push({
+                  backend,
+                  machine,
+                  benchmark,
+                  dataset
+                })
+              } else if (typeof selection === 'object') {
+                const {backend, machine, benchmark, dataset} = selection
                 selected.push({
                   backend,
                   machine,
@@ -175,7 +185,7 @@ class Visualize extends Component {
     const {
       visualize: {
         graphType,
-        speedUpMax,
+        slowdownMax,
         selected
       },
       data: {
@@ -185,7 +195,7 @@ class Visualize extends Component {
         loading
       },
       changeGraphType,
-      changeSpeedMax
+      changeSlowdownMax
     } = this.props
 
     if (skeleton == null || selected == null || loading.length > 0) {
@@ -202,7 +212,7 @@ class Visualize extends Component {
       )
     }
 
-    const speedUpStyle = (isDesktop()) ? {
+    const slowdownStyle = (isDesktop()) ? {
       position: "relative", 
       top: "-10px", 
       marginRight: "5px"
@@ -211,7 +221,7 @@ class Visualize extends Component {
       position: "relative"
     }
 
-    const speedUpInputStyle = (isDesktop()) ? {
+    const slowdownInputStyle = (isDesktop()) ? {
       marginLeft: 16,
       position: "relative",
       top: "-10px",
@@ -230,16 +240,16 @@ class Visualize extends Component {
               <span style={{marginRight: "5px"}}>
                 Absolute
               </span>
-              <Switch defaultChecked onChange={changeGraphType} checked={graphType === "speedup"} />
+              <Switch defaultChecked onChange={changeGraphType} checked={graphType === "slowdown"} />
               <span style={{marginLeft: "5px"}}>
                 Slowdown
               </span>
             </Col>
             <Col xl={12} xxl={9} md={12} sm={24}>
-              {graphType === "speedup" &&
+              {graphType === "slowdown" &&
                 <div>
-                  <span style={speedUpStyle}>
-                    Speedup max:
+                  <span style={slowdownStyle}>
+                    Slowdown max:
                   </span>
                   <Slider
                     style={{
@@ -247,17 +257,17 @@ class Visualize extends Component {
                       display: (isDesktop()) ? "inline-block" : "block",
                       marginTop: "5px"
                     }}
-                    min={2}
-                    max={10}
-                    onChange={changeSpeedMax}
-                    value={speedUpMax}
+                    min={1}
+                    max={15}
+                    onChange={changeSlowdownMax}
+                    value={slowdownMax}
                   />
                   <InputNumber
-                    min={2}
-                    max={10}
-                    style={speedUpInputStyle}
-                    value={speedUpMax}
-                    onChange={changeSpeedMax}
+                    min={1}
+                    max={40}
+                    style={slowdownInputStyle}
+                    value={slowdownMax}
+                    onChange={changeSlowdownMax}
                   />
                 </div>
               }
@@ -279,7 +289,7 @@ class Visualize extends Component {
             dates={commits}
             selected={selected}
             colors={colors}
-            yMax={speedUpMax}
+            yMax={slowdownMax}
             type={graphType}
           />
         </Card>
