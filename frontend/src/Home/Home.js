@@ -35,7 +35,7 @@ const DesktopTable = ({scores}) => {
         dataIndex="backend"
         key="backend"
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {text}
           </Link>
         )}
@@ -45,7 +45,7 @@ const DesktopTable = ({scores}) => {
         dataIndex="machine"
         key="machine"
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {text}
           </Link>
         )}
@@ -53,7 +53,7 @@ const DesktopTable = ({scores}) => {
       <Column
         title="Benchmark"
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {record.benchmark.replace("futhark-benchmarks/", "")}
           </Link>
         )}
@@ -64,7 +64,7 @@ const DesktopTable = ({scores}) => {
         dataIndex="dataset"
         key="dataset"
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {text}
           </Link>
         )}
@@ -114,7 +114,7 @@ const MobileTable = ({scores}) => {
         title="Benchmark"
         width={30}
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {record.benchmark.replace("futhark-benchmarks/", "")}
           </Link>
         )}
@@ -126,7 +126,7 @@ const MobileTable = ({scores}) => {
         key="dataset"
         width={30}
         render={(text, record) => (
-          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}`}>
+          <Link to={`/visualize?selected=${JSON.stringify([[record.backend, record.machine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
             {text}
           </Link>
         )}
