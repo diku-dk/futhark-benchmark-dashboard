@@ -16,7 +16,9 @@ const initialState = {
     }
   ],
   graphType: 'slowdown',
-  slowdownMax: 2
+  slowdownMax: 2,
+  xLeft: 0,
+  xRight: 100
 }
 
 export const reduce = (state, action) => {
@@ -26,6 +28,14 @@ export const reduce = (state, action) => {
       return {
         ...state,
         graphType: value ? 'slowdown' : 'absolute'
+      }
+    }
+    case 'VISUALIZE_CHANGE_GRAPH_ZOOM': {
+      const {xLeft, xRight} = action.payload
+      return {
+        ...state,
+        xLeft,
+        xRight
       }
     }
     case 'VISUALIZE_CHANGE_SLOWDOWN_MAX': {

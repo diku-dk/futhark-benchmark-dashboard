@@ -325,6 +325,7 @@ class D3Graph extends Component {
     x0 = x0.getTime()
     x1 = x1.getTime()
 
+
     // Calculate new domain
     let newX0 = new Date(x0 + from * (x1 - x0))
     let newX1 = new Date(x0 + to * (x1 - x0))

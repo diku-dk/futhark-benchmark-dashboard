@@ -29,6 +29,14 @@ export const updateInUrl = (action) => {
   }
 }
 
+export const changeGraphZoom = (xLeft, xRight) => updateInUrl({
+  type: 'VISUALIZE_CHANGE_GRAPH_ZOOM',
+  payload: {
+    xLeft,
+    xRight
+  }
+})
+
 export const changeGraphType = (value) => updateInUrl({
   type: 'VISUALIZE_CHANGE_GRAPH_TYPE',
   payload: {

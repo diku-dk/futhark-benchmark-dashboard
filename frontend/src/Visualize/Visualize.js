@@ -34,7 +34,8 @@ class Visualize extends Component {
       fetchMetadata,
       changeSelected,
       changeGraphType,
-      changeSlowdownMax
+      changeSlowdownMax,
+      changeGraphZoom
     } = this.props
     const promise = fetchMetadata()
 
@@ -47,6 +48,12 @@ class Visualize extends Component {
           let value = parseInt(url.searchParams.get('slowdownMax'), 10)
           changeSlowdownMax(value)
         }
+      }
+
+      if (url.searchParams.get('xLeft') != null || url.searchParams.get('xRight') != null) {
+        let xLeft = url.searchParams.get('xLeft') || 0
+        let xRight = url.searchParams.get('xRight') || 100
+        changeGraphZoom(parseInt(xLeft, 10), parseInt(xRight, 10))
       }
 
       if (url.searchParams.get('selected') != null) {
