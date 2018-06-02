@@ -15,8 +15,9 @@ function updateUrl(state) {
     searchParams.set('slowdownMax', state.slowdownMax)
     searchParams.set('xLeft', state.xLeft)
     searchParams.set('xRight', state.xRight)
-    var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString()
-    history.push(newRelativePathQuery)
+    history.push({
+      search: '?' + searchParams.toString()
+    })
   }
 }
 

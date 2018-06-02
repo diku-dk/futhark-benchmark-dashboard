@@ -14,8 +14,6 @@ const initialState = {
     "255,193,7",
     "121,85,72"
   ],
-  topScores: [],
-  bottomScores: [],
   loading: []
 
 }
