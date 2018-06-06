@@ -51,3 +51,6 @@ run-split-data:
 
 run-split-data-optimized:
 	node split-data.js out/optimized.json
+
+deploy:
+	rsync --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r -r out/* futhark@futhark-lang.org:/var/www/htdocs/futhark-lang.org/benchmark-results-processed/
