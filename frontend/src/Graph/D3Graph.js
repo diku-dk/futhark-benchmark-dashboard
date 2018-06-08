@@ -270,7 +270,7 @@ class D3Graph extends Component {
     // and independent of slowdown
     if (type === 'slowdown') {
       yDomain[1] = Math.min(yDomain[1], +yMax)
-      this.yLabel.text('Slowdown compared to fastest')
+      this.yLabel.text('Times slower than fastest')
     } else {
       this.yLabel.text('Benchmark runtime (ms)')
     }
