@@ -155,6 +155,8 @@ class D3Graph extends Component {
     // Append west handle
     sliderGroup.append('rect')
       .classed('handle', true)
+      .attr('width', '10')
+      .attr('transform', 'translate(-5)')
       .attr('height', '100%')
       .attr('x', `${xLeft}%`)
       .call(handle)
@@ -162,6 +164,8 @@ class D3Graph extends Component {
     // Append east handle
     sliderGroup.append('rect')
       .classed('handle', true)
+      .attr('width', '10')
+      .attr('transform', 'translate(-5)')
       .attr('height', '100%')
       .attr('x', `${xRight}%`)
       .call(handle)
@@ -215,6 +219,9 @@ class D3Graph extends Component {
       .append('clipPath')
       .attr('id', 'selected-clip')
       .append('rect')
+      .attr('x', '-50%')
+      .attr('width', '200%')
+      .attr('height', '100%')
     this.selectedGraphs.attr('clip-path', 'url(#selected-clip)')
 
     // Size the chart

@@ -22,12 +22,6 @@
   stroke: #d0d1d5;
 }
 
-#selected-clip rect {
-  width: 200%;
-  height: 100%;
-  x: -50%;
-}
-
 .graph {
   stroke: #6a737d;
   stroke-width: 2;
@@ -70,8 +64,6 @@
 
 .handle {
   opacity: 0;
-  width: 10px;
-  transform: translateX(-5px);
   cursor: ew-resize;
 }
 
