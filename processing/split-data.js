@@ -1,25 +1,19 @@
 const fs = require('fs')
-const rimraf = require('rimraf')
-const baseDir = 'out/data-split'
 
-if (process.argv[2] == null) {
-  console.log('Please run: split-data.js <input file>')
-  process.exit()
-}
+const splitData = (inputData, baseDir, filenameExtra) => {
+  for (const backendIndex in inputData) {
+    const backend = inputData[backendIndex]
+    if (!fs.existsSync(`${baseDir}/${backendIndex}`)) {
+      fs.mkdirSync(`${baseDir}/${backendIndex}`)
+    }
 
-const inputData = JSON.parse(fs.readFileSync(process.argv[2]))
+    for (const machineIndex in backend) {
+      const machine = backend[machineIndex]
+      const json = JSON.stringify(machine)
 
-rimraf.sync(baseDir)
-fs.mkdirSync(baseDir)
-
-for (const backendIndex in inputData) {
-  const backend = inputData[backendIndex]
-  fs.mkdirSync(`${baseDir}/${backendIndex}`)
-
-  for (const machineIndex in backend) {
-    const machine = backend[machineIndex]
-    const json = JSON.stringify(machine)
-
-    fs.writeFileSync(`${baseDir}/${backendIndex}/${machineIndex}.json`, json)
+      fs.writeFileSync(`${baseDir}/${backendIndex}/${machineIndex}${filenameExtra}.json`, json)
+    }
   }
 }
+
+module.exports = {splitData}

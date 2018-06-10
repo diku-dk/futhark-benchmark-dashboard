@@ -68,18 +68,4 @@ const dashboard = (commits, data) => {
   }
 }
 
-// If this script was executed directly
-if (require.main === module) {
-  if (process.argv[2] == null) {
-    console.log('Please run: dashboard.js <input file>')
-    process.exit()
-  }
-
-  const commitData = require('./out/commits.json')
-  const input = JSON.parse(fs.readFileSync(process.argv[2]))
-
-  const json = JSON.stringify(dashboard(commitData, input))
-  fs.writeFileSync('./out/dashboard.json', json)
-}
-
 module.exports = {dashboard}

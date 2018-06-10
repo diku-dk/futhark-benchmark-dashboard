@@ -35,13 +35,7 @@ const getRevisionMessage = (revision) => {
   }
 }
 
-// If this script was executed directly
-if (require.main === module) {
-  // Find all benchmark files
-  const files = glob.sync('*.json', {
-    cwd: benchmarkResultsFolder
-  })
-
+const getRevisionData = (files) => {
   // Extract revision hashes
   const commits = getRevisions(files)
 
@@ -60,7 +54,7 @@ if (require.main === module) {
     }
   }
 
-  fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap))
+  return commitsMap
 }
 
-module.exports = {getRevisions, getRevisionDate, getRevisionMessage}
+module.exports = {getRevisions, getRevisionDate, getRevisionMessage, getRevisionData}
