@@ -69,7 +69,7 @@ program
 program
   .command('process')
   .description('process futhark-benchmark data')
-  .option('--optimize-threshold <threshold>', 'Optimization diff threshold, defaults to 0.02', 0.02)
+  .option('--optimize-threshold <threshold>', 'Optimization diff threshold', 0.02)
   .action(processDataCommand)
 
 if (!process.argv.slice(2).length) {
