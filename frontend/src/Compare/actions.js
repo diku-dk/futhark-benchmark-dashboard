@@ -8,14 +8,18 @@ function updateUrl(state, location) {
     let selected = []
 
     for (let selection of state.selected) {
-      selected.push([selection.backend, selection.machine, selection.commit])
+      if ([selection.backend, selection.machine, selection.commit].every(value => value != null)) {
+        selected.push([selection.backend, selection.machine, selection.commit])
+      }
     }
 
-    searchParams.set("selected", JSON.stringify(selected))
-    if ( '?' + searchParams.toString() !== location.search ) {
-      history.push({
-        search: '?' + searchParams.toString()
-      })
+    if (selected.length > 1) {
+      searchParams.set("selected", JSON.stringify(selected))
+      if ('?' + searchParams.toString() !== location.search) {
+        history.push({
+          search: '?' + searchParams.toString()
+        })
+      }
     }
   }
 }
@@ -30,6 +34,15 @@ export const updateInUrl = (action) => {
     return action
   }
 }
+
+export const changeFile = (index, file, data) => updateInUrl({
+  type: 'COMPARE_CHANGE_FILE',
+  payload: {
+    index,
+    file,
+    data
+  }
+})
 
 export const changeBackend = (index, backend) => updateInUrl({
   type: 'COMPARE_CHANGE_BACKEND',
