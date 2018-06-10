@@ -15,7 +15,7 @@ function updateUrl(state) {
     searchParams.set('slowdownMax', state.slowdownMax)
     searchParams.set('xLeft', state.xLeft)
     searchParams.set('xRight', state.xRight)
-    history.push({
+    history.replace({
       search: '?' + searchParams.toString()
     })
   }
