@@ -25,7 +25,7 @@ const processDataCommand = (options) => {
   const commitsFilePath = `${options.parent.outDir}/commits.json`
   if (!options.parent.skipCommits) {
     // Get revision data
-    commitData = getRevisionData(benchmarkFiles)
+    commitData = getRevisionData(benchmarkFiles, '../../futhark')
 
     // Write commits to disk
     fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))

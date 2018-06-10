@@ -11,10 +11,10 @@ const getRevisions = (files) => {
 }
 
 // Gets commit date from one revision hash
-const getRevisionDate = (revision) => {
+const getRevisionDate = (revision, futharkGitDir) => {
   try {
     return new Date(
-      execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+      execSync(`git -C ${futharkGitDir} show -s --format=%ci ${revision}`).toString('utf8').trim()
     ).toISOString()
   } catch (e) {
     return null
@@ -22,15 +22,15 @@ const getRevisionDate = (revision) => {
 }
 
 // Gets commit message from one revision hash
-const getRevisionMessage = (revision) => {
+const getRevisionMessage = (revision, futharkGitDir) => {
   try {
-    return execSync(`git -C ../../futhark show -s --format=%s ${revision}`).toString('utf8').trim()
+    return execSync(`git -C ${futharkGitDir} show -s --format=%s ${revision}`).toString('utf8').trim()
   } catch (e) {
     return null
   }
 }
 
-const getRevisionData = (files) => {
+const getRevisionData = (files, futharkGitDir) => {
   // Extract revision hashes
   const commits = getRevisions(files)
 
@@ -38,8 +38,8 @@ const getRevisionData = (files) => {
   const commitsMap = {}
 
   for (const commit of commits) {
-    const date = getRevisionDate(commit)
-    const message = getRevisionMessage(commit)
+    const date = getRevisionDate(commit, futharkGitDir)
+    const message = getRevisionMessage(commit, futharkGitDir)
 
     if (date != null) {
       commitsMap[commit] = {
