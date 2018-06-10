@@ -130,7 +130,7 @@ class Compare extends Component {
 
         <Divider />
 
-        { selected.length === 2 && selected.every(path => (path.machine != null && path.backend != null && path.commit != null) || path.file != null) &&
+        { selected.length === 2 && selected.every(path => (path.machine != null && path.backend != null && path.commit != null) || path.data != null) &&
           <Card>
             <Comparison
               selected={selected}

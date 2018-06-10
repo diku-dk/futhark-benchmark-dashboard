@@ -6,7 +6,8 @@ import {
   Input,
   Upload,
   Button,
-  Icon
+  Icon,
+  Divider
 } from 'antd'
 const Option = Select.Option
 
@@ -35,7 +36,8 @@ class Commit extends Component {
       path,
       changeBackend,
       changeMachine,
-      changeCommit
+      changeCommit,
+      changeFile
     } = this.props
 
     const {
@@ -51,7 +53,7 @@ class Commit extends Component {
     return (
       <div>
         <Row gutter={16} style={{marginBottom: "10px"}}>
-          <Col lg={2} sm={24} className="mobile-push-1x--bottom">
+          <Col xxl={2} sm={24} md={3} lg={3} className="mobile-push-1x--bottom">
             {backends != null &&
               <Select
                 onChange={(value) => changeBackend(index, value)}
@@ -71,7 +73,7 @@ class Commit extends Component {
               </Select>
             }
           </Col>
-          <Col lg={2} sm={24} className="mobile-push-1x--bottom">
+          <Col xxl={2} sm={24} md={4} lg={3} className="mobile-push-1x--bottom">
             {backend != null && skeleton[backend] != null &&
               <Select
                 style={{ width: "100%", display: "block" }}
@@ -91,7 +93,7 @@ class Commit extends Component {
               </Select>
             }
           </Col>
-          <Col lg={5} sm={24}>
+          <Col xxl={5} sm={24} md={7} lg={6} className="mobile-push-1x--bottom">
             {machine != null && skeleton[backend][machine] != null &&
               <Input
                 style={{width: "100%"}}
@@ -100,7 +102,7 @@ class Commit extends Component {
               />
             }
           </Col>
-          <Col lg={5} sm={24}>
+          <Col xxl={3} sm={24} md={6} lg={5} className="mobile-push-1x--bottom">
             <Upload
               beforeUpload={this.beforeUpload}
               onPreview={() => false}
@@ -112,7 +114,25 @@ class Commit extends Component {
               </Button>
             </Upload>
           </Col>
+          <Col xxl={3} sm={24} md={4} lg={4} className="mobile-push-1x--bottom">
+            <Input
+              style={{width: "100%"}}
+              onChange={(e) => {
+                if (e.target.value.length > 0) {
+                  try {
+                    const value = JSON.parse(e.target.value)
+                    changeFile(index, null, value)
+                  } catch (e) {}
+                }
+              }}
+              value={''}
+              placeholder='Paste here to set data'
+            />
+          </Col>
         </Row>
+        { index === 0 &&
+          <Divider />
+        }
       </div>
     )
   }

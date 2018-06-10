@@ -64,6 +64,8 @@ export const reduce = (state, action) => {
       const {selected} = state
       const {index, ...other} = action.payload
       selected[index] = _.merge(selected[index], {
+        file: null,
+        data: null,
         ...other
       })
 
@@ -77,6 +79,8 @@ export const reduce = (state, action) => {
       const {index, commit} = action.payload
 
       selected[index] = _.merge(selected[index], {
+        file: null,
+        data: null,
         commit
       })
 
