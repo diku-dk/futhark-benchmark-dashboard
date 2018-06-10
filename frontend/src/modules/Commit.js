@@ -3,11 +3,31 @@ import {
   Select,
   Row,
   Col,
-  Input
+  Input,
+  Upload,
+  Button,
+  Icon
 } from 'antd'
 const Option = Select.Option
 
 class Commit extends Component {
+  constructor(props) {
+    super(props)
+    this.beforeUpload = this.beforeUpload.bind(this)
+  }
+
+  beforeUpload(file) {
+    const {changeFile, index} = this.props
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const data = e.target.result
+      changeFile(index, file.name, JSON.parse(data))
+    }
+    reader.readAsBinaryString(file)
+    return false
+  }
+
   render() {
     const {
       skeleton,
@@ -21,7 +41,8 @@ class Commit extends Component {
     const {
       machine,
       backend,
-      commit
+      commit,
+      file
     } = path
 
     const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
@@ -78,6 +99,18 @@ class Commit extends Component {
                 value={(commit != null) ? commit : undefined}
               />
             }
+          </Col>
+          <Col lg={5} sm={24}>
+            <Upload
+              beforeUpload={this.beforeUpload}
+              onPreview={() => false}
+              showUploadList={false}
+            >
+              <Button>
+                <Icon type="upload" /> 
+                {(file) ? file : 'Click/drag here to upload'}
+              </Button>
+            </Upload>
           </Col>
         </Row>
       </div>

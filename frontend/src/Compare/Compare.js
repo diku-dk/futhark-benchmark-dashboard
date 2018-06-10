@@ -92,7 +92,8 @@ class Compare extends Component {
       },
       changeBackend,
       changeMachine,
-      changeCommit
+      changeCommit,
+      changeFile
     } = this.props
 
     if (skeleton == null || commits == null || selected == null || loading.length > 0) {
@@ -122,13 +123,14 @@ class Compare extends Component {
               changeBackend={changeBackend}
               changeMachine={changeMachine}
               changeCommit={changeCommit}
+              changeFile={changeFile}
             />
           ))}
         </Card>
 
         <Divider />
 
-        { selected.length === 2 && selected.every(path => path.machine != null && path.backend != null && path.commit != null) &&
+        { selected.length === 2 && selected.every(path => (path.machine != null && path.backend != null && path.commit != null) || path.file != null) &&
           <Card>
             <Comparison
               selected={selected}

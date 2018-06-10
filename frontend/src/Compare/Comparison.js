@@ -22,16 +22,29 @@ export default class Comparison extends Component {
     const {
       machine: firstMachineKey,
       backend: firstBackendKey,
-      commit: firstCommitKey
+      commit: firstCommitKey,
+      data: firstCommitData
     } = first
-    const firstCommit = skeleton[firstBackendKey][firstMachineKey][firstCommitKey]
+    let firstCommit = null
+    if (firstCommitData) {
+      firstCommit = firstCommitData
+    } else {
+      firstCommit = skeleton[firstBackendKey][firstMachineKey][firstCommitKey]
+    }
+
     const second = selected[1]
+    let secondCommit = null
     const {
       machine: secondMachineKey,
       backend: secondBackendKey,
-      commit: secondCommitKey
+      commit: secondCommitKey,
+      data: secondCommitData
     } = second
-    const secondCommit = skeleton[secondBackendKey][secondMachineKey][secondCommitKey]
+    if (secondCommitData) {
+      secondCommit = secondCommitData
+    } else {
+      secondCommit = skeleton[secondBackendKey][secondMachineKey][secondCommitKey]
+    }
 
     let scores = []
 

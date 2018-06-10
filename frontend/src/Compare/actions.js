@@ -31,6 +31,15 @@ export const updateInUrl = (action) => {
   }
 }
 
+export const changeFile = (index, file, data) => updateInUrl({
+  type: 'COMPARE_CHANGE_FILE',
+  payload: {
+    index,
+    file,
+    data
+  }
+})
+
 export const changeBackend = (index, backend) => updateInUrl({
   type: 'COMPARE_CHANGE_BACKEND',
   payload: {
