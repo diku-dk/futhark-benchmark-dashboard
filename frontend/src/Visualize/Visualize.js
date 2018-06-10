@@ -269,7 +269,7 @@ class Visualize extends Component {
                       marginTop: "5px"
                     }}
                     min={1}
-                    max={15}
+                    max={30}
                     onChange={changeSlowdownMax}
                     value={slowdownMax}
                   />
