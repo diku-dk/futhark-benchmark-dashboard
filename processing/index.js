@@ -9,25 +9,20 @@ const { splitData } = require('./split-data.js');
 const { optimizeBenchmarks } = require('./optimize-data.js');
 
 processDataCommand = (options) => {
-  // Directory containing all .json benchmark files
-  const benchmarkResultsFolder = './benchmark-results'
-  const outDir = './out'
-  const settingsFile = './settings.json'
-
   // Load settings
-  const settings = JSON.parse(fs.readFileSync(settingsFile))
+  const settings = JSON.parse(fs.readFileSync(options.settingsFile))
 
   // Find all files in the benchmark directory
   const benchmarkFiles = glob.sync('*.json', {
-    cwd: benchmarkResultsFolder
+    cwd: options.benchmarkResultsDir
   })
 
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir)
+  if (!fs.existsSync(options.outDir)) {
+    fs.mkdirSync(options.outDir)
   }
 
   let commitData = null
-  const commitsFilePath = `${outDir}/commits.json`
+  const commitsFilePath = `${options.outDir}/commits.json`
   if (!options.skipCommits) {
     // Get revision data
     commitData = getRevisionData(benchmarkFiles)
@@ -38,29 +33,29 @@ processDataCommand = (options) => {
     if (fs.existsSync(commitsFilePath)) {
       commitData = JSON.parse(fs.readFileSync(commitsFilePath))
     } else {
-      console.error("No commits file was found, couldn't --skip-commits")
+      console.error('No commits file was found, couldn\'t --skip-commits')
       return
     }
   }
 
   // Process all the benchmark files
-  const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder, settings})
+  const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder: options.benchmarkResultsDir, settings})
 
   // Write processing to disk
-  fs.writeFileSync(`${outDir}/unoptimized.json`, JSON.stringify(combined))
-  fs.writeFileSync(`${outDir}/metadata.json`, JSON.stringify(metadata))
+  fs.writeFileSync(`${options.outDir}/unoptimized.json`, JSON.stringify(combined))
+  fs.writeFileSync(`${options.outDir}/metadata.json`, JSON.stringify(metadata))
 
   // Dashboard
-  fs.writeFileSync(`${outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
+  fs.writeFileSync(`${options.outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
 
-  const splitDataDir = `${outDir}/data-split`
+  const splitDataDir = `${options.outDir}/data-split`
   rimraf.sync(splitDataDir)
   fs.mkdirSync(splitDataDir)
 
   splitData(combined, splitDataDir, '-unoptimized')
 
-  const optimized = optimizeBenchmarks(combined, 0.02, commitData)
-  fs.writeFileSync(`${outDir}/optimized.json`, JSON.stringify(optimized))
+  const optimized = optimizeBenchmarks(combined, options.optimizeThreshold, commitData)
+  fs.writeFileSync(`${options.outDir}/optimized.json`, JSON.stringify(optimized))
   splitData(optimized, splitDataDir, '-optimized')
 }
 
@@ -73,16 +68,25 @@ program
 program
   .command('process')
   .description('process futhark-benchmark data')
-  .option("--skip-commits", "Skip getting commit information")
+  .option('--skip-commits', 'Skip getting commit information')
+  .option('--optimize-threshold <threshold>', 'Optimization diff threshold, defaults to 0.02', 0.02)
+  .option('--benchmark-results-dir <dir>', '', './benchmark-results')
+  .option('--out-dir <dir>', '', './out')
+  .option('--settings-file <file>', '', './settings.json')
   .action(processDataCommand);
 
 program
   .command('exec <cmd>')
   .alias('ex')
   .description('execute the given remote cmd')
-  .option("-e, --exec_mode <mode>", "Which exec mode to use")
+  .option('-e, --exec_mode <mode>', 'Which exec mode to use')
   .action(function(cmd, options){
-    console.log('exec "%s" using %s mode', cmd, options.exec_mode);
+    console.log('exec \'%s\' using %s mode', cmd, options.exec_mode);
   })
+
+if (!process.argv.slice(2).length) {
+  program.outputHelp()
+}
+
 
 program.parse(process.argv);
