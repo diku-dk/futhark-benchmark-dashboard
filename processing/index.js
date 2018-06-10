@@ -25,7 +25,7 @@ const processDataCommand = (options) => {
   const commitsFilePath = `${options.parent.outDir}/commits.json`
   if (!options.parent.skipCommits) {
     // Get revision data
-    commitData = getRevisionData(benchmarkFiles, '../../futhark')
+    commitData = getRevisionData(benchmarkFiles, options.parent.futharkGitDir)
 
     // Write commits to disk
     fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))
@@ -65,6 +65,7 @@ program
   .option('--benchmark-results-dir <dir>', '', './benchmark-results')
   .option('--out-dir <dir>', '', './out')
   .option('--settings-file <file>', '', './settings.json')
+  .option('--futhark-git-dir <dir>', '', '../../futhark')
 
 program
   .command('process')
