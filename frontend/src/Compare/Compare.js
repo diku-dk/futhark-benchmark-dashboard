@@ -11,6 +11,7 @@ import Comparison from './Comparison'
 import * as actions from '../modules/actions'
 import * as compareActions from './actions'
 import {connect} from 'react-redux'
+import queryString from 'querystring'
 
 class Compare extends Component {
   constructor(props) {
@@ -26,11 +27,11 @@ class Compare extends Component {
     } = this.props
     const promise = fetchMetadata()
 
-    const url = new URL(window.location)
+    const params = queryString.parse(this.props.routing.location.search.replace(/^\?/, ''))
 
-    if (url != null && url.searchParams.get('selected') != null) {
+    if (params && params.selected != null) {
       try {
-        var json = JSON.parse(url.searchParams.get('selected'))
+        var json = JSON.parse(params.selected)
         if (Array.isArray(json)) {
           let selected = []
           for (let selection of json) {

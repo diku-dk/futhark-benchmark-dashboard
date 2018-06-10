@@ -15,7 +15,7 @@ const initialState = {
   ]
 }
 
-export default (state = initialState, action) => {
+export const reduce = (state, action) => {
   switch (action.type) {
     case 'COMPARE_CHANGE_SELECTED': {
       const {selected} = action.payload
@@ -54,3 +54,5 @@ export default (state = initialState, action) => {
       return state
   }
 }
+
+export default (state = initialState, action) => reduce(state, action)

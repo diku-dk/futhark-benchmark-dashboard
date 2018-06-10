@@ -41,7 +41,6 @@ class Visualize extends Component {
     const promise = fetchMetadata()
 
     const params = queryString.parse(this.props.routing.location.search.replace(/^\?/, ''))
-    console.log(params)
 
     if (params) {
       if (params.graphType != null) {
