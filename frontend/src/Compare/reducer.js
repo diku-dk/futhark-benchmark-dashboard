@@ -37,8 +37,8 @@ export const reduce = (state, action) => {
       for (const benchmarkKey in data) {
         const benchmark = data[benchmarkKey]
 
-        for (const datasetKey in benchmark['datasets']) {
-          let dataset = benchmark['datasets'][datasetKey]
+        for (const datasetKey in benchmark.datasets) {
+          let dataset = benchmark.datasets[datasetKey]
 
           if (_.has(data, [benchmarkKey, 'datasets', datasetKey])) {
             dataset['avg'] = average(dataset['runtimes'])

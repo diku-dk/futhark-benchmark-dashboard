@@ -9,6 +9,9 @@ import {
   Icon,
   Divider
 } from 'antd'
+import {
+  isDesktop
+} from './utils'
 const Option = Select.Option
 
 class Commit extends Component {
@@ -117,20 +120,20 @@ class Commit extends Component {
               placeholder='Paste here'
             />
           </Col>
-          <Col xxl={3} sm={24} md={6} lg={5} className="mobile-push-1x--bottom">
+          <Col xxl={8} sm={24} md={6} lg={5} className="mobile-push-1x--bottom">
             <Upload
               beforeUpload={this.beforeUpload}
               onPreview={() => false}
               showUploadList={false}
             >
-              <Button>
+              <Button style={{width: "100%", "display": "block", paddingRight: "10px", overflow: "hidden"}}>
                 <Icon type="upload" /> 
-                {(file) ? file : 'Click/drag file here'}
+                {file || 'Click/drag file here'}
               </Button>
             </Upload>
           </Col>
         </Row>
-        { index === 0 &&
+        { (index === 0 && ! isDesktop()) &&
           <Divider />
         }
       </div>
