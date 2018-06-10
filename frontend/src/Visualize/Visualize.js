@@ -243,7 +243,7 @@ class Visualize extends Component {
     }
 
     return (
-      <div style={{width: "100vw", "overflow": "hidden"}}>
+      <div style={{width: "100%", "overflow": "hidden"}}>
         <Card style={{marginBottom: "10px"}}>
           <Row gutter={16} style={{marginBottom: "10px"}}>
             <Col xl= {5} xxl={3} md={6} sm={24}>
