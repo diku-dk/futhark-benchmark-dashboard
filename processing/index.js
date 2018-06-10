@@ -8,7 +8,7 @@ const { dashboard } = require('./dashboard.js')
 const { splitData } = require('./split-data.js')
 const { optimizeBenchmarks } = require('./optimize-data.js')
 
-processDataCommand = (options) => {
+const processDataCommand = (options) => {
   // Load settings
   const settings = JSON.parse(fs.readFileSync(options.parent.settingsFile))
 

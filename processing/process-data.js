@@ -1,5 +1,4 @@
 const fs = require('fs')
-const glob = require('glob')
 var _ = require('lodash')
 
 // Average of array

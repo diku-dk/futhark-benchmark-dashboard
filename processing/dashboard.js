@@ -1,4 +1,3 @@
-const fs = require('fs')
 var _ = require('lodash')
 
 function compare (a, b) {

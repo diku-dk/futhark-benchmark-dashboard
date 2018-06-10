@@ -1,10 +1,5 @@
-const fs = require('fs')
-const glob = require('glob')
 const {execSync} = require('child_process')
 const _ = require('lodash')
-
-// Constants
-const benchmarkResultsFolder = './benchmark-results'
 
 // Gets revision hashes from an array of benchmark files
 const getRevisions = (files) => {
