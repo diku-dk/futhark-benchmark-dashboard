@@ -102,19 +102,7 @@ class Commit extends Component {
               />
             }
           </Col>
-          <Col xxl={3} sm={24} md={6} lg={5} className="mobile-push-1x--bottom">
-            <Upload
-              beforeUpload={this.beforeUpload}
-              onPreview={() => false}
-              showUploadList={false}
-            >
-              <Button>
-                <Icon type="upload" /> 
-                {(file) ? file : 'Click/drag here to upload'}
-              </Button>
-            </Upload>
-          </Col>
-          <Col xxl={3} sm={24} md={4} lg={4} className="mobile-push-1x--bottom">
+          <Col xxl={2} sm={24} md={2} lg={2} className="mobile-push-1x--bottom">
             <Input
               style={{width: "100%"}}
               onChange={(e) => {
@@ -126,8 +114,20 @@ class Commit extends Component {
                 }
               }}
               value={''}
-              placeholder='Paste here to set data'
+              placeholder='Paste here'
             />
+          </Col>
+          <Col xxl={3} sm={24} md={6} lg={5} className="mobile-push-1x--bottom">
+            <Upload
+              beforeUpload={this.beforeUpload}
+              onPreview={() => false}
+              showUploadList={false}
+            >
+              <Button>
+                <Icon type="upload" /> 
+                {(file) ? file : 'Click/drag file here'}
+              </Button>
+            </Upload>
           </Col>
         </Row>
         { index === 0 &&

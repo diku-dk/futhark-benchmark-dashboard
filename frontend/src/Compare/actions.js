@@ -15,7 +15,7 @@ function updateUrl(state, location) {
 
     if (selected.length > 1) {
       searchParams.set("selected", JSON.stringify(selected))
-      if ( '?' + searchParams.toString() !== location.search ) {
+      if ('?' + searchParams.toString() !== location.search) {
         history.push({
           search: '?' + searchParams.toString()
         })
