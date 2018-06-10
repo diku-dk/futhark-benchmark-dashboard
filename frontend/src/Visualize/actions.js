@@ -69,7 +69,7 @@ export const changeSelected = (selected) => updateInUrl({
   }
 })
 
-export const addPath = () => updateInUrl({
+export const addPath = () => ({
   type: 'VISUALIZE_ADD_PATH',
   payload: {}
 })
