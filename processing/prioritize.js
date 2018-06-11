@@ -13,8 +13,8 @@ const differences = (result, commits) => {
 
         if (!prior) return
 
-        let delta = (prior - avg) / prior
-        result[hash].push(Math.abs(delta))
+        let difference = (prior - avg) / prior
+        result[hash].push(Math.abs(difference))
       })
     })
   })
@@ -32,13 +32,13 @@ const prioritize = (backends, commits, options) => {
       revisions = _.entries(revisions)
       revisions.sort(([a], [b]) => dates[a] - dates[b])
 
-      // Find differences fowards and backwards
+      // Find differences forwards and backwards.
       differences(result, revisions)
       differences(result, revisions.reverse())
     })
   })
 
-  // Process the differences
+  // Process the differences.
   return _.entries(result)
     .map(x => x[1] = _.sum(x[1]))
     .sort((a, b) => b[1] - a[1])
