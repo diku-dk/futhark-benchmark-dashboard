@@ -2,11 +2,11 @@ const fs = require('fs')
 const glob = require('glob')
 const rimraf = require('rimraf')
 const program = require('commander')
-const { getAllRevisionData } = require('./find-commit-dates.js')
-const { processData } = require('./process-data.js')
-const { dashboard } = require('./dashboard.js')
-const { splitData } = require('./split-data.js')
-const { optimizeBenchmarks } = require('./optimize-data.js')
+const { getAllRevisionData } = require('./modules/find-commit-dates.js')
+const { processData } = require('./modules/process-data.js')
+const { dashboard } = require('./modules/dashboard.js')
+const { splitData } = require('./modules/split-data.js')
+const { optimizeBenchmarks } = require('./modules/optimize-data.js')
 
 const processDataCommand = (options) => {
   // Load settings

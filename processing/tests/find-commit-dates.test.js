@@ -1,4 +1,4 @@
-const { getRevisions, getRevisionDate, getRevisionMessage } = require('../find-commit-dates.js');
+const { getRevisions, getRevisionDate, getRevisionMessage } = require('../modules/find-commit-dates.js');
 
 test('tests getRevisions', () => {
   expect(getRevisions([
