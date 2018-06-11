@@ -62,7 +62,7 @@ const processDataCommand = (options) => {
   // Optimize data
   const optimized = optimizeBenchmarks(combined, options.optimizeThreshold, commitData)
   fs.writeFileSync(`${options.parent.outDir}/optimized.json`, JSON.stringify(optimized))
-  
+
   // Split optimized data
   splitData(optimized, splitDataDir, '-optimized')
 }
