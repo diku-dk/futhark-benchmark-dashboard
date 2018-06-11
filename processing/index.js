@@ -81,7 +81,7 @@ const processDataCommand = (options) => {
 
 program
   .version('0.1.0')
-  .option('--skip-commits', 'Skip getting commit information')
+  .option('--skip-commits', 'skip getting commit information')
   .option('--benchmark-results-dir <dir>', '', './benchmark-results')
   .option('--out-dir <dir>', '', './out')
   .option('--settings-file <file>', '', './settings.json')
@@ -90,7 +90,7 @@ program
 program
   .command('process')
   .description('process futhark-benchmark data')
-  .option('--optimize-threshold <threshold>', 'Optimization diff threshold', 0.02)
+  .option('--optimize-threshold <threshold>', 'optimization diff threshold', 0.02)
   .action(processDataCommand)
 
 if (!process.argv.slice(2).length) {
