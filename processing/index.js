@@ -17,10 +17,12 @@ const processDataCommand = (options) => {
     cwd: options.parent.benchmarkResultsDir
   })
 
+  // Ensure that outdir exists
   if (!fs.existsSync(options.parent.outDir)) {
     fs.mkdirSync(options.parent.outDir)
   }
 
+  // Either generate list of commits or load from file
   let commitData = null
   const commitsFilePath = `${options.parent.outDir}/commits.json`
   if (!options.parent.skipCommits) {
@@ -30,6 +32,7 @@ const processDataCommand = (options) => {
     // Write commits to disk
     fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))
   } else {
+    // Load commits from file
     if (fs.existsSync(commitsFilePath)) {
       commitData = JSON.parse(fs.readFileSync(commitsFilePath))
     } else {
@@ -48,14 +51,19 @@ const processDataCommand = (options) => {
   // Dashboard
   fs.writeFileSync(`${options.parent.outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
 
+  // Ensure 'data-split' directory
   const splitDataDir = `${options.parent.outDir}/data-split`
   rimraf.sync(splitDataDir)
   fs.mkdirSync(splitDataDir)
 
+  // Split unoptimized data
   splitData(combined, splitDataDir, '-unoptimized')
 
+  // Optimize data
   const optimized = optimizeBenchmarks(combined, options.optimizeThreshold, commitData)
   fs.writeFileSync(`${options.parent.outDir}/optimized.json`, JSON.stringify(optimized))
+  
+  // Split optimized data
   splitData(optimized, splitDataDir, '-optimized')
 }
 
