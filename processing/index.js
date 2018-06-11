@@ -9,25 +9,37 @@ const { splitData } = require('./modules/split-data.js')
 const { optimizeBenchmarks } = require('./modules/optimize-data.js')
 
 const processDataCommand = (options) => {
+  const {
+    outDir,
+    futharkGitDir,
+    skipCommits,
+    benchmarkResultsDir,
+    settingsFile
+  } = options.parent
+
+  const {
+    optimizeThreshold
+  } = options
+
   // Load settings
-  const settings = JSON.parse(fs.readFileSync(options.parent.settingsFile))
+  const settings = JSON.parse(fs.readFileSync(settingsFile))
 
   // Find all files in the benchmark directory
   const benchmarkFiles = glob.sync('*.json', {
-    cwd: options.parent.benchmarkResultsDir
+    cwd: benchmarkResultsDir
   })
 
   // Ensure that outdir exists
-  if (!fs.existsSync(options.parent.outDir)) {
-    fs.mkdirSync(options.parent.outDir)
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir)
   }
 
   // Either generate list of commits or load from file
   let commitData = null
-  const commitsFilePath = `${options.parent.outDir}/commits.json`
-  if (!options.parent.skipCommits) {
+  const commitsFilePath = `${outDir}/commits.json`
+  if (!skipCommits) {
     // Get revision data
-    commitData = getAllRevisionData(benchmarkFiles, options.parent.futharkGitDir)
+    commitData = getAllRevisionData(benchmarkFiles, futharkGitDir)
 
     // Write commits to disk
     fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))
@@ -42,17 +54,17 @@ const processDataCommand = (options) => {
   }
 
   // Process all the benchmark files
-  const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder: options.parent.benchmarkResultsDir, settings})
+  const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder: benchmarkResultsDir, settings})
 
   // Write processing to disk
-  fs.writeFileSync(`${options.parent.outDir}/unoptimized.json`, JSON.stringify(combined))
-  fs.writeFileSync(`${options.parent.outDir}/metadata.json`, JSON.stringify(metadata))
+  fs.writeFileSync(`${outDir}/unoptimized.json`, JSON.stringify(combined))
+  fs.writeFileSync(`${outDir}/metadata.json`, JSON.stringify(metadata))
 
   // Dashboard
-  fs.writeFileSync(`${options.parent.outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
+  fs.writeFileSync(`${outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
 
   // Ensure 'data-split' directory
-  const splitDataDir = `${options.parent.outDir}/data-split`
+  const splitDataDir = `${outDir}/data-split`
   rimraf.sync(splitDataDir)
   fs.mkdirSync(splitDataDir)
 
@@ -60,8 +72,8 @@ const processDataCommand = (options) => {
   splitData(combined, splitDataDir, '-unoptimized')
 
   // Optimize data
-  const optimized = optimizeBenchmarks(combined, options.optimizeThreshold, commitData)
-  fs.writeFileSync(`${options.parent.outDir}/optimized.json`, JSON.stringify(optimized))
+  const optimized = optimizeBenchmarks(combined, optimizeThreshold, commitData)
+  fs.writeFileSync(`${outDir}/optimized.json`, JSON.stringify(optimized))
 
   // Split optimized data
   splitData(optimized, splitDataDir, '-optimized')
