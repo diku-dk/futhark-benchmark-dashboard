@@ -2,7 +2,7 @@ const fs = require('fs')
 const glob = require('glob')
 const rimraf = require('rimraf')
 const program = require('commander')
-const { getRevisionData } = require('./find-commit-dates.js')
+const { getAllRevisionData } = require('./find-commit-dates.js')
 const { processData } = require('./process-data.js')
 const { dashboard } = require('./dashboard.js')
 const { splitData } = require('./split-data.js')
@@ -25,7 +25,7 @@ const processDataCommand = (options) => {
   const commitsFilePath = `${options.parent.outDir}/commits.json`
   if (!options.parent.skipCommits) {
     // Get revision data
-    commitData = getRevisionData(benchmarkFiles, options.parent.futharkGitDir)
+    commitData = getAllRevisionData(benchmarkFiles, options.parent.futharkGitDir)
 
     // Write commits to disk
     fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))

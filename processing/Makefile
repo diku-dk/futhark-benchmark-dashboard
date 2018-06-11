@@ -5,25 +5,12 @@ all: \
 install:
 	yarn
 
-ensure-dirs:
-	mkdir -p out
-
 run: \
-	ensure-dirs \
-	run-commit-dates \
-	run-process-data \
-	run-split-data \
-	run-dashboard \
+	process \
 	gzip
 
-run-optimized: \
-	ensure-dirs \
-	run-commit-dates \
-	run-process-data \
-	run-optimize-data \
-	run-split-data-optimized \
-	run-dashboard \
-	gzip
+process:
+	node . process
 
 test:
 	yarn test
@@ -33,24 +20,6 @@ gzip:
 
 webserver:
 	yarn run http-server --cors out/
-
-run-dashboard:
-	node dashboard.js out/combined.json
-
-run-commit-dates:
-	node find-commit-dates.js
-
-run-process-data:
-	node process-data.js
-
-run-optimize-data:
-	node optimize-data.js out/combined.json
-
-run-split-data:
-	node split-data.js out/combined.json
-
-run-split-data-optimized:
-	node split-data.js out/optimized.json
 
 deploy:
 	rsync --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r -r out/* futhark@futhark-lang.org:/var/www/htdocs/futhark-lang.org/benchmark-results-processed/

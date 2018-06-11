@@ -30,7 +30,7 @@ const getRevisionMessage = (revision, futharkGitDir) => {
   }
 }
 
-const getRevisionData = (files, futharkGitDir) => {
+const getAllRevisionData = (files, futharkGitDir) => {
   // Extract revision hashes
   const commits = getRevisions(files)
 
@@ -52,4 +52,4 @@ const getRevisionData = (files, futharkGitDir) => {
   return commitsMap
 }
 
-module.exports = {getRevisions, getRevisionDate, getRevisionMessage, getRevisionData}
+module.exports = {getRevisions, getRevisionDate, getRevisionMessage, getAllRevisionData}
