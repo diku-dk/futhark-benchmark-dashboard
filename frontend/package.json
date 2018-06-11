@@ -10,6 +10,7 @@
     "d3": "^5.4.0",
     "jsdom": "^11.6.2",
     "object-path": "^0.11.4",
+    "query-string": "^6.1.0",
     "react": "^16.2.0",
     "react-app-rewire-less": "^2.1.1",
     "react-app-rewired": "^1.5.0",

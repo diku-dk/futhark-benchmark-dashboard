@@ -1,9 +1,10 @@
 import { history } from '../store'
 import { reduce } from './reducer'
+import _ from 'lodash'
 
-function updateUrl(state) {
+function updateUrl(state, location) {
   if ('URLSearchParams' in window) {
-    var searchParams = new URLSearchParams(window.location.search)
+    var searchParams = new URLSearchParams(location.search)
     let selected = []
 
     for (let selection of state.selected) {
@@ -15,18 +16,20 @@ function updateUrl(state) {
     searchParams.set('slowdownMax', state.slowdownMax)
     searchParams.set('xLeft', state.xLeft)
     searchParams.set('xRight', state.xRight)
-    history.push({
-      search: '?' + searchParams.toString()
-    })
+    if ('?' + searchParams.toString() !== location.search) {
+      history.push({
+        search: '?' + searchParams.toString()
+      })
+    }
   }
 }
 
 export const updateInUrl = (action) => {
   return ({dispatch, getState}) => {
-    const state = getState().visualize
-    let newState = reduce(state, action)
+    const state = getState()
+    let newState = reduce(_.cloneDeep(state.visualize), action)
 
-    updateUrl(newState)
+    updateUrl(newState, state.routing.location)
 
     return action
   }
@@ -69,17 +72,19 @@ export const changeSelected = (selected) => updateInUrl({
   }
 })
 
-export const addPath = () => updateInUrl({
+export const addPath = () => ({
   type: 'VISUALIZE_ADD_PATH',
   payload: {}
 })
 
-export const removePath = (index) => updateInUrl({
-  type: 'VISUALIZE_REMOVE_PATH',
-  payload: {
-    index
-  }
-})
+export const removePath = (index) => {
+  return updateInUrl({
+    type: 'VISUALIZE_REMOVE_PATH',
+    payload: {
+      index
+    }
+  })
+}
 
 export const changeBackend = (index, backend) => updateInUrl({
   type: 'VISUALIZE_CHANGE_BACKEND',

@@ -1,10 +1,10 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import promiseMiddleware from 'redux-promise-middleware'
-import createHistory from 'history/createBrowserHistory'
+import createHistory from 'history/createHashHistory'
 import rootReducer from './modules/rootReducer'
 
-export const history = createHistory({basename: process.env.PUBLIC_URL})
+export const history = createHistory()
 
 const injectMiddleware = deps => ({ dispatch, getState }) => next => action =>
   next(typeof action === 'function'

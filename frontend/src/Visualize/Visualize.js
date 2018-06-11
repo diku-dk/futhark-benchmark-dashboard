@@ -12,6 +12,7 @@ import Path from '../modules/Path'
 import D3Graph from '../Graph/D3Graph'
 import _ from 'lodash'
 import {connect} from 'react-redux'
+import queryString from 'querystring'
 import * as actions from '../modules/actions'
 import * as visualizeActions from './actions'
 import {
@@ -39,26 +40,26 @@ class Visualize extends Component {
     } = this.props
     const promise = fetchMetadata()
 
-    const url = new URL(window.location)
+    const params = queryString.parse(this.props.routing.location.search.replace(/^\?/, ''))
 
-    if (url != null) {
-      if (url.searchParams.get('graphType') != null) {
-        changeGraphType((url.searchParams.get('graphType') === 'slowdown'))
-        if (url.searchParams.get('slowdownMax') != null) {
-          let value = parseInt(url.searchParams.get('slowdownMax'), 10)
+    if (params) {
+      if (params.graphType != null) {
+        changeGraphType(params.graphType === 'slowdown')
+        if (params.slowdownMax != null) {
+          let value = parseFloat(params.slowdownMax)
           changeSlowdownMax(value)
         }
       }
 
-      if (url.searchParams.get('xLeft') != null || url.searchParams.get('xRight') != null) {
-        let xLeft = url.searchParams.get('xLeft') || 0
-        let xRight = url.searchParams.get('xRight') || 100
+      if (params.xLeft != null || params.xRight != null) {
+        let xLeft = params.xLeft || 0
+        let xRight = params.xRight || 100
         changeGraphZoom(parseInt(xLeft, 10), parseInt(xRight, 10))
       }
 
-      if (url.searchParams.get('selected') != null) {
+      if (params.selected != null) {
         try {
-          var json = JSON.parse(url.searchParams.get('selected'))
+          var json = JSON.parse(params.selected)
           if (Array.isArray(json)) {
             let selected = []
             for (let selection of json) {
@@ -243,7 +244,7 @@ class Visualize extends Component {
     }
 
     return (
-      <div style={{width: "100vw", "overflow": "hidden"}}>
+      <div style={{width: "100%", "overflow": "hidden"}}>
         <Card style={{marginBottom: "10px"}}>
           <Row gutter={16} style={{marginBottom: "10px"}}>
             <Col xl= {5} xxl={3} md={6} sm={24}>
@@ -269,14 +270,16 @@ class Visualize extends Component {
                     }}
                     min={1}
                     max={15}
+                    step={0.1}
                     onChange={changeSlowdownMax}
-                    value={slowdownMax}
+                    value={parseFloat(slowdownMax)}
                   />
                   <InputNumber
                     min={1}
-                    max={40}
+                    max={15}
+                    step={0.1}
                     style={slowdownInputStyle}
-                    value={slowdownMax}
+                    value={parseFloat(slowdownMax)}
                     onChange={changeSlowdownMax}
                   />
                 </div>
