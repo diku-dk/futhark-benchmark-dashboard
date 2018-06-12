@@ -25,17 +25,19 @@ class Path extends Component {
       changeMachine,
       changeBenchmark,
       changeDataset,
+      togglePath,
       onAddPath,
       onRemovePath,
-      addAllDatasets,
-      colors
+      addAllDatasets
     } = this.props
 
     const {
       machine,
       backend,
       benchmark,
-      dataset
+      dataset,
+      active,
+      color
     } = path
 
     const machines = backend != null && skeleton[backend] != null ? Object.keys(skeleton[backend]) : []
@@ -47,7 +49,10 @@ class Path extends Component {
     const Content = () => (
       <Row gutter={16} style={{marginBottom: "10px"}}>
         <Col xxl={1} xl={1} lg={1} sm={2} xs={4} className="mobile-push-1x--bottom">
-          <span style={{backgroundColor: `rgb(${colors[index]})`, width: "40px", height: "32px", display: "block"}}>
+          <span
+            style={{backgroundColor: `rgba(${color}, ${active ? '1.0' : '0.5'})`, width: "40px", height: "32px", display: "block", "cursor": "pointer"}}
+            onClick={() => togglePath(index)}
+          >
           </span>
         </Col>
         <Col xxl={2} xl={3} lg={3} sm={22} xs={20} className="mobile-push-1x--bottom">

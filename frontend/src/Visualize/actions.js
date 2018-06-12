@@ -65,6 +65,13 @@ export const changeSlowdownMax = (slowdownMax) => {
   }
 }
 
+export const togglePath = (index) => ({
+  type: 'VISUALIZE_TOGGLE_PATH',
+  payload: {
+    index
+  }
+})
+
 export const changeSelected = (selected) => updateInUrl({
   type: 'VISUALIZE_CHANGE_SELECTED',
   payload: {
