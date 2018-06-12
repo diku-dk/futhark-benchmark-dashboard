@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {findDOMNode} from 'react-dom'
 import ReactResizeDetector from 'react-resize-detector'
 import * as d3 from 'd3'
+import saveSvgAsPng from 'save-svg-as-png'
 import _ from 'lodash'
 
 import {extract, slowdown} from './utils'
@@ -319,6 +320,13 @@ class D3Graph extends Component {
   render() {
     return (
       <div className='graph-container'>
+        <button
+          type="button"
+          class="ant-btn ant-btn-primary ant-btn-circle ant-btn-icon-only save-graph"
+          onClick={this._saveGraph}
+        >
+          <i class="anticon anticon-save"></i>
+        </button>
         <ReactResizeDetector handleWidth handleHeight onResize={this._resize}/>
       </div>
     )
@@ -417,6 +425,17 @@ class D3Graph extends Component {
     this.hoveredCommit = null
     this.caret.style('visibility', 'hidden')
     this.tooltip.style('visibility', 'hidden')
+  }
+
+  _saveGraph = () => {
+    const rect = this.selected.node().getBoundingClientRect()
+    saveSvgAsPng.saveSvgAsPng(this.selected.node(), 'diagram.png', {
+      left: -100,
+      top: -20,
+      width: rect.width + 125,
+      height: rect.height + 50,
+      backgroundColor: 'white'
+    });
   }
 }
 
