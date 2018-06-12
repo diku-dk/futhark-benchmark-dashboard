@@ -1,4 +1,4 @@
-const { optimizeBenchmarks } = require('../optimize-data.js');
+const { optimizeBenchmarks } = require('../modules/optimize-data.js');
 
 test('tests optimizeBenchmarks', () => {
   expect(optimizeBenchmarks({

@@ -1,4 +1,4 @@
-const { average, standardDeviation, processData } = require('../process-data.js')
+const { average, standardDeviation, processData } = require('../modules/process-data.js')
 
 test('tests average', () => {
   expect(average([2, 10, 5, 3, 28, 0])).toEqual(8)
