@@ -1,9 +1,10 @@
 const fs = require('fs')
 const _  = require('lodash')
 
-// Find percentage increase between `v1` and `v2`
-const percentageChange = (v1, v2) => {
-  return Math.abs((v1 - v2) / v1)
+// Find absolute relative change as
+// neper (Np) between `v1` and `v2`.
+const neperChange = (v1, v2) => {
+  return Math.abs(Math.log(v1 / v2))
 }
 
 // Prioritize commits by benchmark and dataset.
@@ -18,10 +19,9 @@ const differences = (result, commits) => {
 
         if (prior == null || prior.avg === avg) return
 
-        let forward = percentageChange(prior.avg, avg)
-        let reverse = percentageChange(avg, prior.avg)
-        result[hash][0].push(forward)
-        result[prior.hash][1].push(reverse)
+        let change = neperChange(avg, prior.avg)
+        result[hash][0].push(change)
+        result[prior.hash][1].push(change)
       })
     })
   })
@@ -51,7 +51,7 @@ const prioritize = (backends, commits, options) => {
     .map(x => x[0])
 }
 
-// node prioritize.js <out_name> <max_revisions>
+// node prioritize.js <out_name> <max_revisions>.
 if (require.main == module) {
   let combined = require('./out/combined.json')
   let commits  = require('./out/commits.json')
