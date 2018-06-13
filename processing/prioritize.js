@@ -45,6 +45,7 @@ const prioritize = (backends, commits, options) => {
   // Process the differences.
   return _.entries(result)
     .map(x => [x[0], _.max(x[1].map(_.sum))])
+    .sort((a, b) => dates[b[0]] - dates[a[0]])
     .sort((a, b) => b[1] - a[1])
     .slice(0, maxRevisions)
     .map(x => x[0])
