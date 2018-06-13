@@ -1,4 +1,5 @@
 const fs = require('fs')
+const { saveFileAndCompress } = require('./lib.js')
 
 const splitData = (inputData, baseDir, filenameExtra) => {
   for (const backendIndex in inputData) {
@@ -11,7 +12,7 @@ const splitData = (inputData, baseDir, filenameExtra) => {
       const machine = backend[machineIndex]
       const json = JSON.stringify(machine)
 
-      fs.writeFileSync(`${baseDir}/${backendIndex}/${machineIndex}${filenameExtra}.json`, json)
+      saveFileAndCompress(`${baseDir}/${backendIndex}/${machineIndex}${filenameExtra}.json`, json)
     }
   }
 }

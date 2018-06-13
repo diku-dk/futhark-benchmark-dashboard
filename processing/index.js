@@ -7,6 +7,7 @@ const { processData } = require('./modules/process-data.js')
 const { dashboard } = require('./modules/dashboard.js')
 const { splitData } = require('./modules/split-data.js')
 const { optimizeBenchmarks } = require('./modules/optimize-data.js')
+const { saveFileAndCompress } = require('./modules/lib.js')
 
 const processDataCommand = (options) => {
   const {
@@ -42,7 +43,7 @@ const processDataCommand = (options) => {
     commitData = getAllRevisionData(benchmarkFiles, futharkGitDir)
 
     // Write commits to disk
-    fs.writeFileSync(commitsFilePath, JSON.stringify(commitData))
+    saveFileAndCompress(commitsFilePath, JSON.stringify(commitData))
   } else {
     // Load commits from file
     if (fs.existsSync(commitsFilePath)) {
@@ -57,11 +58,11 @@ const processDataCommand = (options) => {
   const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder: benchmarkResultsDir, settings})
 
   // Write processing to disk
-  fs.writeFileSync(`${outDir}/unoptimized.json`, JSON.stringify(combined))
-  fs.writeFileSync(`${outDir}/metadata.json`, JSON.stringify(metadata))
+  saveFileAndCompress(`${outDir}/unoptimized.json`, JSON.stringify(combined))
+  saveFileAndCompress(`${outDir}/metadata.json`, JSON.stringify(metadata))
 
   // Dashboard
-  fs.writeFileSync(`${outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
+  saveFileAndCompress(`${outDir}/dashboard.json`, JSON.stringify(dashboard(commitData, combined)))
 
   // Ensure 'data-split' directory
   const splitDataDir = `${outDir}/data-split`
@@ -73,7 +74,7 @@ const processDataCommand = (options) => {
 
   // Optimize data
   const optimized = optimizeBenchmarks(combined, optimizeThreshold, commitData)
-  fs.writeFileSync(`${outDir}/optimized.json`, JSON.stringify(optimized))
+  saveFileAndCompress(`${outDir}/optimized.json`, JSON.stringify(optimized))
 
   // Split optimized data
   splitData(optimized, splitDataDir, '-optimized')
