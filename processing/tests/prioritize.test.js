@@ -1,6 +1,6 @@
 const {prioritize} = require('../prioritize.js')
 
-test('tests optimizeBenchmarks', () => {
+test('tests prioritize', () => {
   expect(prioritize({
     opencl: {
       GTX: {
