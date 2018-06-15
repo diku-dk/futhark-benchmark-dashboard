@@ -1,4 +1,5 @@
 {
+  "private": false,
   "dependencies": {
     "chalk": "^2.4.0",
     "commander": "^2.15.1",
@@ -12,7 +13,8 @@
     "test": "jest",
     "lint": "standard *.js"
   },
-  "name": "futhark-benchmark-dashboard",
+  "homepage": "https://futhark-lang.org/benchmark-dashboard",
+  "name": "futhark-benchmark-dashboard-processing",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:diku-dk/futhark-benchmark-dashboard.git",
