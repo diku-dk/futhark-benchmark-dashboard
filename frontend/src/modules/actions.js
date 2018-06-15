@@ -1,7 +1,7 @@
 import fetch from './fetch'
 import _ from 'lodash'
 
-export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MACHINE', `data-split/${backend}/${machine}.json`, state => {
+export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MACHINE', `data-split/${backend}/${machine}-optimized.json`, state => {
   const {skeleton, loading} = state.data
   return ! (
     skeleton !== null &&

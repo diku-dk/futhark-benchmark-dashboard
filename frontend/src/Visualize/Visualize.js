@@ -46,7 +46,7 @@ class Visualize extends Component {
       if (params.graphType != null) {
         changeGraphType(params.graphType === 'slowdown')
         if (params.slowdownMax != null) {
-          let value = parseInt(params.slowdownMax, 10)
+          let value = parseFloat(params.slowdownMax)
           changeSlowdownMax(value)
         }
       }
@@ -269,15 +269,17 @@ class Visualize extends Component {
                       marginTop: "5px"
                     }}
                     min={1}
-                    max={30}
+                    max={15}
+                    step={0.1}
                     onChange={changeSlowdownMax}
-                    value={slowdownMax}
+                    value={parseFloat(slowdownMax)}
                   />
                   <InputNumber
                     min={1}
-                    max={40}
+                    max={15}
+                    step={0.1}
                     style={slowdownInputStyle}
-                    value={slowdownMax}
+                    value={parseFloat(slowdownMax)}
                     onChange={changeSlowdownMax}
                   />
                 </div>
