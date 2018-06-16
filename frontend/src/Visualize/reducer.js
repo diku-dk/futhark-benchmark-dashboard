@@ -4,14 +4,27 @@ const initialState = {
   selected: [
   ],
   colors: [
-    '75,192,192',
-    '255,138,128',
-    '48,79,254',
-    '0,105,92',
-    '76,175,80',
-    '238,255,65',
-    '255,193,7',
-    '121,85,72'
+    '230,25,75',
+    '60,180,75',
+    '255,225,25',
+    '0,130,200',
+    '245,130,48',
+    '145,30,180',
+    '70,240,240',
+    '240,50,230',
+    '210,245,60',
+    '250,190,190',
+    '0,128,128',
+    '230,190,255',
+    '170,110,40',
+    '255,250,200',
+    '128,0,0',
+    '170,255,195',
+    '128,128,0',
+    '255,215,180',
+    '0,0,128',
+    '128,128,128',
+    '0,0,0'
   ],
   graphType: 'slowdown',
   slowdownMax: 2,
@@ -19,8 +32,16 @@ const initialState = {
   xRight: 100
 }
 
-const getColor = (colorList) => {
-  return colorList.pop()
+const getColor = (colorList, selected) => {
+  let color = colorList.shift()
+
+  const colorInUse = () => selected.find(element => element.color === color)
+
+  while ( colorInUse() ) {
+    color = getColor(colorList, selected)
+  }
+
+  return color
 }
 
 export const reduce = (state, action) => {
@@ -60,14 +81,14 @@ export const reduce = (state, action) => {
       }
     }
     case 'VISUALIZE_ADD_PATH': {
-      const {selected, colors} = state
+      let {selected, colors} = state
       selected.push({
         backend: null,
         machine: null,
         benchmark: null,
         dataset: null,
         active: true,
-        colors: getColor(colors)
+        colors: getColor(colors, selected)
       })
       return {
         ...state,
@@ -76,14 +97,14 @@ export const reduce = (state, action) => {
       }
     }
     case 'VISUALIZE_CHANGE_SELECTED': {
-      const {colors} = state
+      let {colors} = state
       const {selected} = action.payload
 
       return {
         ...state,
         selected: selected.map(item => {
           if (item.color == null) {
-            item.color = getColor(colors)
+            item.color = getColor(colors, selected)
           }
           return item
         }),
