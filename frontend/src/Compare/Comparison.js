@@ -91,7 +91,10 @@ export default class Comparison extends Component {
           <Column
             title="Benchmark"
             render={(text, record) => (
-              <Link to={`/visualize?selected=${JSON.stringify([['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset], ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
+              <Link to={`/visualize?selected=${JSON.stringify([
+                  ['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset],
+                  ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]
+              ])}&xLeft=0&xRight=100`}>
                 {record.benchmark.replace("futhark-benchmarks/", "")}
               </Link>
             )}
@@ -102,7 +105,10 @@ export default class Comparison extends Component {
             dataIndex="dataset"
             key="dataset"
             render={(text, record) => (
-              <Link to={`/visualize?selected=${JSON.stringify([['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset], ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]])}&xLeft=0&xRight=100`}>
+              <Link to={`/visualize?selected=${JSON.stringify([
+                ['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset],
+                ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]]
+              )}&xLeft=0&xRight=100`}>
                 {text}
               </Link>
             )}
