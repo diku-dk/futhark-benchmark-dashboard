@@ -1,4 +1,3 @@
-const fs = require('fs')
 const _ = require('lodash')
 
 const optimizeBenchmarks = (input, diffThreshold, commitData) => {
@@ -50,20 +49,6 @@ const optimizeBenchmarks = (input, diffThreshold, commitData) => {
   }
 
   return input
-}
-
-// If this script was executed directly
-if (require.main === module) {
-  if (process.argv[2] == null) {
-    console.log('Please run: optimize-data.js <input file>')
-    process.exit()
-  }
-
-  const commitData = require('./out/commits.json')
-  const inputData = JSON.parse(fs.readFileSync(process.argv[2]))
-  const optimized = optimizeBenchmarks(inputData, 0.02, commitData)
-
-  fs.writeFileSync('./out/optimized.json', JSON.stringify(optimized))
 }
 
 module.exports = {optimizeBenchmarks}

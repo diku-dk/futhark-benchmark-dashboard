@@ -1,4 +1,4 @@
-const { dashboard } = require('../dashboard.js')
+const { dashboard } = require('../modules/dashboard.js')
 
 test('tests dashboard with two commits', () => {
   const commits = {

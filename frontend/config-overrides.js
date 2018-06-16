@@ -5,7 +5,7 @@ module.exports = function override(config, env) {
   config = injectBabelPlugin(['import', { libraryName: 'antd', style: true }], config);
   config = rewireLess.withLoaderOptions({
     modifyVars: {
-      "@slider-track-background-color": "#ffffff"
+      "@icon-url": "'/fonts/iconfont'"
     },
   })(config, env);
   return config;

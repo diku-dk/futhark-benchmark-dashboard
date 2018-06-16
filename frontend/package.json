@@ -1,20 +1,31 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
+  "name": "futhark-benchmark-dashboard-frontend",
+  "version": "1.0.0",
+  "private": false,
+  "license": "MIT",
   "homepage": "https://futhark-lang.org/benchmark-dashboard",
+  "repository": "git@github.com:diku-dk/futhark-benchmark-dashboard.git",
+  "contributors": [
+    "Bo Thomsen <boh1996@gmail.com>",
+    "Emil Weihe <emil@weihe.dk>",
+    "Frederik Lassen <frederiklassen@gmail.com>"
+  ],
+  "devDependencies": {
+    "jsdom": "^11.6.2",
+    "redux-devtools-extension": "^2.13.2"
+  },
   "dependencies": {
     "antd": "^3.4.0",
     "axios": "^0.18.0",
     "babel-plugin-import": "^1.6.7",
     "d3": "^5.4.0",
-    "jsdom": "^11.6.2",
-    "object-path": "^0.11.4",
+    "history": "^4.7.2",
+    "lodash": "^4.17.10",
+    "pako": "^1.0.6",
     "query-string": "^6.1.0",
     "react": "^16.2.0",
     "react-app-rewire-less": "^2.1.1",
     "react-app-rewired": "^1.5.0",
-    "react-chartjs": "^1.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
     "react-resize-detector": "^2.3.0",
@@ -22,7 +33,6 @@
     "react-router-redux": "^5.0.0-alpha.9",
     "react-scripts": "1.1.1",
     "redux": "^4.0.0",
-    "redux-devtools-extension": "^2.13.2",
     "redux-promise-middleware": "^5.1.1"
   },
   "scripts": {

@@ -1,7 +1,7 @@
-const { optimizeBenchmarks } = require('../modules/optimize-data.js');
+const {prioritize} = require('../modules/prioritize.js')
 
-test('tests optimizeBenchmarks', () => {
-  expect(optimizeBenchmarks({
+test('tests prioritize', () => {
+  expect(prioritize({
     opencl: {
       GTX: {
         '0000000000000000000000000000000000000001': {
@@ -20,7 +20,7 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 101
+                avg: 100
               },
               'dataset2': {
                 avg: 30
@@ -32,10 +32,10 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 102
+                avg: 150
               },
               'dataset2': {
-                avg: 30
+                avg: 32
               }
             }
           }
@@ -47,7 +47,7 @@ test('tests optimizeBenchmarks', () => {
                 avg: 101
               },
               'dataset2': {
-                avg: 10
+                avg: 29
               }
             }
           }
@@ -56,10 +56,10 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 120
+                avg: 100
               },
               'dataset2': {
-                avg: 10
+                avg: 30
               }
             }
           }
@@ -68,10 +68,10 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 121
+                avg: 50
               },
               'dataset2': {
-                avg: 10
+                avg: 15
               }
             }
           }
@@ -80,10 +80,10 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 100
+                avg: 45
               },
               'dataset2': {
-                avg: 10
+                avg: 12
               }
             }
           }
@@ -92,10 +92,10 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 100
+                avg: 50
               },
               'dataset2': {
-                avg: 15
+                avg: 14
               }
             }
           }
@@ -104,17 +104,17 @@ test('tests optimizeBenchmarks', () => {
           'test.fut': {
             datasets: {
               'dataset1': {
-                avg: 100
+                avg: 15
               },
               'dataset2': {
-                avg: 15
+                avg: 13
               }
             }
           }
         },
       }
     }
-  }, 0.03, {
+  }, {
     '0000000000000000000000000000000000000001': {
       date: new Date('2018-01-01 12:00:00 +0200')
     },
@@ -142,94 +142,15 @@ test('tests optimizeBenchmarks', () => {
     '0000000000000000000000000000000000000009': {
       date: new Date('2018-01-09 12:00:00 +0200')
     }
-  })).toEqual({
-    opencl: {
-      GTX: {
-        "0000000000000000000000000000000000000001": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 100,
-              },
-             "dataset2": {
-               "avg": 30,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000003": {
-         "test.fut": {
-           "datasets": {
-             "dataset2": {
-               "avg": 30,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000004": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 101,
-             },
-             "dataset2": {
-               "avg": 10,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000005": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 120,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000006": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 121,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000007": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 100,
-             },
-             "dataset2": {
-               "avg": 10,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000008": {
-         "test.fut": {
-           "datasets": {
-             "dataset2": {
-               "avg": 15,
-             },
-           },
-         },
-        },
-        "0000000000000000000000000000000000000009": {
-         "test.fut": {
-           "datasets": {
-             "dataset1": {
-               "avg": 100,
-             },
-             "dataset2": {
-               "avg": 15,
-             },
-           },
-         },
-        },
-      }
-    }
-  });
-});
+  })).toEqual([
+    '0000000000000000000000000000000000000006',
+    '0000000000000000000000000000000000000005',
+    '0000000000000000000000000000000000000009',
+    '0000000000000000000000000000000000000008',
+    '0000000000000000000000000000000000000004',
+    '0000000000000000000000000000000000000003',
+    '0000000000000000000000000000000000000002',
+    '0000000000000000000000000000000000000007',
+    '0000000000000000000000000000000000000001'
+  ])
+})
