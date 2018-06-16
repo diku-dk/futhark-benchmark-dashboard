@@ -4,7 +4,7 @@ import {
   Menu
 } from 'antd'
 import { Link } from "react-router-dom"
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 const { Header } = Layout
 
 class HeaderNavigation extends Component {

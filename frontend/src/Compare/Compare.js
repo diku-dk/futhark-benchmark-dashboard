@@ -10,7 +10,7 @@ import Commit from '../modules/Commit'
 import Comparison from './Comparison'
 import * as actions from '../modules/actions'
 import * as compareActions from './actions'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import queryString from 'querystring'
 
 class Compare extends Component {

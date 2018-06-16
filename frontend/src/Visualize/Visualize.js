@@ -11,7 +11,7 @@ import {
 import Path from '../modules/Path'
 import D3Graph from '../Graph/D3Graph'
 import _ from 'lodash'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import queryString from 'query-string'
 import * as actions from '../modules/actions'
 import * as visualizeActions from './actions'
