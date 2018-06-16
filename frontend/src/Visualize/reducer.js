@@ -1,66 +1,26 @@
 import _ from 'lodash'
-import randomColor from 'randomcolor'
-
-let randomColors = []
-for (let i = 0; i < 10; i++) {
-  randomColors.push(randomColor({
-    format: 'rgbArray'
-  }).join(","))
-}
 
 const initialState = {
   selected: [
-    {
-      backend: 'opencl',
-      machine: 'GTX780',
-      benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
-      dataset: 'data/radix_sort_100.in',
-      active: true,
-      color: "255,138,128"
-    },
-    {
-      backend: 'opencl',
-      machine: 'GTX780',
-      benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
-      dataset: '#0',
-      active: true,
-      color: "75,192,192"
-    }
   ],
-  colors: randomColors.concat([
-    //"75,192,192",
-    //"255,138,128",
+  colors: [
+    "75,192,192",
+    "255,138,128",
     "48,79,254",
     "0,105,92",
     "76,175,80",
     "238,255,65",
     "255,193,7",
     "121,85,72"
-  ]),
+  ],
   graphType: 'slowdown',
   slowdownMax: 2,
   xLeft: 0,
   xRight: 100
 }
 
-const getColor = (colorList, selected) => {
-  let color = null
-
-  if ( colorList.length > 0 ) {
-    color = colorList.pop()
-  } else {
-    color = randomColor({
-      format: 'rgbArray'
-    }).join(",")
-  }
-
-  const colorInUse = () => selected.find(element => element.color === color)
-
-  while ( colorInUse() ) {
-    color = getColor(colorList, selected)
-  }
-
-  return color
+const getColor = (colorList) => {
+  return colorList.pop()
 }
 
 export const reduce = (state, action) => {
@@ -107,7 +67,7 @@ export const reduce = (state, action) => {
         benchmark: null,
         dataset: null,
         active: true,
-        colors: getColor(colors, selected)
+        colors: getColor(colors)
       })
       return {
         ...state,
@@ -123,7 +83,7 @@ export const reduce = (state, action) => {
         ...state,
         selected: selected.map(item => {
           if (item.color == null) {
-            item.color = getColor(colors, selected)
+            item.color = getColor(colors)
           }
           return item
         }),

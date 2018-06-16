@@ -28,6 +28,28 @@ class Visualize extends Component {
     }
 
     this.addAllDatasets = this.addAllDatasets.bind(this)
+    this.initializeDefaults = this.initializeDefaults.bind(this)
+  }
+
+  initializeDefaults() {
+    const {changeSelected} = this.props
+
+    changeSelected([
+      {
+        backend: 'opencl',
+        machine: 'GTX780',
+        benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
+        dataset: 'data/radix_sort_100.in',
+        active: true
+      },
+      {
+        backend: 'opencl',
+        machine: 'GTX780',
+        benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
+        dataset: '#0',
+        active: true
+      }
+    ])
   }
 
   componentDidMount() {
@@ -90,7 +112,11 @@ class Visualize extends Component {
           }
         } catch ( e ) {
         }
+      } else {
+        this.initializeDefaults()
       }
+    } else {
+      this.initializeDefaults()
     }
 
     if (promise.then != null) {
