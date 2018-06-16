@@ -51,13 +51,4 @@ const prioritize = (backends, commits, options) => {
     .map(x => x[0])
 }
 
-// node prioritize.js <out_name> <max_revisions>.
-if (require.main == module) {
-  let combined = require('./out/combined.json')
-  let commits  = require('./out/commits.json')
-  let [,, name = 'out', maxRevisions] = process.argv
-  let out = prioritize(combined, commits, {maxRevisions})
-  fs.writeFileSync(name + '.txt', out.join('\n'))
-}
-
 module.exports = {prioritize}

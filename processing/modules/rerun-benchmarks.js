@@ -31,7 +31,7 @@ const rerunBenchmarks = ({machine, compilerRevisions, benchmarkRuns, outDir, com
   const benchmarkGitCommand = `git -C ${benchmarkDir}`
 
   for (const compilerRevision of compilerRevisions) {
-    const hasCompiled = false
+    let hasCompiled = false
 
     for (let backend of backends) {
       console.log(chalk.green(`\n-- Running ${compilerRevision} with ${backend}`))
@@ -40,7 +40,7 @@ const rerunBenchmarks = ({machine, compilerRevisions, benchmarkRuns, outDir, com
       backend = `futhark-${backend}`
 
       const outputFilename = `${backend}-${machine}-${compilerRevision}.json`
-      const outputFile = `${path.resolve(__dirname, outDir)}/${outputFilename}`
+      const outputFile = `${outDir}/${outputFilename}`
 
       if (fs.existsSync(outputFile)) {
         console.log(chalk.green(`Build for ${compilerRevision} exists, skipping...`))

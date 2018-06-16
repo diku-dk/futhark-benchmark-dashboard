@@ -9,6 +9,7 @@ const { splitData } = require('./modules/split-data.js')
 const { optimizeBenchmarks } = require('./modules/optimize-data.js')
 const { saveFileAndCompress } = require('./modules/lib.js')
 const { rerunBenchmarks } = require('./modules/rerun-benchmarks.js')
+const { prioritize } = require('./modules/prioritize-commits.js')
 
 const processDataCommand = (options) => {
   const {
@@ -91,17 +92,18 @@ const rerunBenchmarksCommand = (machineName, options) => {
   } = options.parent
 
   const {
-    benchmarkRuns
+    benchmarkRuns,
+    commitCount
   } = options
 
   if (machineName == null || machineName === '') {
     throw Error('No machine name for this machine was provided')
   }
 
-  const compilerRevisions = [
-    'ce6f746e7bb68c9816b8063299056e39ef67069a',
-    'cef6f9d02e211d610393aabd55605ae9805f526d'
-  ]
+  const unoptimized = JSON.parse(fs.readFileSync(`${outDir}/unoptimized.json`))
+  const commits = JSON.parse(fs.readFileSync(`${outDir}/commits.json`))
+
+  const compilerRevisions = prioritize(unoptimized, commits, {commitCount})
 
   rerunBenchmarks({
     compilerDir: futharkGitDir,
@@ -130,6 +132,7 @@ program
 program
   .command('rerun <machine-name>')
   .description('rerun futhark benchmarks on this machine')
+  .option('--commit-count <n>', 'n amount of commits to be benchmarked', 100)
   .option('--benchmark-runs <n>', 'n amount of benchmark iterations, for futhark-bench', 10)
   .action(rerunBenchmarksCommand)
 
