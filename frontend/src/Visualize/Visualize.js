@@ -86,8 +86,9 @@ class Visualize extends Component {
             let selected = []
             for (let selection of json) {
               if (Array.isArray(selection)) {
-                const [backend, machine, benchmark, dataset] = selection
+                const [color, backend, machine, benchmark, dataset] = selection
                 selected.push({
+                  color,
                   backend,
                   machine,
                   benchmark,
@@ -95,8 +96,9 @@ class Visualize extends Component {
                   active: true
                 })
               } else if (typeof selection === 'object') {
-                const {backend, machine, benchmark, dataset} = selection
+                const {color, backend, machine, benchmark, dataset} = selection
                 selected.push({
+                  color,
                   backend,
                   machine,
                   benchmark,

@@ -8,7 +8,7 @@ function updateUrl(state, location) {
     let selected = []
 
     for (let selection of state.selected) {
-      selected.push([selection.backend, selection.machine, selection.benchmark, selection.dataset])
+      selected.push([selection.color, selection.backend, selection.machine, selection.benchmark, selection.dataset])
     }
 
     searchParams.set("selected", JSON.stringify(selected))
