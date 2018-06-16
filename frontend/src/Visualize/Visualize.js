@@ -110,7 +110,7 @@ class Visualize extends Component {
               changeSelected(selected)
             }
           }
-        } catch ( e ) {
+        } catch (e) {
         }
       } else {
         this.initializeDefaults()

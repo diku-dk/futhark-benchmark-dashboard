@@ -37,7 +37,7 @@ const getColor = (colorList, selected) => {
 
   const colorInUse = () => selected.find(element => element.color === color)
 
-  while ( colorInUse() ) {
+  while (colorInUse()) {
     color = getColor(colorList, selected)
   }
 
