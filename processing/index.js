@@ -8,6 +8,7 @@ const { dashboard } = require('./modules/dashboard.js')
 const { splitData } = require('./modules/split-data.js')
 const { optimizeBenchmarks } = require('./modules/optimize-data.js')
 const { saveFileAndCompress } = require('./modules/lib.js')
+const { rerunBenchmarks } = require('./modules/rerun-benchmarks.js')
 
 const processDataCommand = (options) => {
   const {
@@ -80,6 +81,38 @@ const processDataCommand = (options) => {
   splitData(optimized, splitDataDir, '-optimized')
 }
 
+const rerunBenchmarksCommand = (machineName, options) => {
+  const {
+    outDir,
+    futharkGitDir,
+    skipCommits,
+    benchmarkResultsDir,
+    settingsFile
+  } = options.parent
+
+  const {
+    benchmarkRuns
+  } = options
+
+  if (machineName == null || machineName === '') {
+    throw Error('No machine name for this machine was provided')
+  }
+
+  const compilerRevisions = [
+    'ce6f746e7bb68c9816b8063299056e39ef67069a',
+    'cef6f9d02e211d610393aabd55605ae9805f526d'
+  ]
+
+  rerunBenchmarks({
+    compilerDir: futharkGitDir,
+    benchmarkRuns,
+    machine: machineName,
+    outDir,
+    compilerRevisions,
+    backends: ['opencl', 'pyopencl']
+  })
+}
+
 program
   .version('0.1.0')
   .option('--skip-commits', 'skip getting commit information')
@@ -93,6 +126,12 @@ program
   .description('process futhark-benchmark data')
   .option('--optimize-threshold <threshold>', 'optimization diff threshold', 0.02)
   .action(processDataCommand)
+
+program
+  .command('rerun <machine-name>')
+  .description('rerun futhark benchmarks on this machine')
+  .option('--benchmark-runs <n>', 'n amount of benchmark iterations, for futhark-bench', 10)
+  .action(rerunBenchmarksCommand)
 
 if (!process.argv.slice(2).length) {
   program.outputHelp()
