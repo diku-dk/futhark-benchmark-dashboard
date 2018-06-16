@@ -50,7 +50,13 @@ class Path extends Component {
       <Row gutter={16} style={{marginBottom: "10px"}}>
         <Col xxl={1} xl={1} lg={1} sm={2} xs={4} className="mobile-push-1x--bottom">
           <span
-            style={{backgroundColor: `rgba(${color}, ${active ? '1.0' : '0.5'})`, width: "40px", height: "32px", display: "block", "cursor": "pointer"}}
+            style={{
+              backgroundColor: `rgba(${color}, ${active ? '1.0' : '0.5'})`,
+              width: "40px",
+              height: "32px",
+              display: "block",
+              "cursor": "pointer"
+            }}
             onClick={() => togglePath(index)}
           >
           </span>
