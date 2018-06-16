@@ -3,12 +3,13 @@ import {
   Layout,
   Menu
 } from 'antd'
-import { Link, withRouter } from "react-router-dom"
+import { Link } from "react-router-dom"
+import {connect} from 'react-redux'
 const { Header } = Layout
 
 class HeaderNavigation extends Component {
   render() {
-    const {location} = this.props
+    const {routing: {location}} = this.props
 
     const active = {
       '/': 'home',
@@ -45,4 +46,6 @@ class HeaderNavigation extends Component {
   }
 }
 
-export default withRouter(HeaderNavigation)
+export default connect(
+  state => state
+)(HeaderNavigation)
