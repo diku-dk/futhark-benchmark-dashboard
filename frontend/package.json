@@ -11,6 +11,7 @@
     "Frederik Lassen <frederiklassen@gmail.com>"
   ],
   "devDependencies": {
+    "jsdom": "^11.6.2",
     "redux-devtools-extension": "^2.13.2"
   },
   "dependencies": {
@@ -18,7 +19,8 @@
     "axios": "^0.18.0",
     "babel-plugin-import": "^1.6.7",
     "d3": "^5.4.0",
-    "jsdom": "^11.6.2",
+    "history": "^4.7.2",
+    "lodash": "^4.17.10",
     "pako": "^1.0.6",
     "query-string": "^6.1.0",
     "react": "^16.2.0",
