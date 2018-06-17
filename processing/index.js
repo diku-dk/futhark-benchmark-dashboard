@@ -104,7 +104,7 @@ const rerunBenchmarksCommand = (machineName, options) => {
   const unoptimized = JSON.parse(fs.readFileSync(`${outDir}/unoptimized.json`))
   const commits = JSON.parse(fs.readFileSync(`${outDir}/commits.json`))
 
-  const compilerRevisions = prioritize(unoptimized, commits, {commitCount})
+  const compilerRevisions = prioritize(unoptimized, commits, {maxRevisions: commitCount || Infinity})
 
   rerunBenchmarks({
     compilerDir: futharkGitDir,
