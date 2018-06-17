@@ -9,6 +9,12 @@
   overflow: visible !important;
 }
 
+.save-graph {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+}
+
 /* Selected graphs */
 .selected {
   width: 100%;

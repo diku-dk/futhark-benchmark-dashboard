@@ -33,7 +33,8 @@
     "react-router-redux": "^5.0.0-alpha.9",
     "react-scripts": "1.1.1",
     "redux": "^4.0.0",
-    "redux-promise-middleware": "^5.1.1"
+    "redux-promise-middleware": "^5.1.1",
+    "save-svg-as-png": "^1.4.5"
   },
   "scripts": {
     "start": "react-app-rewired start",
