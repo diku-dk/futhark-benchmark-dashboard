@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const glob = require('glob')
 const rimraf = require('rimraf')
 const program = require('commander')
@@ -109,7 +110,7 @@ const rerunBenchmarksCommand = (machineName, options) => {
     compilerDir: futharkGitDir,
     benchmarkRuns,
     machine: machineName,
-    outDir,
+    outDir: path.resolve(__dirname, benchmarkResultsDir),
     compilerRevisions,
     backends: ['opencl', 'pyopencl']
   })
