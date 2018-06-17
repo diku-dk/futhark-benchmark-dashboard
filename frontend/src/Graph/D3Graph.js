@@ -234,7 +234,7 @@ class D3Graph extends Component {
   componentDidUpdate() {
     this._clear()
 
-    let {yMax, type, colors} = this.props
+    let {yMax, type, selected} = this.props
     let datasets = extract(this.props)
 
     // Apply slowdown processing
@@ -248,7 +248,7 @@ class D3Graph extends Component {
       if (dataset == null) continue
       this.datasets.push({
         data: dataset,
-        color: colors[i]
+        color: selected[i].color
       })
     }
 

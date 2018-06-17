@@ -11,7 +11,7 @@ import {
 import Path from '../modules/Path'
 import D3Graph from '../Graph/D3Graph'
 import _ from 'lodash'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import queryString from 'query-string'
 import * as actions from '../modules/actions'
 import * as visualizeActions from './actions'
@@ -28,6 +28,28 @@ class Visualize extends Component {
     }
 
     this.addAllDatasets = this.addAllDatasets.bind(this)
+    this.initializeDefaults = this.initializeDefaults.bind(this)
+  }
+
+  initializeDefaults() {
+    const {changeSelected} = this.props
+
+    changeSelected([
+      {
+        backend: 'opencl',
+        machine: 'GTX780',
+        benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
+        dataset: 'data/radix_sort_100.in',
+        active: true
+      },
+      {
+        backend: 'opencl',
+        machine: 'GTX780',
+        benchmark: 'futhark-benchmarks/misc/radix_sort/radix_sort.fut',
+        dataset: '#0',
+        active: true
+      }
+    ])
   }
 
   componentDidMount() {
@@ -64,20 +86,24 @@ class Visualize extends Component {
             let selected = []
             for (let selection of json) {
               if (Array.isArray(selection)) {
-                const [backend, machine, benchmark, dataset] = selection
+                const [color, backend, machine, benchmark, dataset] = selection
                 selected.push({
+                  color,
                   backend,
                   machine,
                   benchmark,
-                  dataset
+                  dataset,
+                  active: true
                 })
               } else if (typeof selection === 'object') {
-                const {backend, machine, benchmark, dataset} = selection
+                const {color, backend, machine, benchmark, dataset} = selection
                 selected.push({
+                  color,
                   backend,
                   machine,
                   benchmark,
-                  dataset
+                  dataset,
+                  active: true
                 })
               }
             }
@@ -86,9 +112,13 @@ class Visualize extends Component {
               changeSelected(selected)
             }
           }
-        } catch ( e ) {
+        } catch (e) {
         }
+      } else {
+        this.initializeDefaults()
       }
+    } else {
+      this.initializeDefaults()
     }
 
     if (promise.then != null) {
@@ -110,12 +140,12 @@ class Visualize extends Component {
       }
     } = this.props
 
-    const selectionExists = toCheck => selected.find(element => _.isEqual(Object.values(element), Object.values(toCheck)) )
+    const selectionExists = toCheck => selected.find(element => _.isEqual(Object.values(_.omit(element, ["color", "active"])), Object.values(toCheck)) )
 
     if (benchmarks[path.benchmark] != null) {
       for (let dataset of benchmarks[path.benchmark]) {
-        if (path.dataset !== dataset && ! selectionExists(Object.assign({}, path, {dataset}))) {
-          selected.push(Object.assign({}, path, {dataset}))
+        if (path.dataset !== dataset && ! selectionExists(Object.assign({}, _.omit(path, ["color", "active"]), {dataset}))) {
+          selected.push(Object.assign({}, path, {dataset, color: null}))
         }
       }
 
@@ -153,7 +183,6 @@ class Visualize extends Component {
         selected
       },
       data: {
-        colors,
         benchmarks,
         skeleton
       },
@@ -162,7 +191,8 @@ class Visualize extends Component {
       changeBackend,
       changeBenchmark,
       changeMachine,
-      changeDataset
+      changeDataset,
+      togglePath
     } = this.props
 
     return (
@@ -170,7 +200,6 @@ class Visualize extends Component {
         {selected.map((path, index) => (
           <Path
             key={index}
-            colors={colors}
             benchmarks={benchmarks}
             path={path}
             index={index}
@@ -180,6 +209,7 @@ class Visualize extends Component {
             changeMachine={changeMachine}
             changeBenchmark={changeBenchmark}
             changeDataset={changeDataset}
+            togglePath={togglePath}
             onAddPath={addPath}
             onRemovePath={removePath}
             addAllDatasets={this.addAllDatasets}
@@ -199,7 +229,6 @@ class Visualize extends Component {
         xRight
       },
       data: {
-        colors,
         skeleton,
         commits,
         loading
@@ -300,8 +329,7 @@ class Visualize extends Component {
           <D3Graph
             data={skeleton}
             dates={commits}
-            selected={selected}
-            colors={colors}
+            selected={selected.filter(item => item.active)}
             yMax={slowdownMax}
             type={graphType}
             changeGraphZoom={changeGraphZoom}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Table } from 'antd';
 import _ from 'lodash'
+import { Link } from "react-router-dom"
 const { Column } = Table;
 
 function compare(a,b) {
@@ -63,6 +64,12 @@ export default class Comparison extends Component {
               diff,
               benchmark: benchmarkKey,
               dataset: datasetKey,
+              benchmark: benchmarkKey,
+              dataset: datasetKey,
+              firstMachine: firstMachineKey,
+              secondMachine: secondMachineKey,
+              firstBackend: firstBackendKey,
+              secondBackend: secondBackendKey,
               key: [benchmarkKey, datasetKey].join("-")
             })
           }
@@ -84,9 +91,12 @@ export default class Comparison extends Component {
           <Column
             title="Benchmark"
             render={(text, record) => (
-              <span>
+              <Link to={`/visualize?selected=${JSON.stringify([
+                  ['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset],
+                  ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]
+              ])}&xLeft=0&xRight=100`}>
                 {record.benchmark.replace("futhark-benchmarks/", "")}
-              </span>
+              </Link>
             )}
             key="benchmark"
           />
@@ -94,6 +104,14 @@ export default class Comparison extends Component {
             title="Dataset"
             dataIndex="dataset"
             key="dataset"
+            render={(text, record) => (
+              <Link to={`/visualize?selected=${JSON.stringify([
+                ['230,25,75',record.firstBackend, record.firstMachine, record.benchmark, record.dataset],
+                ['60,180,75',record.secondBackend, record.secondMachine, record.benchmark, record.dataset]]
+              )}&xLeft=0&xRight=100`}>
+                {text}
+              </Link>
+            )}
           />
           <Column
             title="Difference (%)"
