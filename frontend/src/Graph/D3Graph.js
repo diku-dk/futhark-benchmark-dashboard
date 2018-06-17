@@ -4,6 +4,7 @@ import ReactResizeDetector from 'react-resize-detector'
 import * as d3 from 'd3'
 import saveSvgAsPng from 'save-svg-as-png'
 import _ from 'lodash'
+import {Button, Icon} from 'antd'
 
 import {extract, slowdown} from './utils'
 import {slider, handle} from './drag'
@@ -320,13 +321,9 @@ class D3Graph extends Component {
   render() {
     return (
       <div className='graph-container'>
-        <button
-          type="button"
-          class="ant-btn ant-btn-primary ant-btn-circle ant-btn-icon-only save-graph"
-          onClick={this._saveGraph}
-        >
-          <i class="anticon anticon-save"></i>
-        </button>
+        <Button onClick={this._saveGraph} shape="circle" className="save-graph">
+           <Icon type="save" />
+        </Button>
         <ReactResizeDetector handleWidth handleHeight onResize={this._resize}/>
       </div>
     )
@@ -429,7 +426,7 @@ class D3Graph extends Component {
 
   _saveGraph = () => {
     const rect = this.selected.node().getBoundingClientRect()
-    saveSvgAsPng.saveSvgAsPng(this.selected.node(), 'diagram.png', {
+    saveSvgAsPng.saveSvgAsPng(this.selected.node(), 'futhark-benchmarks.png', {
       left: -100,
       top: -20,
       width: rect.width + 125,
