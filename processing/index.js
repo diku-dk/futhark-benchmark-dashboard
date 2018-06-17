@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const glob = require('glob')
 const rimraf = require('rimraf')
 const program = require('commander')
@@ -8,6 +9,8 @@ const { dashboard } = require('./modules/dashboard.js')
 const { splitData } = require('./modules/split-data.js')
 const { optimizeBenchmarks } = require('./modules/optimize-data.js')
 const { saveFileAndCompress } = require('./modules/lib.js')
+const { rerunBenchmarks } = require('./modules/rerun-benchmarks.js')
+const { prioritize } = require('./modules/prioritize-commits.js')
 
 const processDataCommand = (options) => {
   const {
@@ -80,6 +83,40 @@ const processDataCommand = (options) => {
   splitData(optimized, splitDataDir, '-optimized')
 }
 
+const rerunBenchmarksCommand = (machineName, options) => {
+  const {
+    outDir,
+    futharkGitDir,
+    benchmarkResultsDir
+  } = options.parent
+
+  const {
+    benchmarkRuns,
+    commitCount,
+    backends
+  } = options
+
+  if (machineName == null || machineName === '') {
+    throw Error('No machine name for this machine was provided')
+  }
+
+  const unoptimized = JSON.parse(fs.readFileSync(`${outDir}/unoptimized.json`))
+  const commits = JSON.parse(fs.readFileSync(`${outDir}/commits.json`))
+
+  const compilerRevisions = prioritize(unoptimized, commits, {maxRevisions: commitCount || Infinity})
+
+  rerunBenchmarks({
+    compilerDir: futharkGitDir,
+    benchmarkRuns,
+    machine: machineName,
+    outDir: path.resolve(__dirname, benchmarkResultsDir),
+    compilerRevisions,
+    backends
+  })
+}
+
+const list = val => val.split(',')
+
 program
   .version('0.1.0')
   .option('--skip-commits', 'skip getting commit information')
@@ -93,6 +130,14 @@ program
   .description('process futhark-benchmark data')
   .option('--optimize-threshold <threshold>', 'optimization diff threshold', 0.02)
   .action(processDataCommand)
+
+program
+  .command('rerun <machine-name>')
+  .description('rerun futhark benchmarks on this machine')
+  .option('--commit-count <n>', 'n amount of commits to be benchmarked', 100)
+  .option('--benchmark-runs <n>', 'n amount of benchmark iterations, for futhark-bench', 10)
+  .option('--backends <backends>', 'backends to run with futhark-bench', list, ['opencl', 'pyopencl'])
+  .action(rerunBenchmarksCommand)
 
 if (!process.argv.slice(2).length) {
   program.outputHelp()

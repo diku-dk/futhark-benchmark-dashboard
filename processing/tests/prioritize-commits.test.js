@@ -1,4 +1,4 @@
-const {prioritize} = require('../modules/prioritize.js')
+const {prioritize} = require('../modules/prioritize-commits.js')
 
 test('tests prioritize', () => {
   expect(prioritize({
