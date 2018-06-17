@@ -94,7 +94,8 @@ const rerunBenchmarksCommand = (machineName, options) => {
 
   const {
     benchmarkRuns,
-    commitCount
+    commitCount,
+    backends
   } = options
 
   if (machineName == null || machineName === '') {
@@ -112,9 +113,11 @@ const rerunBenchmarksCommand = (machineName, options) => {
     machine: machineName,
     outDir: path.resolve(__dirname, benchmarkResultsDir),
     compilerRevisions,
-    backends: ['opencl', 'pyopencl']
+    backends
   })
 }
+
+const list = val => val.split(',')
 
 program
   .version('0.1.0')
@@ -135,6 +138,7 @@ program
   .description('rerun futhark benchmarks on this machine')
   .option('--commit-count <n>', 'n amount of commits to be benchmarked', 100)
   .option('--benchmark-runs <n>', 'n amount of benchmark iterations, for futhark-bench', 10)
+  .option('--backends <backends>', 'backends to run with futhark-bench', list, ['opencl', 'pyopencl'])
   .action(rerunBenchmarksCommand)
 
 if (!process.argv.slice(2).length) {
