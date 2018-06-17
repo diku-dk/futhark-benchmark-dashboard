@@ -1,10 +1,5 @@
-const fs = require('fs')
-const glob = require('glob')
 const {execSync} = require('child_process')
 const _ = require('lodash')
-
-// Constants
-const benchmarkResultsFolder = './benchmark-results'
 
 // Gets revision hashes from an array of benchmark files
 const getRevisions = (files) => {
@@ -16,10 +11,10 @@ const getRevisions = (files) => {
 }
 
 // Gets commit date from one revision hash
-const getRevisionDate = (revision) => {
+const getRevisionDate = (revision, futharkGitDir) => {
   try {
     return new Date(
-      execSync(`git -C ../../futhark show -s --format=%ci ${revision}`).toString('utf8').trim()
+      execSync(`git -C ${futharkGitDir} show -s --format=%ci ${revision}`).toString('utf8').trim()
     ).toISOString()
   } catch (e) {
     return null
@@ -27,21 +22,15 @@ const getRevisionDate = (revision) => {
 }
 
 // Gets commit message from one revision hash
-const getRevisionMessage = (revision) => {
+const getRevisionMessage = (revision, futharkGitDir) => {
   try {
-    return execSync(`git -C ../../futhark show -s --format=%s ${revision}`).toString('utf8').trim()
+    return execSync(`git -C ${futharkGitDir} show -s --format=%s ${revision}`).toString('utf8').trim()
   } catch (e) {
     return null
   }
 }
 
-// If this script was executed directly
-if (require.main === module) {
-  // Find all benchmark files
-  const files = glob.sync('*.json', {
-    cwd: benchmarkResultsFolder
-  })
-
+const getAllRevisionData = (files, futharkGitDir) => {
   // Extract revision hashes
   const commits = getRevisions(files)
 
@@ -49,8 +38,8 @@ if (require.main === module) {
   const commitsMap = {}
 
   for (const commit of commits) {
-    const date = getRevisionDate(commit)
-    const message = getRevisionMessage(commit)
+    const date = getRevisionDate(commit, futharkGitDir)
+    const message = getRevisionMessage(commit, futharkGitDir)
 
     if (date != null) {
       commitsMap[commit] = {
@@ -60,7 +49,7 @@ if (require.main === module) {
     }
   }
 
-  fs.writeFileSync('./out/commits.json', JSON.stringify(commitsMap))
+  return commitsMap
 }
 
-module.exports = {getRevisions, getRevisionDate, getRevisionMessage}
+module.exports = {getRevisions, getRevisionDate, getRevisionMessage, getAllRevisionData}

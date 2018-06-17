@@ -1,5 +1,4 @@
 const fs = require('fs')
-const glob = require('glob')
 var _ = require('lodash')
 
 // Average of array
@@ -82,30 +81,6 @@ const processData = ({files, commitData, benchmarkResultsFolder, settings}) => {
   metadata.benchmarks = _.mapValues(metadata.benchmarks, datasets => _.uniq(datasets))
 
   return {combined, metadata}
-}
-
-// If this script was executed directly
-if (require.main === module) {
-  // Load settings
-  const settings = JSON.parse(fs.readFileSync('./settings.json'))
-
-  // Directory containing all .json benchmark files
-  const benchmarkResultsFolder = './benchmark-results'
-
-  // Find all files in the benchmark directory
-  const files = glob.sync('*.json', {
-    cwd: benchmarkResultsFolder
-  })
-
-  // Load the .json file contanining commit dates
-  const commitData = JSON.parse(fs.readFileSync('./out/commits.json'))
-
-  // Process all the benchmark files
-  const {combined, metadata} = processData({files, commitData, benchmarkResultsFolder, settings})
-
-  // Write results to disk
-  fs.writeFileSync('./out/combined.json', JSON.stringify(combined))
-  fs.writeFileSync('./out/metadata.json', JSON.stringify(metadata))
 }
 
 module.exports = {average, standardDeviation, processData}

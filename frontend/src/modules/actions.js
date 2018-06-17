@@ -1,7 +1,7 @@
 import fetch from './fetch'
 import _ from 'lodash'
 
-export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MACHINE', `data-split/${backend}/${machine}.json`, state => {
+export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MACHINE', `data-split/${backend}/${machine}-optimized.json.gz`, state => {
   const {skeleton, loading} = state.data
   return ! (
     skeleton !== null &&
@@ -13,6 +13,6 @@ export const fetchBackendMachine = (backend, machine) => fetch('FETCH_BACKEND_MA
   )
 }, {backend, machine})
 
-export const fetchMetadata = () => fetch('METADATA', 'metadata.json', state => {
+export const fetchMetadata = () => fetch('METADATA', 'metadata.json.gz', state => {
   return state.data.skeleton !== null
 })
