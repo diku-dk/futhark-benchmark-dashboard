@@ -20,8 +20,6 @@
   width: 100%;
   overflow: visible;
   height: calc(100% - 60px);
-  border-top: 1px solid;
-  border-color: #d0d1d5;
 }
 
 .selected line {
