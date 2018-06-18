@@ -128,8 +128,10 @@ class D3Graph extends Component {
       .classed('caret', true)
       .attr('y2', '100%')
 
+    // Append label for y-axis
     this.yLabel = this.selected.append('text')
-      .style('text-anchor', 'middle')
+      .attr('text-anchor', 'middle')
+      .attr('font-family', 'sans-serif')
       .attr('transform', 'rotate(-90)')
       .attr('dy', '-4em')
       .attr('x', '-130')
