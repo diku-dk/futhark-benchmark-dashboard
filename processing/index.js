@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -100,8 +101,10 @@ const rerunBenchmarksCommand = (machineName, options) => {
     throw Error('No machine name for this machine was provided')
   }
 
-  const unoptimized = JSON.parse(fs.readFileSync(`${outDir}/unoptimized.json`))
+  let unoptimized = JSON.parse(fs.readFileSync(`${outDir}/unoptimized.json`))
   const commits = JSON.parse(fs.readFileSync(`${outDir}/commits.json`))
+
+  unoptimized = _.pickBy(unoptimized, (_, backend) => backends.includes(backend))
 
   const compilerRevisions = prioritize(unoptimized, commits, {maxRevisions: commitCount || Infinity})
 
