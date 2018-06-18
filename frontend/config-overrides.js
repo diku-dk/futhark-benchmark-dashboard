@@ -5,7 +5,7 @@ module.exports = function override(config, env) {
   config = injectBabelPlugin(['import', { libraryName: 'antd', style: true }], config);
   config = rewireLess.withLoaderOptions({
     modifyVars: {
-      "@icon-url": "'/fonts/iconfont'"
+      "@icon-url": "'../../../../../public/fonts/iconfont'"
     },
   })(config, env);
   return config;
