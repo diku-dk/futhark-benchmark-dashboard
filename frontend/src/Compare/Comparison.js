@@ -64,8 +64,6 @@ export default class Comparison extends Component {
               diff,
               benchmark: benchmarkKey,
               dataset: datasetKey,
-              benchmark: benchmarkKey,
-              dataset: datasetKey,
               firstMachine: firstMachineKey,
               secondMachine: secondMachineKey,
               firstBackend: firstBackendKey,
