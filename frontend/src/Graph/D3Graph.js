@@ -15,6 +15,7 @@ let formatTime = d3.timeFormat('%B %d, %Y');
 
 class D3Graph extends Component {
   datasets = []
+  exportTop = 0
 
   // Initialize chart container
   componentDidMount() {
@@ -218,6 +219,10 @@ class D3Graph extends Component {
     this.selectedGraphs = this.selected.append('g')
     this.overviewGraphs = this.overview.append('g')
 
+    // Initialize legend container
+    this.legends = this.selected.append('text')
+      .classed('legends', true)
+
     // Clamp y-axis to height
     this.selected.append('defs')
       .append('clipPath')
@@ -248,13 +253,33 @@ class D3Graph extends Component {
 
     // Apply colors to datasets
     for (let i in datasets) {
-      let dataset = datasets[i]
-      if (dataset == null) continue
+      if (datasets[i] == null) continue
+
+      let {
+        color,
+        backend,
+        machine,
+        benchmark,
+        dataset
+      } = selected[i]
+
+      // Append legend
+      this.legends.append('tspan')
+        .attr('fill', `rgb(${color})`)
+        .attr('text-anchor', 'middle')
+        .attr('x', '50%')
+        .attr('dy', '20')
+        .attr('font-family', 'sans-serif')
+        .text(`${backend} | ${machine} | ${benchmark} | ${dataset}`)
+
       this.datasets.push({
-        data: dataset,
-        color: selected[i].color
+        data: datasets[i],
+        color: color
       })
     }
+
+    this.exportTop = 20 * this.datasets.length
+    this.legends.attr('transform', `translate(0, -${24 + this.exportTop})`)
 
     if (_.isEmpty(this.datasets)) return
 
@@ -417,6 +442,7 @@ class D3Graph extends Component {
       overviewPath.remove()
     }
 
+    this.legends.selectAll('tspan').remove();
     this.datasets = []
   }
 
@@ -430,11 +456,12 @@ class D3Graph extends Component {
     const rect = this.selected.node().getBoundingClientRect()
     saveSvgAsPng.saveSvgAsPng(this.selected.node(), 'futhark-benchmarks.png', {
       left: -100,
-      top: -20,
-      width: rect.width + 125,
-      height: rect.height + 50,
-      backgroundColor: 'white'
-    });
+      top: -24 - this.exportTop,
+      width: rect.width + 130,
+      height: rect.height + 50 + this.exportTop,
+      backgroundColor: 'white',
+      modifyStyle: s => _.includes(s, 'hidden') ? 'visibility: visible' : s
+    })
   }
 }
 

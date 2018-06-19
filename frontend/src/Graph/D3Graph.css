@@ -15,6 +15,10 @@
   top: 24px;
 }
 
+.legends {
+  visibility: hidden;
+}
+
 /* Selected graphs */
 .selected {
   width: 100%;
