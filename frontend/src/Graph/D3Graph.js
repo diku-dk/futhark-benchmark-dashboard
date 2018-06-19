@@ -120,9 +120,8 @@ class D3Graph extends Component {
       })
 
     // Cosmetic top line
-    this.selected.append('line')
+    this.topLine = this.selected.append('line')
       .classed('domain', true)
-      .attr('x2', '100%')
 
     // Append data point caret
     this.caret = this.selected.append('line')
@@ -408,6 +407,8 @@ class D3Graph extends Component {
     // directly to the amount of ticks since D3 decides
     let xTicks = Math.max(2, selectedRect.width / 100)
     let yTicks = Math.max(2, selectedRect.height / 30)
+
+    this.topLine.attr('x2', selectedRect.width)
 
     this.xComponent.ticks(xTicks)
     this.yComponent.ticks(yTicks)
