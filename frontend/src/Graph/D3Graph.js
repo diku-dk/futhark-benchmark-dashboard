@@ -300,7 +300,7 @@ class D3Graph extends Component {
       yDomain[1] = +yMax
       this.yLabel.text('Times slower than fastest')
     } else {
-      this.yLabel.text('Benchmark runtime (ms)')
+      this.yLabel.text('Benchmark runtime (µs)')
     }
 
     this.selectedXScale.domain(xDomain)
