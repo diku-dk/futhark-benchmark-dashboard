@@ -62,7 +62,7 @@ const processDataCommand = (options) => {
   const {combined, metadata} = processData({files: benchmarkFiles, commitData, benchmarkResultsFolder: benchmarkResultsDir, settings})
 
   // Write processing to disk
-  saveFileAndCompress(`${outDir}/unoptimized.json`, JSON.stringify(combined))
+  // saveFileAndCompress(`${outDir}/unoptimized.json`, JSON.stringify(combined)) // Too slow
   saveFileAndCompress(`${outDir}/metadata.json`, JSON.stringify(metadata))
 
   // Dashboard
